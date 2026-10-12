@@ -247,6 +247,46 @@ h1,h2,h3,p { overflow-wrap: anywhere; }
 .ranking-progress > div:first-child { display: flex; justify-content: space-between; margin-bottom: 8px; color: #98a5ab; font-size: 9px; }
 .progress-track { height: 6px; }
 .ranking-footnote { margin: 18px 0 0; color: #75838d; font-size: 9px; }
+.xp-summary { margin: 12px 0 17px; padding: 14px 17px; }
+.xp-summary > div:first-child { display: flex; align-items: center; gap: 11px; }
+.xp-summary > div:first-child > div { display: grid; gap: 4px; }
+.xp-summary strong { color: #d8e3d4; font: 600 11px "DM Mono",monospace; }
+.xp-summary small { color: #82918e; font-size: 9px; }
+.level-badge { display: inline-flex; align-items: center; width: max-content; padding: 5px 8px; border: 1px solid #4d6044; border-radius: 6px; color: #c7eda8; background: #27352b; font: 700 10px "DM Mono",monospace; }
+.xp-track { height: 5px; overflow: hidden; margin-top: 11px; border-radius: 8px; background: #29343b; }
+.xp-track i { height: 100%; display: block; border-radius: inherit; background: linear-gradient(90deg,#8ec85f,#c2ed8e); }
+.ranking-panel { max-width: none; padding: 0 18px 12px; }
+.ranking-table-head,.ranking-table-row { min-height: 46px; display: grid; grid-template-columns: 72px minmax(130px,1fr) 110px minmax(110px,.6fr); align-items: center; gap: 10px; }
+.ranking-table-head { border-bottom: 1px solid #2c3841; color: #71808a; font-size: 9px; }
+.ranking-table-row { border-bottom: 1px solid #27323b; color: #c2cbd0; font-size: 10px; }
+.ranking-table-row:last-child { border-bottom: 0; }
+.ranking-table-row > strong { color: var(--accent); font: 600 10px "DM Mono",monospace; }
+.rank-number { color: #d6c58e; font: 700 12px "DM Mono",monospace; }
+.ranking-self { background: #a3e36f0a; }
+.contest-list { display: grid; gap: 12px; }
+.contest-card { padding: 19px; }
+.contest-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.contest-card-top h2 { margin: 10px 0 0; font-size: 15px; }
+.contest-card > p { color: #94a1a8; font-size: 10px; line-height: 1.7; }
+.contest-card .contest-dates { color: #c1cbd0; font: 9px "DM Mono",monospace; }
+.contest-participants { color: #8c9aa2; font-size: 9px; }
+.contest-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.contest-private-note { color: #d7b779 !important; }
+.contest-problems { display: grid; gap: 7px; margin-top: 16px; }
+.contest-problems > strong { margin-bottom: 2px; color: #bec9cd; font-size: 10px; }
+.contest-problem { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 11px; border: 1px solid #303c45; border-radius: 6px; color: #cbd5d8; background: #111a22; text-align: left; cursor: pointer; font-size: 10px; }
+.contest-problem:hover { border-color: #718b61; }
+.contest-board { margin-top: 13px; }
+.contest-board .ranking-table-head,.contest-board .ranking-table-row { grid-template-columns: 60px minmax(120px,1fr) 110px 120px; }
+.contest-form { display: grid; gap: 9px; margin-top: 18px; padding: 19px; }
+.contest-form .section-heading { margin-bottom: 2px; }
+.contest-form .auth-field { margin-top: 3px; }
+.contest-form .auth-field textarea,.contest-form .auth-field select { width: 100%; padding: 9px 11px; border: 1px solid #35434d; border-radius: 6px; outline: none; color: var(--text); background: #111a22; font-size: 11px; }
+.contest-form .auth-field select { height: auto; }
+.contest-form .auth-field textarea { resize: vertical; }
+.contest-form .auth-field textarea:focus,.contest-form .auth-field select:focus { border-color: #83af69; }
+.contest-time-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.contest-time-fields input { color-scheme: dark; }
 .admin-users { margin-top: 16px; }
 .admin-users .section-heading { margin-bottom: 14px; }
 .admin-user-head,.admin-user-row { grid-template-columns: 1.4fr 1fr 1.7fr; }
@@ -319,6 +359,10 @@ h1,h2,h3,p { overflow-wrap: anywhere; }
   .table-row > span:nth-child(4),.table-row > span:nth-child(5) { display: none; }
   .table-title { flex-wrap: wrap; gap: 6px; }
   .training-grid { grid-template-columns: 1fr; }
+  .contest-time-fields { grid-template-columns: 1fr; gap: 3px; }
+  .contest-card-top { align-items: flex-start; }
+  .ranking-panel { overflow-x: auto; }
+  .ranking-table-head,.ranking-table-row { min-width: 440px; }
   .detail-panel { padding: 17px 13px; }
   .example-grid { grid-template-columns: 1fr; }
   .editor-hint { max-width: 55%; line-height: 1.5; }

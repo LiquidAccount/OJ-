@@ -20,6 +20,10 @@ const state = {
   codeByLanguage: {},
   currentUser: null,
   mySubmissions: null,
+  ranking: null,
+  contests: null,
+  contestLeaderboards: {},
+  activeContestId: null,
   adminOverview: null,
   authMode: "login",
   adminRegistrationEnabled: false,
@@ -49,6 +53,8 @@ function setPage(page) {
   render();
   window.scrollTo({ top: 0, behavior: "smooth" });
   if (page === "submissions") loadSubmissions();
+  if (page === "ranking") loadRanking();
+  if (page === "contests") loadContests();
   if (page === "admin") loadAdminOverview();
 }
 
@@ -66,10 +72,52 @@ function render() {
   pageContent.innerHTML = (views[state.page] || renderHome)();
 }
 
+const dailyQuotes = [
+  "代码不只是答案，更是你思考的轨迹。",
+  "先把问题拆小，复杂的事就有了入口。",
+  "每一次调试，都是更接近理解的一步。",
+  "不用一次写对，重要的是持续发现问题。",
+  "清晰的思路，胜过匆忙敲下的代码。",
+  "今天多懂一点，明天就能走得更远。",
+  "遇到难题先别怕，试着把它分成几步。",
+  "错误不是终点，它在告诉你该往哪里看。",
+  "把想法讲清楚，往往就找到了解法。",
+  "认真完成的小练习，也会积累成大进步。",
+  "先理解数据，再决定怎样处理它。",
+  "好程序不仅能运行，也让人读得明白。",
+  "卡住时换个角度，答案也许就在旁边。",
+  "每行代码都在练习，每次练习都算数。",
+  "把大目标拆成今天能完成的一小步。",
+  "耐心检查边界，细节常常决定成败。",
+  "写下第一版，再让它变得更好。",
+  "算法是工具，解决真实问题才是目的。",
+  "一次只解决一个问题，进度就会向前。",
+  "坚持复盘今天，明天就少绕一点弯路。",
+  "从样例开始推演，让抽象变得具体。",
+  "愿意尝试新方法，就是成长的开始。",
+  "学会求助，也学会解释自己已经尝试了什么。",
+  "把失败的测试点变成下一次的提示。",
+  "先保证正确，再思考如何更快。",
+  "每个熟练的人，都曾从基础开始。",
+  "写代码需要灵感，也需要一点点耐心。",
+  "今天解决一个小问题，就是很好的进展。",
+  "多问一句为什么，理解就会更扎实。",
+  "保持好奇，下一道题会带来新的发现。"
+];
+
+function dailyQuote(date = new Date()) {
+  const dayNumber = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
+  const index = ((dayNumber % dailyQuotes.length) + dailyQuotes.length) % dailyQuotes.length;
+  return dailyQuotes[index];
+}
+
 function renderHome() {
   const submissions = state.mySubmissions || [];
   const solved = new Set(submissions.filter((item) => item.verdict === "Accepted").map((item) => item.problemId));
   const recommended = state.problems.slice(0, 3);
+  const level = state.currentUser?.level || 1;
+  const experience = state.currentUser?.experience || 0;
+  const levelProgress = state.currentUser?.progressPercent || 0;
   return `
     <section class="welcome-row">
       <div><p class="eyebrow"><span class="eyebrow-line"></span> YOUR PERSONAL CODING ARENA</p>
@@ -88,12 +136,13 @@ function renderHome() {
       <article class="stat-card"><div class="stat-icon amber">⌁</div><div class="stat-label">提交次数</div><div class="stat-value">${submissions.length}<small> 次</small></div><div class="stat-note">试错也是成长的一部分</div></article>
       <article class="stat-card"><div class="stat-icon blue">◷</div><div class="stat-label">今日目标</div><div class="stat-value">${solved.size ? "继续" : "1"}<small>${solved.size ? "保持节奏" : " 道题"}</small></div><div class="stat-note">不用着急，按自己的节奏来</div></article>
     </section>
+    ${state.currentUser ? `<section class="panel xp-summary"><div><span class="level-badge">Lv.${level}</span><div><strong>${experience.toLocaleString()} EXP</strong><small>下一等级还需 ${state.currentUser.xpToNextLevel.toLocaleString()} EXP</small></div></div><div class="xp-track"><i style="width:${levelProgress}%"></i></div></section>` : ""}
     <div class="content-grid">
       <section class="panel problem-panel"><div class="section-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2>推荐练习</h2></div><button class="text-button" data-page="problems">全部题目 <span>→</span></button></div>
         <div class="mini-problem-list">${recommended.length ? recommended.map(problemRow).join("") : emptyState("题目正在准备中")}</div>
       </section>
       <aside class="panel side-panel"><div class="section-heading"><div><p class="eyebrow">A LITTLE NOTE</p><h2>今日寄语</h2></div><span class="note-spark">✦</span></div>
-        <div class="quote-mark">“</div><blockquote>代码不只是答案，<br>更是你思考的轨迹。</blockquote>
+        <div class="quote-mark">“</div><blockquote>${escapeHtml(dailyQuote())}</blockquote>
         <div class="note-footer"><span class="note-dot"></span> 写下今天的第一行代码</div>
       </aside>
     </div>
@@ -104,7 +153,7 @@ function problemRow(problem) {
   const difficultyClass = difficultyTone(problem.difficulty);
   return `<button class="problem-row" data-problem="${escapeHtml(problem.id)}">
     <span class="problem-status"></span><span class="problem-id">${escapeHtml(problem.id)}</span>
-    <span class="problem-title">${escapeHtml(problem.title)}<small>考点：${escapeHtml((problem.knowledgePoints || []).join("、") || problem.category)}</small></span>
+    <span class="problem-title">${escapeHtml(problem.title)}<small>考点：${escapeHtml((problem.knowledgePoints || []).join("、") || problem.category)} · 系数 ${problem.difficultyCoefficient} · 首通 +${problem.difficultyCoefficient * 10} EXP</small></span>
     <span class="difficulty ${difficultyClass}">${escapeHtml(problem.difficulty)}</span><span class="row-arrow">↗</span></button>`;
 }
 
@@ -132,7 +181,7 @@ function renderProblems() {
       <div class="problem-table">${filtered.map((problem) => {
         const rate = problem.attempts ? Math.round(problem.accepted / problem.attempts * 100) : 0;
         const difficultyClass = difficultyTone(problem.difficulty);
-        const knowledge = (problem.knowledgePoints || []).map((point) => `<i class="knowledge-chip">${escapeHtml(point)}</i>`).join("");
+        const knowledge = [...(problem.knowledgePoints || []).map((point) => `<i class="knowledge-chip">${escapeHtml(point)}</i>`), `<i class="knowledge-chip">难度系数 ${problem.difficultyCoefficient}</i>`].join("");
         return `<button class="table-row" data-problem="${escapeHtml(problem.id)}"><span class="problem-status"></span><span class="table-title"><b>${escapeHtml(problem.id)}</b><span class="table-main">${escapeHtml(problem.title)}<small class="knowledge-list">${knowledge || `<i class="knowledge-chip">${escapeHtml(problem.category)}</i>`}</small></span></span><span><i class="difficulty ${difficultyClass}">${escapeHtml(problem.difficulty)}</i></span><span class="table-muted">${escapeHtml(problem.category)}</span><span class="rate-cell"><span class="rate-track"><i style="width:${rate}%"></i></span>${rate}%</span><span class="row-arrow">↗</span></button>`;
       }).join("") || emptyState("没有找到匹配的题目")}</div>
     </section>${detail}`;
@@ -146,7 +195,7 @@ function renderProblemDetail(problem) {
     javascript: "// 在这里编写你的解法\n"
   };
   return `<section class="panel detail-panel" id="problem-detail">
-    <div class="detail-top"><div><button class="back-button" data-action="close-problem">← 返回题目列表</button><p class="eyebrow">${escapeHtml(problem.id)} · ${escapeHtml(problem.category)}</p><h2>${escapeHtml(problem.title)}</h2><div class="detail-knowledge">${(problem.knowledgePoints || []).map((point) => `<span class="knowledge-chip">${escapeHtml(point)}</span>`).join("")}</div></div><span class="difficulty ${difficultyTone(problem.difficulty)}">${escapeHtml(problem.difficulty)}</span></div>
+    <div class="detail-top"><div><button class="back-button" data-action="close-problem">← 返回题目列表</button><p class="eyebrow">${escapeHtml(problem.id)} · ${escapeHtml(problem.category)}</p><h2>${escapeHtml(problem.title)}</h2><div class="detail-knowledge">${(problem.knowledgePoints || []).map((point) => `<span class="knowledge-chip">${escapeHtml(point)}</span>`).join("")}<span class="knowledge-chip">难度系数 ${problem.difficultyCoefficient} · 首次通过 +${problem.difficultyCoefficient * 10} EXP</span></div></div><span class="difficulty ${difficultyTone(problem.difficulty)}">${escapeHtml(problem.difficulty)}</span></div>
     <div class="statement">${problem.background ? `<h3>实际背景</h3><p>${escapeHtml(problem.background)}</p>` : ""}<h3>题目描述</h3><p>${escapeHtml(problem.description)}</p><h3>输入格式</h3><p>${escapeHtml(problem.input)}</p><h3>输出格式</h3><p>${escapeHtml(problem.output)}</p>
       <h3>样例</h3>${problem.examples.map((example, index) => `<div class="example-grid"><div><label>输入 ${index + 1}</label><pre>${escapeHtml(example.input || "(无输入)")}</pre></div><div><label>输出 ${index + 1}</label><pre>${escapeHtml(example.output)}</pre></div></div>`).join("")}
     </div>
@@ -173,8 +222,36 @@ function renderTraining() {
 }
 
 function renderContests() {
-  return `<div class="page-heading"><div><p class="eyebrow">FRIENDLY CHALLENGES</p><h1>比赛</h1><p>在轻量挑战中，试试把所学串起来。</p></div><span class="pill pill-muted">个人空间</span></div>
-    <section class="panel empty-panel"><div class="empty-illustration">⚑</div><h2>专属比赛，即将开放</h2><p>目前这里还没有安排比赛。你可以先从题库开始练习，准备好后再来挑战。</p><button class="button button-primary" data-page="problems">去题库看看 <span>→</span></button></section>`;
+  const admin = state.currentUser?.role === "admin";
+  const problems = state.problems.map((problem) =>
+    `<option value="${escapeHtml(problem.id)}">${escapeHtml(problem.id)} · ${escapeHtml(problem.title)}（系数 ${problem.difficultyCoefficient}）</option>`
+  ).join("");
+  const cards = state.contests?.length ? state.contests.map((contest) => {
+    const statusLabels = { upcoming: "即将开始", running: "进行中", ended: "已结束" };
+    const dateRange = `${new Date(contest.startsAt).toLocaleString("zh-CN", { hour12: false })} — ${new Date(contest.endsAt).toLocaleString("zh-CN", { hour12: false })}`;
+    const registerAction = state.currentUser?.role === "student" && contest.status === "upcoming" && !contest.registered
+      ? `<button class="button button-primary" data-contest-register="${escapeHtml(contest.id)}">报名参赛</button>`
+      : "";
+    const waiting = contest.status === "upcoming" && contest.registered
+      ? `<p class="contest-private-note">报名成功。比赛开始前题目保持隐藏。</p>`
+      : contest.status === "upcoming" && !state.currentUser && !admin
+        ? `<p class="contest-private-note">登录并报名后，比赛开始时即可查看题目。</p>`
+        : "";
+    const problemList = contest.problems?.length
+      ? `<div class="contest-problems"><strong>比赛题目</strong>${contest.problems.map((problem) =>
+        `<button class="contest-problem" data-problem="${escapeHtml(problem.id)}" data-contest-id="${escapeHtml(contest.id)}"><span>${escapeHtml(problem.id)} · ${escapeHtml(problem.title)}</span><span class="difficulty ${difficultyTone(problem.difficulty)}">${escapeHtml(problem.difficulty)}</span></button>`
+      ).join("")}</div>`
+      : "";
+    const leaderboard = contest.status !== "upcoming" && (contest.registered || admin)
+      ? `<button class="button button-outline" data-contest-leaderboard="${escapeHtml(contest.id)}">${state.contestLeaderboards[contest.id] ? "收起比赛榜" : "查看比赛榜"}</button>`
+      : "";
+    const contestBoard = state.contestLeaderboards[contest.id]
+      ? `<div class="contest-board"><div class="ranking-table-head"><span>排名</span><span>选手</span><span>通过题数</span><span>罚时</span></div>${state.contestLeaderboards[contest.id].leaderboard.map((entry) => `<div class="ranking-table-row"><span>${entry.rank}</span><span>${escapeHtml(entry.username)}</span><span>${entry.solved}</span><strong>${entry.penalty} 分钟</strong></div>`).join("") || emptyState("暂无比赛成绩")}</div>`
+      : "";
+    return `<article class="panel contest-card"><div class="contest-card-top"><div><span class="pill pill-muted">${statusLabels[contest.status]}</span><h2>${escapeHtml(contest.title)}</h2></div><span class="contest-participants">${contest.participantCount} 人报名</span></div>${contest.description ? `<p>${escapeHtml(contest.description)}</p>` : ""}<p class="contest-dates">${escapeHtml(dateRange)}</p><div class="contest-actions">${registerAction}${leaderboard}</div>${waiting}${problemList}${contestBoard}</article>`;
+  }).join("") : `<section class="panel empty-panel"><div class="empty-illustration">⚑</div><h2>暂时还没有比赛</h2><p>${admin ? "可在下方创建一场新比赛。" : "管理员创建比赛后，你可以在这里报名参加。"}</p></section>`;
+  const creationForm = admin ? `<form id="contest-form" class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">ADMINISTRATION</p><h2>创建比赛</h2></div><span class="pill pill-muted">仅管理员</span></div><label class="auth-field">比赛名称<input name="title" required minlength="3" maxlength="80" placeholder="例如：周末算法挑战"></label><label class="auth-field">说明（可选）<textarea name="description" maxlength="500" rows="2" placeholder="比赛说明"></textarea></label><div class="contest-time-fields"><label class="auth-field">开始时间<input name="startsAt" type="datetime-local" required></label><label class="auth-field">结束时间<input name="endsAt" type="datetime-local" required></label></div><label class="auth-field">选择题目（1–20 道，按住 Ctrl/⌘ 可多选）<select name="problemIds" multiple required size="7">${problems}</select></label><p class="auth-error" id="contest-error" role="alert"></p><button class="button button-primary" type="submit">创建比赛</button></form>` : "";
+  return `<div class="page-heading"><div><p class="eyebrow">FRIENDLY CHALLENGES</p><h1>比赛</h1><p>学生可直接报名；题目在比赛开始后向已报名者开放，榜单按通过题数和罚时排序。</p></div>${admin ? `<span class="pill pill-muted">管理员可创建比赛</span>` : ""}</div>${state.contests === null ? `<section class="panel empty-panel"><span class="spinner"></span><p>正在读取比赛…</p></section>` : `<div class="contest-list">${cards}</div>`}${creationForm}`;
 }
 
 function renderSubmissions() {
@@ -194,9 +271,9 @@ function renderDiscuss() {
 }
 
 function renderRanking() {
-  const solved = new Set((state.mySubmissions || []).filter((item) => item.verdict === "Accepted").map((item) => item.problemId)).size;
-  return `<div class="page-heading"><div><p class="eyebrow">JUST FOR FUN</p><h1>排行榜</h1><p>这里只和昨天的自己比较。</p></div></div>
-    <section class="panel ranking-panel"><div class="ranking-header"><span class="ranking-medal">✦</span><div><p>个人练习榜</p><h2>${state.currentUser ? escapeHtml(state.currentUser.username) : "游客"}</h2></div><strong>${solved}<small> 题通过</small></strong></div><div class="ranking-progress"><div><span>题目进度</span><span>${solved} / ${state.problems.length}</span></div><div class="progress-track"><i style="width:${state.problems.length ? Math.min(100, solved / state.problems.length * 100) : 0}%"></i></div></div><p class="ranking-footnote">${state.currentUser ? "这里只展示当前账号的解题进度。" : "登录后即可查看个人解题进度。"}</p></section>`;
+  if (state.ranking === null) return `<section class="panel empty-panel"><span class="spinner"></span><p>正在读取经验排行榜…</p></section>`;
+  return `<div class="page-heading"><div><p class="eyebrow">EXPERIENCE LEADERBOARD</p><h1>排行榜</h1><p>按累计经验值排名。每道题首次通过可获得难度系数 × 10 EXP。</p></div></div>
+    <section class="panel ranking-panel"><div class="ranking-table-head"><span>排名</span><span>选手</span><span>等级</span><span>经验值</span></div>${state.ranking.length ? state.ranking.map((entry) => `<div class="ranking-table-row ${state.currentUser?.id === entry.id ? "ranking-self" : ""}"><span class="rank-number">${entry.rank <= 3 ? ["🥇", "🥈", "🥉"][entry.rank - 1] : entry.rank}</span><span>${escapeHtml(entry.username)}</span><span><span class="level-badge">Lv.${entry.level}</span></span><strong>${entry.experience.toLocaleString()} EXP</strong></div>`).join("") : emptyState("还没有学生上榜，完成题目即可获得经验。")}</section><p class="ranking-footnote">升级所需经验：Lv.n → Lv.(n+1) 需要 100 + 5×n² EXP，最高 Lv.999。管理员账号不参与排行榜。启用本机评测时，经验值来自用户设备报告，不可视为防作弊成绩。</p>`;
 }
 
 function renderAdmin() {
@@ -296,7 +373,7 @@ function updateAccountUI() {
   document.querySelector("#profile-avatar").textContent = label.slice(0, 1).toUpperCase();
   document.querySelector("#profile-name").textContent = label;
   document.querySelector("#profile-role").textContent = user
-    ? (user.role === "admin" ? "管理员" : "学生账号")
+    ? (user.role === "admin" ? "管理员" : `Lv.${user.level} · ${user.experience.toLocaleString()} EXP`)
     : "请登录后提交";
   document.querySelector("#top-avatar").textContent = label.slice(0, 1).toUpperCase();
   const action = document.querySelector("#profile-action");
@@ -447,6 +524,50 @@ async function loadSubmissions(showErrors = true) {
   }
 }
 
+async function loadRanking() {
+  try {
+    state.ranking = await requestJson("/api/ranking");
+    if (state.page === "ranking") render();
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
+async function loadContests() {
+  try {
+    state.contests = await requestJson("/api/contests");
+    if (state.page === "contests") render();
+  } catch (error) {
+    state.contests = [];
+    showToast(error.message);
+    if (state.page === "contests") render();
+  }
+}
+
+async function registerForContest(contestId) {
+  try {
+    await requestJson(`/api/contests/${encodeURIComponent(contestId)}/register`, { method: "POST" });
+    showToast("报名成功，比赛开始前题目会保持隐藏。");
+    await loadContests();
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
+async function toggleContestLeaderboard(contestId) {
+  if (state.contestLeaderboards[contestId]) {
+    delete state.contestLeaderboards[contestId];
+    render();
+    return;
+  }
+  try {
+    state.contestLeaderboards[contestId] = await requestJson(`/api/contests/${encodeURIComponent(contestId)}/leaderboard`);
+    render();
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
 async function loadAdminOverview() {
   try {
     state.adminOverview = await requestJson("/api/admin/overview");
@@ -456,13 +577,49 @@ async function loadAdminOverview() {
   }
 }
 
-function saveLocalResult(problemId, language, result) {
+async function handleContestFormSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const errorBox = form.querySelector("#contest-error");
+  const button = form.querySelector('[type="submit"]');
+  const values = new FormData(form);
+  button.disabled = true;
+  errorBox.textContent = "";
+  try {
+    const startsAt = new Date(values.get("startsAt"));
+    const endsAt = new Date(values.get("endsAt"));
+    if (!Number.isFinite(startsAt.getTime()) || !Number.isFinite(endsAt.getTime())) {
+      throw new Error("请输入有效的比赛开始和结束时间。");
+    }
+    await requestJson("/api/admin/contests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: values.get("title"),
+        description: values.get("description"),
+        startsAt: startsAt.toISOString(),
+        endsAt: endsAt.toISOString(),
+        problemIds: values.getAll("problemIds")
+      })
+    });
+    showToast("比赛创建成功。");
+    state.contests = null;
+    await loadContests();
+  } catch (error) {
+    errorBox.textContent = error.message;
+  } finally {
+    if (button.isConnected) button.disabled = false;
+  }
+}
+
+function saveLocalResult(problemId, language, result, contestId) {
   return requestJson("/api/local-result", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       problemId,
       language,
+      contestId,
       verdict: result.verdict,
       passed: result.passed,
       total: result.total,
@@ -510,24 +667,38 @@ async function submitCode() {
         throw new Error("先连接本机评测器，再提交代码。");
       }
       result = await evaluateLocally(state.selectedProblem, language, code);
-      await saveLocalResult(state.selectedProblem.id, language, result);
+      const saved = await saveLocalResult(state.selectedProblem.id, language, result, state.activeContestId);
+      result.experienceAwarded = saved.experienceAwarded;
     } else {
       const response = await fetch("/api/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ problemId: state.selectedProblem.id, language, code })
+        body: JSON.stringify({ problemId: state.selectedProblem.id, language, code, contestId: state.activeContestId })
       });
       result = await response.json();
       if (!response.ok) throw new Error(result.error || "提交失败，请稍后重试。");
     }
     const accepted = result.verdict === "Accepted";
+    if (accepted) {
+      try {
+        const me = await requestJson("/api/me");
+        state.currentUser = me.user;
+        updateAccountUI();
+      } catch (error) {
+        showToast(error.message);
+      }
+    }
     resultContainer.innerHTML = `<div class="submission-message ${accepted ? "accepted-result" : "failed-result"}">
       <div><strong>${accepted ? "✓ " : "× "}${escapeHtml(result.verdict)}</strong><span>${result.passed} / ${result.total} 个测试点通过</span></div>
       ${result.failedCase ? `<p>失败测试点：${result.failedCase}</p>` : ""}
       ${result.compileOutput ? `<pre>${escapeHtml(result.compileOutput)}</pre>` : ""}
       <small>评测时间 ${escapeHtml(String(result.time ?? "-"))} s · 内存 ${escapeHtml(String(result.memory ?? "-"))} KB</small></div>`;
-    showToast(accepted ? "恭喜通过！" : "评测完成，继续加油。");
+    showToast(accepted
+      ? (result.experienceAwarded ? `恭喜通过！首次解出，获得 ${result.experienceAwarded} EXP。` : "恭喜通过！这道题的首次通过经验已领取。")
+      : "评测完成，继续加油。");
     await loadSubmissions(false);
+    if (state.page === "ranking") await loadRanking();
+    if (state.page === "contests" && state.activeContestId) await toggleContestLeaderboard(state.activeContestId);
   } catch (error) {
     resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>评测未完成</strong><p>${escapeHtml(error.message)}</p></div>`;
   } finally {
@@ -575,6 +746,21 @@ document.addEventListener("click", (event) => {
     logout();
     return;
   }
+  const registerContestButton = event.target.closest("[data-contest-register]");
+  if (registerContestButton) {
+    if (!state.currentUser) {
+      openAuth("login");
+      showToast("登录学生账号后即可报名。");
+      return;
+    }
+    registerForContest(registerContestButton.dataset.contestRegister);
+    return;
+  }
+  const contestLeaderboardButton = event.target.closest("[data-contest-leaderboard]");
+  if (contestLeaderboardButton) {
+    toggleContestLeaderboard(contestLeaderboardButton.dataset.contestLeaderboard);
+    return;
+  }
   const pageLink = event.target.closest("[data-page]");
   if (pageLink) {
     event.preventDefault();
@@ -587,6 +773,7 @@ document.addEventListener("click", (event) => {
   }
   const problemButton = event.target.closest("[data-problem]");
   if (problemButton) {
+    state.activeContestId = problemButton.dataset.contestId || null;
     state.selectedProblem = state.problems.find((problem) => problem.id === problemButton.dataset.problem) || null;
     if (state.selectedProblem) {
       render();
@@ -605,6 +792,7 @@ document.addEventListener("click", (event) => {
 document.addEventListener("submit", (event) => {
   if (event.target.id === "auth-form") handleAuthSubmit(event);
   if (event.target.id === "local-judge-form") handleLocalJudgeSubmit(event);
+  if (event.target.id === "contest-form") handleContestFormSubmit(event);
 });
 
 document.addEventListener("input", (event) => {
