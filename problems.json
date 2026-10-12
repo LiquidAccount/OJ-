@@ -1,0 +1,2265 @@
+[
+  {
+    "id": "LL1001",
+    "title": "两数之和",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "标准输入输出",
+      "整数运算"
+    ],
+    "accepted": 128,
+    "attempts": 164,
+    "description": "读入两个整数 a 和 b，输出它们的和。输入保证两个数都在 32 位有符号整数范围内。",
+    "input": "一行两个整数 a、b，以空格分隔。",
+    "output": "输出一个整数，表示 a + b。",
+    "examples": [
+      {
+        "input": "3 5\n",
+        "output": "8\n"
+      },
+      {
+        "input": "-7 12\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 5\n",
+        "output": "8\n"
+      },
+      {
+        "input": "-7 12\n",
+        "output": "5\n"
+      },
+      {
+        "input": "100000 200000\n",
+        "output": "300000\n"
+      },
+      {
+        "input": "0 0\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 1
+  },
+  {
+    "id": "LL1002",
+    "title": "问候世界",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "输出语句",
+      "程序结构"
+    ],
+    "accepted": 96,
+    "attempts": 121,
+    "description": "编写一个程序，在标准输出中打印指定的问候语。",
+    "input": "本题没有输入。",
+    "output": "输出 Hello, World! 并换行。",
+    "examples": [
+      {
+        "input": "",
+        "output": "Hello, World!\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "",
+        "output": "Hello, World!\n"
+      }
+    ],
+    "difficultyCoefficient": 6
+  },
+  {
+    "id": "LL1003",
+    "title": "奇偶判断",
+    "difficulty": "基础",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "条件判断",
+      "取模运算"
+    ],
+    "accepted": 74,
+    "attempts": 118,
+    "description": "读入一个整数 n。若 n 是偶数，输出 EVEN；否则输出 ODD。",
+    "input": "一行一个整数 n。",
+    "output": "输出 EVEN 或 ODD。",
+    "examples": [
+      {
+        "input": "14\n",
+        "output": "EVEN\n"
+      },
+      {
+        "input": "-3\n",
+        "output": "ODD\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "14\n",
+        "output": "EVEN\n"
+      },
+      {
+        "input": "-3\n",
+        "output": "ODD\n"
+      },
+      {
+        "input": "0\n",
+        "output": "EVEN\n"
+      },
+      {
+        "input": "999999\n",
+        "output": "ODD\n"
+      }
+    ],
+    "difficultyCoefficient": 21
+  },
+  {
+    "id": "LL1004",
+    "title": "数组最大值",
+    "difficulty": "进阶",
+    "category": "数组",
+    "knowledgePoints": [
+      "数组遍历",
+      "最大值"
+    ],
+    "accepted": 42,
+    "attempts": 89,
+    "description": "第一行输入正整数 n，第二行输入 n 个整数。请输出这 n 个数中的最大值。",
+    "input": "第一行一个整数 n；第二行 n 个整数。",
+    "output": "输出数组中的最大值。",
+    "examples": [
+      {
+        "input": "5\n-2 8 1 8 0\n",
+        "output": "8\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n-2 8 1 8 0\n",
+        "output": "8\n"
+      },
+      {
+        "input": "1\n-100\n",
+        "output": "-100\n"
+      },
+      {
+        "input": "4\n-9 -2 -11 -4\n",
+        "output": "-2\n"
+      }
+    ],
+    "difficultyCoefficient": 41
+  },
+  {
+    "id": "LL1005",
+    "title": "校园打印费用",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "条件表达式",
+      "数值计算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "学生会需要打印活动通知，打印店每天给每位同学前 10 张黑白纸免费，超出部分每张收费 1 元。",
+    "description": "输入需要打印的页数 n，计算应付费用。n 不小于 0。",
+    "input": "一行一个整数 n（0 ≤ n ≤ 100000）。",
+    "output": "输出应付的整数金额（元）。",
+    "examples": [
+      {
+        "input": "14\n",
+        "output": "4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "0\n",
+        "output": "0\n"
+      },
+      {
+        "input": "10\n",
+        "output": "0\n"
+      },
+      {
+        "input": "14\n",
+        "output": "4\n"
+      },
+      {
+        "input": "100\n",
+        "output": "90\n"
+      }
+    ],
+    "difficultyCoefficient": 11
+  },
+  {
+    "id": "LL1006",
+    "title": "校园班车票价",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "条件判断",
+      "分段计费"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "校园班车实行简化计价：前 2 公里收取 2 元，之后每多乘 1 公里增加 1 元。题目中的里程均为整数。",
+    "description": "根据乘车里程 d 计算车费。乘车里程为正整数。",
+    "input": "一行一个整数 d（1 ≤ d ≤ 100000）。",
+    "output": "输出应付车费（元）。",
+    "examples": [
+      {
+        "input": "5\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "1\n",
+        "output": "2\n"
+      },
+      {
+        "input": "2\n",
+        "output": "2\n"
+      },
+      {
+        "input": "3\n",
+        "output": "3\n"
+      },
+      {
+        "input": "5\n",
+        "output": "5\n"
+      }
+    ],
+    "difficultyCoefficient": 16
+  },
+  {
+    "id": "LL1007",
+    "title": "一周降雨总量",
+    "difficulty": "基础",
+    "category": "循环与累加",
+    "knowledgePoints": [
+      "循环",
+      "累加求和"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "气象社团用雨量筒记录一周每天的降雨量，想计算这一周的累计降雨量。",
+    "description": "输入 7 个非负整数，依次表示一周每天的降雨量（毫米），输出一周的总降雨量。",
+    "input": "一行 7 个整数 r1...r7（0 ≤ ri ≤ 1000），以空格分隔。",
+    "output": "输出 7 天降雨量之和。",
+    "examples": [
+      {
+        "input": "0 2 5 0 3 1 4\n",
+        "output": "15\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "0 2 5 0 3 1 4\n",
+        "output": "15\n"
+      },
+      {
+        "input": "0 0 0 0 0 0 0\n",
+        "output": "0\n"
+      },
+      {
+        "input": "1000 1000 1000 1000 1000 1000 1000\n",
+        "output": "7000\n"
+      }
+    ],
+    "difficultyCoefficient": 25
+  },
+  {
+    "id": "LL1008",
+    "title": "冷链温度巡检",
+    "difficulty": "基础",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "循环",
+      "区间判断",
+      "计数"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "冷链仓库要求冷冻区温度保持在 -18℃ 到 -15℃ 之间（含端点）。巡检员每天记录多个传感器读数，需要统计合格读数数量。",
+    "description": "给定 n 个整数温度，统计落在闭区间 [-18, -15] 内的读数个数。",
+    "input": "第一行一个整数 n（1 ≤ n ≤ 1000）；第二行 n 个整数温度 t（-50 ≤ t ≤ 50）。",
+    "output": "输出合格读数的数量。",
+    "examples": [
+      {
+        "input": "6\n-20 -18 -17 -15 -14 0\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "6\n-20 -18 -17 -15 -14 0\n",
+        "output": "3\n"
+      },
+      {
+        "input": "4\n-18 -18 -15 -15\n",
+        "output": "4\n"
+      },
+      {
+        "input": "5\n-30 -25 -19 -14 10\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 29
+  },
+  {
+    "id": "LL1009",
+    "title": "寻找最热的一天",
+    "difficulty": "基础",
+    "category": "数组与遍历",
+    "knowledgePoints": [
+      "数组遍历",
+      "最大值",
+      "下标"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "气象站记录了连续 n 天的最高气温。请找出最高气温以及它第一次出现的日期编号（从第 1 天开始）。",
+    "description": "输入 n 天的最高气温，输出最高气温和它第一次出现的天数。若最高气温出现多次，输出最早的一天。",
+    "input": "第一行一个整数 n（1 ≤ n ≤ 10000）；第二行 n 个整数气温，以空格分隔。",
+    "output": "输出两个整数：最高气温和最早出现的天数，中间用一个空格分隔。",
+    "examples": [
+      {
+        "input": "5\n18 23 23 19 21\n",
+        "output": "23 2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n18 23 23 19 21\n",
+        "output": "23 2\n"
+      },
+      {
+        "input": "1\n-5\n",
+        "output": "-5 1\n"
+      },
+      {
+        "input": "4\n-10 -3 -8 -3\n",
+        "output": "-3 2\n"
+      }
+    ],
+    "difficultyCoefficient": 33
+  },
+  {
+    "id": "LL1010",
+    "title": "共享单车骑行统计",
+    "difficulty": "基础",
+    "category": "数组与累加",
+    "knowledgePoints": [
+      "数组遍历",
+      "累加求和"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "校园出行平台记录了一位同学一天内每次共享单车骑行的距离，平台需要汇总当天的总里程。",
+    "description": "给定一天中 n 次骑行的距离（单位：米），计算总骑行距离。每次骑行距离都是非负整数。",
+    "input": "第一行一个整数 n（1 ≤ n ≤ 10000）；第二行 n 个非负整数 d（0 ≤ d ≤ 1000000）。",
+    "output": "输出总骑行距离（米）。",
+    "examples": [
+      {
+        "input": "4\n1200 850 0 1950\n",
+        "output": "4000\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4\n1200 850 0 1950\n",
+        "output": "4000\n"
+      },
+      {
+        "input": "1\n0\n",
+        "output": "0\n"
+      },
+      {
+        "input": "3\n1000000 1000000 1000000\n",
+        "output": "3000000\n"
+      }
+    ],
+    "difficultyCoefficient": 37
+  },
+  {
+    "id": "LL1011",
+    "title": "食堂窗口排队时间",
+    "difficulty": "进阶",
+    "category": "数组与模拟",
+    "knowledgePoints": [
+      "前缀和",
+      "队列模拟",
+      "时间复杂度"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "食堂只有一个打饭窗口，学生按给定顺序排队。窗口服务完一位同学后，才会开始服务下一位。根据每人的打饭时长估算所有人的总等待时间。",
+    "description": "输入排队人数以及每位同学的服务时长。第一位同学无需等待；第 i 位同学的等待时间等于前 i-1 位同学服务时长之和。输出所有人的等待时间总和。",
+    "input": "第一行一个整数 n（1 ≤ n ≤ 100000）；第二行 n 个正整数服务时长 ti（1 ≤ ti ≤ 1000）。",
+    "output": "输出所有等待时间之和（分钟）。",
+    "examples": [
+      {
+        "input": "4\n3 2 5 1\n",
+        "output": "18\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4\n3 2 5 1\n",
+        "output": "18\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "0\n"
+      },
+      {
+        "input": "3\n1 1 1\n",
+        "output": "3\n"
+      },
+      {
+        "input": "5\n10 20 30 40 50\n",
+        "output": "200\n"
+      }
+    ],
+    "difficultyCoefficient": 51
+  },
+  {
+    "id": "LL2001",
+    "title": "仓库库存区间查询",
+    "difficulty": "困难",
+    "category": "树状数组",
+    "knowledgePoints": [
+      "指针与数组",
+      "函数拆分",
+      "树状数组",
+      "前缀和",
+      "区间更新"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "仓库要频繁修改某件商品的库存，并查询一段货架编号的总库存。",
+    "description": "维护 n 个整数。Q l r 查询区间和，U i x 将第 i 个数赋值为 x。下标从 1 开始。",
+    "input": "第一行 n q；第二行 n 个整数；接下来 q 行为 Q l r 或 U i x。n,q≤200000。",
+    "output": "每个 Q 操作输出一行区间和。",
+    "examples": [
+      {
+        "input": "5 4\n2 1 3 4 5\nQ 2 4\nU 3 10\nQ 1 3\nQ 4 5\n",
+        "output": "8\n13\n9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 4\n2 1 3 4 5\nQ 2 4\nU 3 10\nQ 1 3\nQ 4 5\n",
+        "output": "8\n13\n9\n"
+      },
+      {
+        "input": "1 3\n7\nQ 1 1\nU 1 0\nQ 1 1\n",
+        "output": "7\n0\n"
+      }
+    ],
+    "difficultyCoefficient": 61
+  },
+  {
+    "id": "LL2002",
+    "title": "传感器最长无重复片段",
+    "difficulty": "困难",
+    "category": "字符串与哈希",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "滑动窗口",
+      "哈希表"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "连续采样中重复的读数会干扰分析，需要找出最长的不含重复字符的片段。",
+    "description": "给定一个只含可见 ASCII 字符且不含空格的字符串，输出最长无重复字符子串的长度。",
+    "input": "一行字符串 s，1≤|s|≤200000。",
+    "output": "输出最长长度。",
+    "examples": [
+      {
+        "input": "abcabcbb\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "abcabcbb\n",
+        "output": "3\n"
+      },
+      {
+        "input": "bbbbb\n",
+        "output": "1\n"
+      },
+      {
+        "input": "pwwkew\n",
+        "output": "3\n"
+      }
+    ],
+    "difficultyCoefficient": 61
+  },
+  {
+    "id": "LL2003",
+    "title": "校园地图最短步数",
+    "difficulty": "困难",
+    "category": "图搜索",
+    "knowledgePoints": [
+      "二维数组指针",
+      "函数拆分",
+      "广度优先搜索",
+      "队列"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "校园导航要计算从宿舍到教室的最少步数，墙和建筑不可穿过。",
+    "description": "网格中 S 为起点、G 为终点、# 为障碍、. 为可走格。每步只能上下左右移动，输出最少步数；无法到达输出 -1。",
+    "input": "第一行 n m（1≤n,m≤1000）；接下来 n 行各含 m 个字符，恰有一个 S 和一个 G。",
+    "output": "输出最少步数或 -1。",
+    "examples": [
+      {
+        "input": "3 4\nS..#\n.#..\n...G\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 4\nS..#\n.#..\n...G\n",
+        "output": "5\n"
+      },
+      {
+        "input": "2 3\nS#G\n...\n",
+        "output": "-1\n"
+      }
+    ],
+    "difficultyCoefficient": 62
+  },
+  {
+    "id": "LL2004",
+    "title": "合并重叠预约时段",
+    "difficulty": "困难",
+    "category": "排序与区间",
+    "knowledgePoints": [
+      "结构体指针",
+      "比较函数",
+      "排序",
+      "区间合并"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "会议室系统需要把互相重叠或首尾相接的预约合并，避免重复展示。",
+    "description": "给出 n 个闭区间 [l,r]，按左端点升序合并所有相交或相接区间（下一段 l≤当前 r）。",
+    "input": "第一行 n（1≤n≤200000）；接下来 n 行为整数 l r。",
+    "output": "第一行输出合并后的区间数，随后每行输出一个 l r。",
+    "examples": [
+      {
+        "input": "4\n1 3\n2 6\n8 10\n10 12\n",
+        "output": "2\n1 6\n8 12\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4\n1 3\n2 6\n8 10\n10 12\n",
+        "output": "2\n1 6\n8 12\n"
+      },
+      {
+        "input": "3\n5 5\n1 2\n3 4\n",
+        "output": "1\n1 5\n"
+      }
+    ],
+    "difficultyCoefficient": 63
+  },
+  {
+    "id": "LL2005",
+    "title": "背包中的最高采购价值",
+    "difficulty": "困难",
+    "category": "动态规划",
+    "knowledgePoints": [
+      "一维数组",
+      "函数拆分",
+      "0/1 背包",
+      "空间优化"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "采购车有固定载重，每种物品最多买一件，目标是在不超重时获得最大价值。",
+    "description": "有 n 件物品，第 i 件重量 wi、价值 vi。容量为 W，求可选物品的最大总价值。",
+    "input": "第一行 n W（1≤n≤200，0≤W≤200000）；随后 n 行 wi vi（1≤wi≤W，0≤vi≤10^9）。",
+    "output": "输出最大价值。",
+    "examples": [
+      {
+        "input": "4 7\n1 1\n3 4\n4 5\n5 7\n",
+        "output": "9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 7\n1 1\n3 4\n4 5\n5 7\n",
+        "output": "9\n"
+      },
+      {
+        "input": "3 4\n3 6\n2 4\n2 4\n",
+        "output": "8\n"
+      }
+    ],
+    "difficultyCoefficient": 63
+  },
+  {
+    "id": "LL2006",
+    "title": "课程安排的最小编号顺序",
+    "difficulty": "困难",
+    "category": "有向图",
+    "knowledgePoints": [
+      "邻接表指针",
+      "函数拆分",
+      "拓扑排序",
+      "优先队列",
+      "环检测"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "课程有先修关系；在可选课程中优先安排编号最小的一门。",
+    "description": "给出 n 门课和 m 条先修边 a b（a 必须先于 b）。用字典序最小的合法顺序输出所有课程；若有环输出 CYCLE。",
+    "input": "第一行 n m（1≤n≤200000，0≤m≤300000）；随后 m 行为 a b，课程编号为 1..n。",
+    "output": "输出一行拓扑序，或输出 CYCLE。",
+    "examples": [
+      {
+        "input": "4 3\n1 3\n2 3\n3 4\n",
+        "output": "1 2 3 4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 3\n1 3\n2 3\n3 4\n",
+        "output": "1 2 3 4\n"
+      },
+      {
+        "input": "3 3\n1 2\n2 3\n3 1\n",
+        "output": "CYCLE\n"
+      }
+    ],
+    "difficultyCoefficient": 64
+  },
+  {
+    "id": "LL2007",
+    "title": "设备目录树的中序编号",
+    "difficulty": "困难",
+    "category": "二叉树",
+    "knowledgePoints": [
+      "指针",
+      "递归函数",
+      "二叉树",
+      "中序遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "设备目录用数组形式保存为完全二叉树布局，空槽位以 -1 标记。",
+    "description": "给定按完全二叉树下标存储的节点值（根下标 0，孩子下标 2i+1、2i+2），输出所有非空节点的中序遍历。空树输出 EMPTY。",
+    "input": "第一行 n（1≤n≤100000）；第二行 n 个整数，-1 表示空节点；若根为空则整棵树为空。",
+    "output": "输出中序序列，节点以空格分隔；空树输出 EMPTY。",
+    "examples": [
+      {
+        "input": "5\n1 2 3 -1 4\n",
+        "output": "2 4 1 3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n1 2 3 -1 4\n",
+        "output": "2 4 1 3\n"
+      },
+      {
+        "input": "1\n-1\n",
+        "output": "EMPTY\n"
+      }
+    ],
+    "difficultyCoefficient": 65
+  },
+  {
+    "id": "LL2008",
+    "title": "最近使用文件缓存",
+    "difficulty": "困难",
+    "category": "哈希与链表",
+    "knowledgePoints": [
+      "结构体指针",
+      "双向链表",
+      "哈希表",
+      "LRU"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "实验室电脑用固定容量缓存保存最近访问的文件编号。",
+    "description": "实现容量为 c 的 LRU 缓存。GET x 命中时输出值并将其设为最近使用，否则输出 -1；PUT x y 插入或更新。满时淘汰最久未使用项。",
+    "input": "第一行 c q（0≤c≤100000，q≤200000）；随后 q 行为 GET x 或 PUT x y。",
+    "output": "每个 GET 操作输出一行。",
+    "examples": [
+      {
+        "input": "2 7\nPUT 1 10\nPUT 2 20\nGET 1\nPUT 3 30\nGET 2\nGET 3\nGET 1\n",
+        "output": "10\n-1\n30\n10\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2 7\nPUT 1 10\nPUT 2 20\nGET 1\nPUT 3 30\nGET 2\nGET 3\nGET 1\n",
+        "output": "10\n-1\n30\n10\n"
+      },
+      {
+        "input": "0 3\nPUT 1 8\nGET 1\nGET 2\n",
+        "output": "-1\n-1\n"
+      }
+    ],
+    "difficultyCoefficient": 65
+  },
+  {
+    "id": "LL2009",
+    "title": "日志中的首次关键词",
+    "difficulty": "困难",
+    "category": "字符串匹配",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "KMP",
+      "前缀函数"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "日志检索需要在长文本中快速定位关键词第一次出现的位置。",
+    "description": "给定模式串 p 和文本串 s，输出 p 在 s 中第一次出现的零起始下标；若不存在输出 -1。",
+    "input": "第一行模式串 p，第二行文本串 s。字符串只含英文字母，长度不超过 500000。",
+    "output": "输出首次匹配下标或 -1。",
+    "examples": [
+      {
+        "input": "aba\nabacaba\n",
+        "output": "0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "aba\nabacaba\n",
+        "output": "0\n"
+      },
+      {
+        "input": "abcd\nabc\n",
+        "output": "-1\n"
+      },
+      {
+        "input": "aaa\naaaaa\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 66
+  },
+  {
+    "id": "LL2010",
+    "title": "实时窗口最高温度",
+    "difficulty": "困难",
+    "category": "单调队列",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "滑动窗口",
+      "单调队列"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "气象平台每次要展示最近 k 次采样中的最高温度。",
+    "description": "给定 n 个整数和窗口长度 k，输出每个长度为 k 的连续窗口最大值。",
+    "input": "第一行 n k（1≤k≤n≤200000）；第二行 n 个整数。",
+    "output": "输出 n-k+1 个窗口最大值。",
+    "examples": [
+      {
+        "input": "8 3\n1 3 -1 -3 5 3 6 7\n",
+        "output": "3 3 5 5 6 7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "8 3\n1 3 -1 -3 5 3 6 7\n",
+        "output": "3 3 5 5 6 7\n"
+      },
+      {
+        "input": "4 1\n-2 0 5 1\n",
+        "output": "-2 0 5 1\n"
+      }
+    ],
+    "difficultyCoefficient": 67
+  },
+  {
+    "id": "LL2011",
+    "title": "屋顶最高蓄水边界",
+    "difficulty": "困难",
+    "category": "单调栈",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "单调栈",
+      "矩形面积"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "屋顶由连续宽度为 1 的立柱组成，需要找出能放置的最大矩形设备区域。",
+    "description": "给定 n 根柱子的非负高度，求柱状图中最大矩形面积。",
+    "input": "第一行 n（1≤n≤200000）；第二行 n 个整数 hi（0≤hi≤10^9）。",
+    "output": "输出最大面积。",
+    "examples": [
+      {
+        "input": "6\n2 1 5 6 2 3\n",
+        "output": "10\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "6\n2 1 5 6 2 3\n",
+        "output": "10\n"
+      },
+      {
+        "input": "4\n4 4 4 4\n",
+        "output": "16\n"
+      },
+      {
+        "input": "3\n0 0 0\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 67
+  },
+  {
+    "id": "LL2012",
+    "title": "超长订单金额相加",
+    "difficulty": "困难",
+    "category": "字符串与模拟",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "数组模拟",
+      "高精度加法"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "订单系统以十进制文本保存超出机器整数范围的累计金额。",
+    "description": "输入两个非负十进制整数（可能有前导零），输出它们的精确和，不保留无意义的前导零。",
+    "input": "一行两个十进制非负整数字符串，每个长度不超过 100000。",
+    "output": "输出它们的和。",
+    "examples": [
+      {
+        "input": "999999999999999999 1\n",
+        "output": "1000000000000000000\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "999999999999999999 1\n",
+        "output": "1000000000000000000\n"
+      },
+      {
+        "input": "000 00012\n",
+        "output": "12\n"
+      }
+    ],
+    "difficultyCoefficient": 68
+  },
+  {
+    "id": "LL2013",
+    "title": "检测物流链表回环",
+    "difficulty": "困难",
+    "category": "链表",
+    "knowledgePoints": [
+      "指针",
+      "函数拆分",
+      "快慢指针",
+      "链表环检测"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "物流节点通过 next 指针串接，损坏的数据可能让链尾重新指向旧节点。",
+    "description": "链表按输入顺序含 n 个节点，下标从 0 开始。最后一个节点指向 pos；pos=-1 表示指向空。判断是否有环。",
+    "input": "第一行 n（0≤n≤200000）；第二行 n 个节点值（n=0 时省略）；第三行 pos。",
+    "output": "有环输出 YES，否则输出 NO。",
+    "examples": [
+      {
+        "input": "4\n3 2 0 -4\n1\n",
+        "output": "YES\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4\n3 2 0 -4\n1\n",
+        "output": "YES\n"
+      },
+      {
+        "input": "2\n1 2\n-1\n",
+        "output": "NO\n"
+      },
+      {
+        "input": "0\n\n-1\n",
+        "output": "NO\n"
+      }
+    ],
+    "difficultyCoefficient": 69
+  },
+  {
+    "id": "LL2014",
+    "title": "搜索框前缀统计",
+    "difficulty": "困难",
+    "category": "字典树",
+    "knowledgePoints": [
+      "结构体指针",
+      "函数拆分",
+      "字典树",
+      "前缀计数"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "校园服务搜索框要统计有多少条已录入服务名称以用户输入的前缀开头。",
+    "description": "维护小写英文字典，INSERT word 加入一个单词（重复插入重复计数），COUNT prefix 查询匹配数量。",
+    "input": "第一行 q（1≤q≤200000）；随后 q 行为 INSERT word 或 COUNT prefix，字符串长度≤50。",
+    "output": "每个 COUNT 输出一行匹配数。",
+    "examples": [
+      {
+        "input": "6\nINSERT apple\nINSERT app\nINSERT apple\nCOUNT app\nCOUNT apple\nCOUNT z\n",
+        "output": "3\n2\n0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "6\nINSERT apple\nINSERT app\nINSERT apple\nCOUNT app\nCOUNT apple\nCOUNT z\n",
+        "output": "3\n2\n0\n"
+      },
+      {
+        "input": "3\nCOUNT a\nINSERT banana\nCOUNT ban\n",
+        "output": "0\n1\n"
+      }
+    ],
+    "difficultyCoefficient": 69
+  },
+  {
+    "id": "LL2015",
+    "title": "社团成员合并查询",
+    "difficulty": "困难",
+    "category": "并查集",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "并查集",
+      "路径压缩",
+      "按秩合并"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "社团报名数据不断合并小组，并需要快速确认两名同学是否属于同一组。",
+    "description": "初始每人各自一组。U a b 合并两组，Q a b 查询是否同组。编号从 1 开始。",
+    "input": "第一行 n q（1≤n,q≤200000）；随后 q 行操作。",
+    "output": "每个 Q 输出 YES 或 NO。",
+    "examples": [
+      {
+        "input": "5 5\nQ 1 2\nU 1 2\nQ 1 2\nU 2 3\nQ 1 3\n",
+        "output": "NO\nYES\nYES\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 5\nQ 1 2\nU 1 2\nQ 1 2\nU 2 3\nQ 1 3\n",
+        "output": "NO\nYES\nYES\n"
+      },
+      {
+        "input": "2 2\nU 1 2\nQ 1 2\n",
+        "output": "YES\n"
+      }
+    ],
+    "difficultyCoefficient": 70
+  },
+  {
+    "id": "LL2016",
+    "title": "校园道路最低通行时间",
+    "difficulty": "困难",
+    "category": "最短路",
+    "knowledgePoints": [
+      "邻接表指针",
+      "函数拆分",
+      "Dijkstra",
+      "优先队列"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "导航系统根据道路通行时间计算两栋建筑之间的最快路线。",
+    "description": "给出 n 个点、m 条非负权有向边，求 s 到 t 的最短距离；不可达输出 -1。",
+    "input": "第一行 n m s t（1≤n≤200000，m≤300000）；随后 m 行 u v w，w≤10^9。",
+    "output": "输出最短距离或 -1。",
+    "examples": [
+      {
+        "input": "4 5 1 4\n1 2 4\n1 3 1\n3 2 2\n2 4 1\n3 4 7\n",
+        "output": "4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 5 1 4\n1 2 4\n1 3 1\n3 2 2\n2 4 1\n3 4 7\n",
+        "output": "4\n"
+      },
+      {
+        "input": "3 1 1 3\n1 2 5\n",
+        "output": "-1\n"
+      }
+    ],
+    "difficultyCoefficient": 71
+  },
+  {
+    "id": "LL2017",
+    "title": "档案编号最少回文切分",
+    "difficulty": "困难",
+    "category": "字符串动态规划",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "动态规划",
+      "回文判断"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "档案编号若拆成多个回文片段，切分次数越少越便于人工校验。",
+    "description": "给定非空小写字符串 s，将其切分为若干回文子串，输出最少切分次数。",
+    "input": "一行字符串 s，1≤|s|≤2000。",
+    "output": "输出最少切分次数。",
+    "examples": [
+      {
+        "input": "aab\n",
+        "output": "1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "aab\n",
+        "output": "1\n"
+      },
+      {
+        "input": "racecar\n",
+        "output": "0\n"
+      },
+      {
+        "input": "abccbc\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 71
+  },
+  {
+    "id": "LL2018",
+    "title": "消费记录目标区间计数",
+    "difficulty": "困难",
+    "category": "前缀和与哈希",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "前缀和",
+      "哈希表"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "分析消费流水中总金额恰好等于预算值的连续时间段数量。",
+    "description": "给定整数数组和目标 k，统计和恰好为 k 的连续非空子数组数量。",
+    "input": "第一行 n k（1≤n≤200000，|k|≤10^9）；第二行 n 个整数，绝对值≤10^9。",
+    "output": "输出满足条件的子数组数。",
+    "examples": [
+      {
+        "input": "5 5\n1 2 3 2 2\n",
+        "output": "2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 5\n1 2 3 2 2\n",
+        "output": "2\n"
+      },
+      {
+        "input": "3 0\n0 0 0\n",
+        "output": "6\n"
+      }
+    ],
+    "difficultyCoefficient": 72
+  },
+  {
+    "id": "LL2019",
+    "title": "循环轮转传感器队列",
+    "difficulty": "困难",
+    "category": "数组与指针",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "原地反转",
+      "取模"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "循环缓冲区需要将最新记录整体向右轮转若干位置。",
+    "description": "将长度 n 的数组向右轮转 k 位，要求输出轮转后的数组。k 可大于 n。",
+    "input": "第一行 n k（1≤n≤200000，0≤k≤10^18）；第二行 n 个整数。",
+    "output": "输出轮转后的 n 个整数。",
+    "examples": [
+      {
+        "input": "7 3\n1 2 3 4 5 6 7\n",
+        "output": "5 6 7 1 2 3 4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "7 3\n1 2 3 4 5 6 7\n",
+        "output": "5 6 7 1 2 3 4\n"
+      },
+      {
+        "input": "4 8\n-1 0 2 9\n",
+        "output": "-1 0 2 9\n"
+      }
+    ],
+    "difficultyCoefficient": 73
+  },
+  {
+    "id": "LL2020",
+    "title": "多台设备排序日志合并",
+    "difficulty": "困难",
+    "category": "堆与归并",
+    "knowledgePoints": [
+      "结构体指针",
+      "比较函数",
+      "最小堆",
+      "多路归并"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "多台设备各自产生有序日志，需要按时间戳合并成一条有序流。",
+    "description": "给出 k 个非降序整数序列，输出它们合并后的非降序序列；相同值保留全部。",
+    "input": "第一行 k（1≤k≤1000）；每个序列先输入长度 n（可为 0），再输入 n 个整数。总长度≤200000。",
+    "output": "输出合并后的所有整数；若总长度为 0 输出空行。",
+    "examples": [
+      {
+        "input": "3\n3 1 4 7\n2 2 6\n3 0 5 8\n",
+        "output": "0 1 2 4 5 6 7 8\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n3 1 4 7\n2 2 6\n3 0 5 8\n",
+        "output": "0 1 2 4 5 6 7 8\n"
+      },
+      {
+        "input": "2\n0\n3 -1 -1 2\n",
+        "output": "-1 -1 2\n"
+      }
+    ],
+    "difficultyCoefficient": 73
+  },
+  {
+    "id": "LL2021",
+    "title": "区间最低水位维护",
+    "difficulty": "困难",
+    "category": "线段树",
+    "knowledgePoints": [
+      "指针与数组",
+      "递归函数",
+      "线段树",
+      "区间查询",
+      "单点更新"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "水位监测站需要修改单个传感器读数，并查询任意区间的最低值。",
+    "description": "维护数组，U i x 将位置 i 赋值为 x，Q l r 查询区间最小值。下标从 1 开始。",
+    "input": "第一行 n q（1≤n,q≤200000）；第二行 n 个整数；随后 q 行操作。",
+    "output": "每个 Q 操作输出区间最小值。",
+    "examples": [
+      {
+        "input": "5 4\n5 2 7 1 3\nQ 2 5\nU 4 9\nQ 2 5\nQ 1 3\n",
+        "output": "1\n2\n2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 4\n5 2 7 1 3\nQ 2 5\nU 4 9\nQ 2 5\nQ 1 3\n",
+        "output": "1\n2\n2\n"
+      },
+      {
+        "input": "1 2\n-4\nQ 1 1\nU 1 8\n",
+        "output": "-4\n"
+      }
+    ],
+    "difficultyCoefficient": 74
+  },
+  {
+    "id": "LL2022",
+    "title": "拼写校正最少编辑数",
+    "difficulty": "困难",
+    "category": "动态规划",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "二维动态规划",
+      "编辑距离"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "输入法用最少字符操作估算用户输入与词库单词的差异。",
+    "description": "把字符串 a 变成 b，每次可插入、删除或替换一个字符，求最少操作次数。",
+    "input": "两行小写字符串 a、b，长度均≤2000；空串用单独一行的 # 表示。",
+    "output": "输出编辑距离。",
+    "examples": [
+      {
+        "input": "horse\nros\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "horse\nros\n",
+        "output": "3\n"
+      },
+      {
+        "input": "intention\nexecution\n",
+        "output": "5\n"
+      },
+      {
+        "input": "same\nsame\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 75
+  },
+  {
+    "id": "LL2023",
+    "title": "九宫格录入冲突检查",
+    "difficulty": "困难",
+    "category": "数组与模拟",
+    "knowledgePoints": [
+      "二维数组指针",
+      "函数拆分",
+      "哈希标记",
+      "网格分块"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "数独应用要验证当前盘面是否违反行、列或 3×3 宫的规则。",
+    "description": "输入 9×9 盘面，字符 1..9 表示数字、0 表示空格。任一行、列或 3×3 宫出现重复数字则无效。",
+    "input": "9 行，每行 9 个字符，只含 0..9。",
+    "output": "合法输出 VALID，否则输出 INVALID。",
+    "examples": [
+      {
+        "input": "534678912\n672195348\n198342567\n859761423\n426853791\n713924856\n961537284\n287419635\n345286179\n",
+        "output": "VALID\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "534678912\n672195348\n198342567\n859761423\n426853791\n713924856\n961537284\n287419635\n345286179\n",
+        "output": "VALID\n"
+      },
+      {
+        "input": "534678912\n672195348\n198342567\n859761423\n426853791\n713924856\n961537284\n287419635\n345286178\n",
+        "output": "INVALID\n"
+      }
+    ],
+    "difficultyCoefficient": 75
+  },
+  {
+    "id": "LL2024",
+    "title": "计算器表达式求值",
+    "difficulty": "困难",
+    "category": "栈与解析",
+    "knowledgePoints": [
+      "字符指针",
+      "递归函数",
+      "运算符优先级",
+      "表达式解析",
+      "栈"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "实验室计算器需要按括号和运算优先级解释输入表达式。",
+    "description": "求只含非负整数、加号、减号、乘号和圆括号的合法表达式值；乘法优先级高于加减，同级从左向右。表达式不含空格且中间结果在 64 位有符号整数范围内。",
+    "input": "一行表达式，长度≤100000；不含一元运算符。",
+    "output": "输出表达式的整数值。",
+    "examples": [
+      {
+        "input": "2*(3+4)-5\n",
+        "output": "9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2*(3+4)-5\n",
+        "output": "9\n"
+      },
+      {
+        "input": "18-6*2+4\n",
+        "output": "10\n"
+      },
+      {
+        "input": "(12+3)*(4-1)\n",
+        "output": "45\n"
+      }
+    ],
+    "difficultyCoefficient": 76
+  },
+  {
+    "id": "LL2025",
+    "title": "合并数据包的最小总耗时",
+    "difficulty": "困难",
+    "category": "贪心与堆",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "贪心",
+      "最小堆",
+      "哈夫曼合并"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "每次合并两个数据包的耗时等于两包大小之和，目标是降低总处理时间。",
+    "description": "每次取出两个最小的正整数合并，代价为两者之和，再将新包放回。输出合并所有包的最小总代价。",
+    "input": "第一行 n（1≤n≤200000）；第二行 n 个正整数 wi（总和≤10^18）。",
+    "output": "输出最小总代价。",
+    "examples": [
+      {
+        "input": "4\n1 2 3 4\n",
+        "output": "19\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4\n1 2 3 4\n",
+        "output": "19\n"
+      },
+      {
+        "input": "1\n100\n",
+        "output": "0\n"
+      },
+      {
+        "input": "3\n5 5 5\n",
+        "output": "25\n"
+      }
+    ],
+    "difficultyCoefficient": 77
+  },
+  {
+    "id": "LL2026",
+    "title": "文件名通配规则匹配",
+    "difficulty": "困难",
+    "category": "字符串动态规划",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "动态规划",
+      "通配符匹配"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "文件筛选器用 ? 匹配单字符、* 匹配任意长度字符序列。",
+    "description": "给定只含小写字母的文本 s 和模式 p（额外含 ?、*），判断整个文本是否匹配整个模式。* 可匹配空串。",
+    "input": "第一行 s，第二行 p；长度均≤2000。",
+    "output": "匹配输出 YES，否则输出 NO。",
+    "examples": [
+      {
+        "input": "adceb\n*a*b\n",
+        "output": "YES\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "adceb\n*a*b\n",
+        "output": "YES\n"
+      },
+      {
+        "input": "acdcb\na*c?b\n",
+        "output": "NO\n"
+      },
+      {
+        "input": "abc\n***\n",
+        "output": "YES\n"
+      }
+    ],
+    "difficultyCoefficient": 77
+  },
+  {
+    "id": "LL2027",
+    "title": "排行榜第 K 名",
+    "difficulty": "困难",
+    "category": "选择算法",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "快速选择",
+      "分区"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "排行榜只需要查询第 K 高分，不必完整排序所有参赛者。",
+    "description": "给定 n 个整数和 k，输出按降序排列后的第 k 个数；相同分数按多个名次分别计数。",
+    "input": "第一行 n k（1≤k≤n≤200000）；第二行 n 个整数。",
+    "output": "输出第 k 大元素。",
+    "examples": [
+      {
+        "input": "6 2\n3 2 1 5 6 4\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "6 2\n3 2 1 5 6 4\n",
+        "output": "5\n"
+      },
+      {
+        "input": "5 4\n7 7 7 2 1\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 78
+  },
+  {
+    "id": "LL2028",
+    "title": "地图上最多共线信标",
+    "difficulty": "困难",
+    "category": "哈希与几何",
+    "knowledgePoints": [
+      "结构体指针",
+      "函数拆分",
+      "最大公约数",
+      "斜率哈希"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "地图维护人员希望找出落在同一直线上的最多个信标。",
+    "description": "给定 n 个二维整数点，求同一条直线上最多包含多少个输入点。坐标可重复；重复点按点数计入。",
+    "input": "第一行 n（1≤n≤1000）；随后 n 行为 xi yi（|xi|,|yi|≤10^9）。",
+    "output": "输出最大点数。",
+    "examples": [
+      {
+        "input": "5\n1 1\n2 2\n3 3\n1 2\n2 3\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n1 1\n2 2\n3 3\n1 2\n2 3\n",
+        "output": "3\n"
+      },
+      {
+        "input": "4\n0 0\n0 0\n1 1\n2 2\n",
+        "output": "4\n"
+      },
+      {
+        "input": "1\n9 -2\n",
+        "output": "1\n"
+      }
+    ],
+    "difficultyCoefficient": 79
+  },
+  {
+    "id": "LL2029",
+    "title": "服务依赖是否可达",
+    "difficulty": "困难",
+    "category": "图搜索",
+    "knowledgePoints": [
+      "邻接表指针",
+      "函数拆分",
+      "深度优先搜索",
+      "广度优先搜索"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "部署系统要确认一个服务是否能通过依赖链访问另一个服务。",
+    "description": "给出有向图和 q 个查询。对每对 a b，判断是否存在从 a 到 b 的路径；允许零条边，因此 a=b 时答案为 YES。",
+    "input": "第一行 n m q（n≤100000，m,q≤200000）；随后 m 行有向边，再随后 q 行查询 a b。",
+    "output": "每个查询输出 YES 或 NO。",
+    "examples": [
+      {
+        "input": "4 3 3\n1 2\n2 3\n4 3\n1 3\n3 1\n4 3\n",
+        "output": "YES\nNO\nYES\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 3 3\n1 2\n2 3\n4 3\n1 3\n3 1\n4 3\n",
+        "output": "YES\nNO\nYES\n"
+      },
+      {
+        "input": "2 0 2\n1 1\n1 2\n",
+        "output": "YES\nNO\n"
+      }
+    ],
+    "difficultyCoefficient": 79
+  },
+  {
+    "id": "LL2030",
+    "title": "校园树形道路的最远距离",
+    "difficulty": "困难",
+    "category": "树与图",
+    "knowledgePoints": [
+      "指针与邻接表",
+      "函数拆分",
+      "树的直径",
+      "广度优先搜索"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "校园道路构成一棵树，规划人员要知道任意两栋建筑间的最大路段数。",
+    "description": "给定一棵含 n 个节点的无权树，输出树的直径长度（按边数计）。",
+    "input": "第一行 n（1≤n≤200000）；随后 n-1 行为无向边 u v。",
+    "output": "输出直径边数。",
+    "examples": [
+      {
+        "input": "5\n1 2\n2 3\n3 4\n3 5\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n1 2\n2 3\n3 4\n3 5\n",
+        "output": "3\n"
+      },
+      {
+        "input": "1\n",
+        "output": "0\n"
+      },
+      {
+        "input": "4\n1 2\n1 3\n1 4\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 80
+  },
+  {
+    "id": "LL3001",
+    "title": "跨区域路网最低造价",
+    "difficulty": "地狱",
+    "category": "最小生成树",
+    "knowledgePoints": [
+      "结构体指针",
+      "比较函数",
+      "Kruskal",
+      "并查集",
+      "连通性"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "城市规划要在候选道路中选出总造价最低且能连通所有区域的方案。",
+    "description": "给定无向带权图，求最小生成树总权值；若图不连通输出 IMPOSSIBLE。",
+    "input": "第一行 n m（1≤n≤200000，m≤400000）；随后 m 行 u v w，w 为非负整数。",
+    "output": "输出最小总权值或 IMPOSSIBLE。",
+    "examples": [
+      {
+        "input": "4 5\n1 2 1\n2 3 2\n3 4 3\n1 4 10\n1 3 4\n",
+        "output": "6\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 5\n1 2 1\n2 3 2\n3 4 3\n1 4 10\n1 3 4\n",
+        "output": "6\n"
+      },
+      {
+        "input": "3 1\n1 2 4\n",
+        "output": "IMPOSSIBLE\n"
+      }
+    ],
+    "difficultyCoefficient": 81
+  },
+  {
+    "id": "LL3002",
+    "title": "关键道路与割点统计",
+    "difficulty": "地狱",
+    "category": "图论",
+    "knowledgePoints": [
+      "邻接表指针",
+      "递归 DFS",
+      "Tarjan",
+      "割点",
+      "桥"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "网络维护人员要找出哪些路段损坏会使网络断开，以及哪些站点故障会拆分网络。",
+    "description": "给定无向图，统计桥的数量和割点数量。重边和不连通图均可能出现。",
+    "input": "第一行 n m（1≤n≤200000，m≤400000）；随后 m 行为无向边 u v。",
+    "output": "输出桥数和割点数。",
+    "examples": [
+      {
+        "input": "5 5\n1 2\n2 3\n3 1\n3 4\n4 5\n",
+        "output": "2 2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 5\n1 2\n2 3\n3 1\n3 4\n4 5\n",
+        "output": "2 2\n"
+      },
+      {
+        "input": "3 3\n1 2\n2 3\n1 3\n",
+        "output": "0 0\n"
+      }
+    ],
+    "difficultyCoefficient": 82
+  },
+  {
+    "id": "LL3003",
+    "title": "大规模道路全源距离",
+    "difficulty": "地狱",
+    "category": "最短路",
+    "knowledgePoints": [
+      "指针与邻接表",
+      "函数拆分",
+      "Floyd-Warshall",
+      "负环检测"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "小型物流网络要分析任意两站之间的最短费用，并检查是否存在可无限降低费用的回路。",
+    "description": "给定有向带权图，输出所有点对最短距离。若任意存在负环，输出 NEGATIVE CYCLE。不可达输出 INF。",
+    "input": "第一行 n m（1≤n≤500，m≤200000）；随后 m 行 u v w，权值绝对值≤10^6。",
+    "output": "若有负环输出 NEGATIVE CYCLE；否则输出 n 行 n 列距离。",
+    "examples": [
+      {
+        "input": "3 3\n1 2 4\n2 3 -2\n1 3 5\n",
+        "output": "0 4 2\nINF 0 -2\nINF INF 0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 3\n1 2 4\n2 3 -2\n1 3 5\n",
+        "output": "0 4 2\nINF 0 -2\nINF INF 0\n"
+      },
+      {
+        "input": "2 2\n1 2 -1\n2 1 -1\n",
+        "output": "NEGATIVE CYCLE\n"
+      }
+    ],
+    "difficultyCoefficient": 83
+  },
+  {
+    "id": "LL3004",
+    "title": "动态区间加与区间求和",
+    "difficulty": "地狱",
+    "category": "线段树",
+    "knowledgePoints": [
+      "指针与数组",
+      "递归函数",
+      "线段树",
+      "懒惰标记",
+      "区间更新"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "传感器平台要批量校准连续编号设备的读数，同时查询任意区间总值。",
+    "description": "维护初始数组，ADD l r x 将区间每个值加 x，SUM l r 查询区间和。",
+    "input": "第一行 n q（1≤n,q≤200000）；第二行 n 个整数；随后 q 行操作。所有结果在 64 位有符号范围内。",
+    "output": "每个 SUM 输出一行区间和。",
+    "examples": [
+      {
+        "input": "5 4\n1 2 3 4 5\nSUM 2 4\nADD 2 5 3\nSUM 1 5\nSUM 3 3\n",
+        "output": "9\n27\n6\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 4\n1 2 3 4 5\nSUM 2 4\nADD 2 5 3\nSUM 1 5\nSUM 3 3\n",
+        "output": "9\n27\n6\n"
+      },
+      {
+        "input": "1 2\n-2\nADD 1 1 5\nSUM 1 1\n",
+        "output": "3\n"
+      }
+    ],
+    "difficultyCoefficient": 84
+  },
+  {
+    "id": "LL3005",
+    "title": "历史版本库存查询",
+    "difficulty": "地狱",
+    "category": "持久化数据结构",
+    "knowledgePoints": [
+      "指针",
+      "函数拆分",
+      "可持久化线段树",
+      "历史版本"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "库存系统保留每次更新后的历史快照，允许回看过去任一版本。",
+    "description": "初始数组为版本 0。U v i x 从版本 v 创建新版本，仅将 i 改为 x；Q v l r 查询版本 v 的区间和。更新产生的版本按创建顺序编号。",
+    "input": "第一行 n q；第二行 n 个整数；随后 q 行 U v i x 或 Q v l r。n,q≤100000。",
+    "output": "每次 U 输出新版本编号；每次 Q 输出区间和。",
+    "examples": [
+      {
+        "input": "3 4\n1 2 3\nQ 0 1 3\nU 0 2 10\nQ 1 1 3\nQ 0 1 3\n",
+        "output": "6\n1\n14\n6\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 4\n1 2 3\nQ 0 1 3\nU 0 2 10\nQ 1 1 3\nQ 0 1 3\n",
+        "output": "6\n1\n14\n6\n"
+      },
+      {
+        "input": "1 3\n5\nU 0 1 -2\nQ 1 1 1\nQ 0 1 1\n",
+        "output": "1\n-2\n5\n"
+      }
+    ],
+    "difficultyCoefficient": 85
+  },
+  {
+    "id": "LL3006",
+    "title": "动态区间第 K 小",
+    "difficulty": "地狱",
+    "category": "主席树",
+    "knowledgePoints": [
+      "指针",
+      "函数拆分",
+      "可持久化线段树",
+      "离散化",
+      "顺序统计"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "监控平台需要查询任意时间区间内第 k 小的传感器读数。",
+    "description": "数组固定不变，回答区间 [l,r] 的第 k 小元素查询。",
+    "input": "第一行 n q（1≤n,q≤200000）；第二行 n 个整数；随后 q 行 l r k。",
+    "output": "每个查询输出第 k 小值。",
+    "examples": [
+      {
+        "input": "5 3\n5 1 4 2 3\n1 5 3\n2 4 1\n2 5 4\n",
+        "output": "3\n1\n5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 3\n5 1 4 2 3\n1 5 3\n2 4 1\n2 5 4\n",
+        "output": "3\n1\n5\n"
+      },
+      {
+        "input": "4 1\n-1 -1 8 0\n1 4 2\n",
+        "output": "-1\n"
+      }
+    ],
+    "difficultyCoefficient": 86
+  },
+  {
+    "id": "LL3007",
+    "title": "道路连通性的离线时间旅行",
+    "difficulty": "地狱",
+    "category": "离线算法",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "线段树分治",
+      "回滚并查集"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "道路会在一段时间内开放，管理系统需回答每个时刻两个区域是否连通。",
+    "description": "给出边的加入、删除和连通查询操作。每条边在任意时刻最多存在一次；查询判断当前图中 u、v 是否连通。",
+    "input": "第一行 n q（n≤100000，q≤200000）；操作为 + u v、- u v、? u v。边无向，端点顺序不影响边身份。",
+    "output": "每个 ? 输出 YES 或 NO。",
+    "examples": [
+      {
+        "input": "4 7\n+ 1 2\n? 1 2\n+ 2 3\n? 1 3\n- 1 2\n? 1 3\n? 3 4\n",
+        "output": "YES\nYES\nNO\nNO\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 7\n+ 1 2\n? 1 2\n+ 2 3\n? 1 3\n- 1 2\n? 1 3\n? 3 4\n",
+        "output": "YES\nYES\nNO\nNO\n"
+      },
+      {
+        "input": "2 3\n? 1 2\n+ 1 2\n? 1 2\n",
+        "output": "NO\nYES\n"
+      }
+    ],
+    "difficultyCoefficient": 87
+  },
+  {
+    "id": "LL3008",
+    "title": "最大流量配送方案",
+    "difficulty": "地狱",
+    "category": "网络流",
+    "knowledgePoints": [
+      "指针与残量网络",
+      "函数拆分",
+      "Dinic",
+      "分层图",
+      "增广路"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "物流网络中每条道路有最大通行量，要求从仓库向配送中心发送尽可能多的货物。",
+    "description": "给定有向容量网络源点 s 与汇点 t，求最大流。",
+    "input": "第一行 n m s t（n≤500，m≤10000）；随后 m 行 u v c，容量为非负整数。",
+    "output": "输出最大流值。",
+    "examples": [
+      {
+        "input": "4 5 1 4\n1 2 3\n1 3 2\n2 3 1\n2 4 2\n3 4 4\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 5 1 4\n1 2 3\n1 3 2\n2 3 1\n2 4 2\n3 4 4\n",
+        "output": "5\n"
+      },
+      {
+        "input": "3 1 1 3\n1 2 10\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 88
+  },
+  {
+    "id": "LL3009",
+    "title": "强连通服务模块统计",
+    "difficulty": "地狱",
+    "category": "强连通分量",
+    "knowledgePoints": [
+      "邻接表指针",
+      "递归函数",
+      "Tarjan",
+      "强连通分量",
+      "缩点"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "服务依赖图中彼此可达的模块可能形成循环部署组，需要统计最少模块组数。",
+    "description": "求有向图强连通分量数量。",
+    "input": "第一行 n m（1≤n≤200000，m≤400000）；随后 m 行 u v。",
+    "output": "输出强连通分量数量。",
+    "examples": [
+      {
+        "input": "5 6\n1 2\n2 1\n2 3\n3 4\n4 3\n4 5\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 6\n1 2\n2 1\n2 3\n3 4\n4 3\n4 5\n",
+        "output": "3\n"
+      },
+      {
+        "input": "3 0\n",
+        "output": "3\n"
+      }
+    ],
+    "difficultyCoefficient": 89
+  },
+  {
+    "id": "LL3010",
+    "title": "支持改值的区间不同数统计",
+    "difficulty": "地狱",
+    "category": "树套树与离线",
+    "knowledgePoints": [
+      "指针",
+      "函数拆分",
+      "树状数组",
+      "主席树",
+      "离线查询"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "分析日志时需要在历史区间中统计出现过多少种不同事件，并支持修订单条记录。",
+    "description": "维护数组，C i x 修改位置 i；Q l r 查询区间不同整数个数。输入操作在线执行。",
+    "input": "第一行 n q（n,q≤100000）；第二行 n 个整数；随后 q 行操作。",
+    "output": "每个 Q 输出不同值个数。",
+    "examples": [
+      {
+        "input": "5 4\n1 2 1 3 2\nQ 1 5\nC 2 1\nQ 1 3\nQ 2 5\n",
+        "output": "3\n1\n3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 4\n1 2 1 3 2\nQ 1 5\nC 2 1\nQ 1 3\nQ 2 5\n",
+        "output": "3\n1\n3\n"
+      },
+      {
+        "input": "3 2\n-1 -1 0\nQ 1 3\nC 3 -1\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 90
+  },
+  {
+    "id": "LL3011",
+    "title": "二维地图矩形区域求和",
+    "difficulty": "地狱",
+    "category": "二维数据结构",
+    "knowledgePoints": [
+      "二维数组指针",
+      "函数拆分",
+      "二维树状数组",
+      "矩形更新",
+      "前缀和"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "遥感网格需要对子区域统一校准，并即时查询任意矩形的累计读数。",
+    "description": "维护 n×m 矩阵，ADD x1 y1 x2 y2 v 对矩形全部加 v；SUM 查询矩形和。",
+    "input": "第一行 n m q（n,m≤1000，q≤200000）；随后 q 行操作，矩阵初值全为 0。",
+    "output": "每个 SUM 输出矩形元素和。",
+    "examples": [
+      {
+        "input": "3 3 4\nADD 1 1 2 2 5\nSUM 1 1 3 3\nADD 2 2 3 3 -2\nSUM 2 2 3 3\n",
+        "output": "20\n-3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 3 4\nADD 1 1 2 2 5\nSUM 1 1 3 3\nADD 2 2 3 3 -2\nSUM 2 2 3 3\n",
+        "output": "20\n-3\n"
+      },
+      {
+        "input": "1 2 2\nADD 1 1 1 2 3\nSUM 1 2 1 2\n",
+        "output": "3\n"
+      }
+    ],
+    "difficultyCoefficient": 91
+  },
+  {
+    "id": "LL3012",
+    "title": "大型棋盘皇后安全布置",
+    "difficulty": "地狱",
+    "category": "搜索与剪枝",
+    "knowledgePoints": [
+      "数组指针",
+      "递归函数",
+      "回溯",
+      "位运算",
+      "对称性剪枝"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "棋类程序要统计 n 皇后问题中互不攻击的摆放方案数量。",
+    "description": "在 n×n 棋盘放置 n 个皇后，使任意两者不同行、不同列、不同对角线，输出方案数。",
+    "input": "一个整数 n（1≤n≤15）。",
+    "output": "输出方案数。",
+    "examples": [
+      {
+        "input": "8\n",
+        "output": "92\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "8\n",
+        "output": "92\n"
+      },
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "4\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 92
+  },
+  {
+    "id": "LL3013",
+    "title": "括号表达式合法替换计数",
+    "difficulty": "地狱",
+    "category": "区间动态规划",
+    "knowledgePoints": [
+      "字符指针",
+      "递归函数",
+      "区间 DP",
+      "括号匹配",
+      "记忆化搜索"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "表达式引擎在合法括号结构中选择拆分方式，使总计算收益最大。",
+    "description": "给定仅由字符 '('、')'、'?' 组成的字符串，将每个 ? 替换成左右括号，要求结果为合法括号序列。输出合法替换方案数量，对 1000000007 取模；若长度为奇数输出 0。",
+    "input": "一行字符串 s，长度≤500。",
+    "output": "输出合法替换方案数。",
+    "examples": [
+      {
+        "input": "????\n",
+        "output": "2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "????\n",
+        "output": "2\n"
+      },
+      {
+        "input": "(??)\n",
+        "output": "1\n"
+      },
+      {
+        "input": "???\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 93
+  },
+  {
+    "id": "LL3014",
+    "title": "超长档案文本最长重复片段",
+    "difficulty": "地狱",
+    "category": "后缀数组",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "后缀数组",
+      "LCP",
+      "倍增排序"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "档案压缩器要识别文本中重复出现的最长片段，以评估压缩潜力。",
+    "description": "给定字符串，求至少出现两次的最长子串长度；重复出现位置可以重叠。不存在重复子串时输出 0。",
+    "input": "一行字符串 s，只含小写英文字母，长度≤500000。",
+    "output": "输出最长重复子串长度。",
+    "examples": [
+      {
+        "input": "banana\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "banana\n",
+        "output": "3\n"
+      },
+      {
+        "input": "abcd\n",
+        "output": "0\n"
+      },
+      {
+        "input": "aaaaa\n",
+        "output": "4\n"
+      }
+    ],
+    "difficultyCoefficient": 94
+  },
+  {
+    "id": "LL3015",
+    "title": "字符串最短循环周期",
+    "difficulty": "地狱",
+    "category": "字符串算法",
+    "knowledgePoints": [
+      "字符指针",
+      "函数拆分",
+      "Z 函数",
+      "周期检测",
+      "线性算法"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "设备协议需识别重复发送的数据帧周期，以消除冗余存储。",
+    "description": "求字符串最短周期长度 p，使字符串可由长度 p 的前缀重复构成；若末尾不完整则仍需完整覆盖，输出最短生成串长度。",
+    "input": "一行非空字符串 s，长度≤1000000。",
+    "output": "输出最短周期生成长度。",
+    "examples": [
+      {
+        "input": "abababa\n",
+        "output": "7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "abababa\n",
+        "output": "7\n"
+      },
+      {
+        "input": "abcabcabc\n",
+        "output": "3\n"
+      },
+      {
+        "input": "aaaa\n",
+        "output": "1\n"
+      }
+    ],
+    "difficultyCoefficient": 95
+  },
+  {
+    "id": "LL3016",
+    "title": "多模式告警词扫描",
+    "difficulty": "地狱",
+    "category": "字符串自动机",
+    "knowledgePoints": [
+      "指针",
+      "函数拆分",
+      "Aho-Corasick 自动机",
+      "失败指针",
+      "字典树"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "安全日志要一次扫描同时识别大量告警关键词，并统计每个词出现次数。",
+    "description": "给定 n 个模式串和一个文本串，分别统计每个模式在文本中出现次数，重叠出现也计数。",
+    "input": "第一行 n（1≤n≤100000）；随后 n 行小写模式串；最后一行小写文本。总模式长度和文本长度≤1000000。",
+    "output": "按输入顺序每行输出对应模式出现次数。",
+    "examples": [
+      {
+        "input": "3\nhe\nshe\nhers\nahershe\n",
+        "output": "2\n1\n1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\nhe\nshe\nhers\nahershe\n",
+        "output": "2\n1\n1\n"
+      },
+      {
+        "input": "2\na\naa\naaaa\n",
+        "output": "4\n3\n"
+      }
+    ],
+    "difficultyCoefficient": 96
+  },
+  {
+    "id": "LL3017",
+    "title": "网络流量的最小费用配送",
+    "difficulty": "地狱",
+    "category": "最小费用最大流",
+    "knowledgePoints": [
+      "指针与残量网络",
+      "函数拆分",
+      "最小费用最大流",
+      "势能",
+      "Dijkstra"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "运输系统在道路容量限制下发送货物，并希望总运输费用最低。",
+    "description": "给定有向边容量和单位费用，求从 s 到 t 的最大流量及该流量下的最小总费用。",
+    "input": "第一行 n m s t（n≤300，m≤5000）；随后 m 行 u v capacity cost。容量非负，费用可为负，保证不存在可达负费用环。",
+    "output": "输出最大流量和最小费用。",
+    "examples": [
+      {
+        "input": "4 5 1 4\n1 2 2 1\n1 3 1 2\n2 3 1 0\n2 4 1 3\n3 4 2 1\n",
+        "output": "3 9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 5 1 4\n1 2 2 1\n1 3 1 2\n2 3 1 0\n2 4 1 3\n3 4 2 1\n",
+        "output": "3 9\n"
+      },
+      {
+        "input": "3 1 1 3\n1 2 5 4\n",
+        "output": "0 0\n"
+      }
+    ],
+    "difficultyCoefficient": 97
+  },
+  {
+    "id": "LL3018",
+    "title": "二分图最大人员配对",
+    "difficulty": "地狱",
+    "category": "二分图匹配",
+    "knowledgePoints": [
+      "邻接表指针",
+      "递归函数",
+      "Hopcroft-Karp",
+      "二分图",
+      "增广路"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "活动组织要把志愿者与岗位配对，每人只能负责一个岗位，且每人有可胜任岗位列表。",
+    "description": "给定二分图，求最大匹配数。",
+    "input": "第一行左侧人数 n、右侧人数 m、资格关系数 e（n,m≤200000，e≤400000）；随后 e 行 u v。",
+    "output": "输出最大匹配数。",
+    "examples": [
+      {
+        "input": "3 3 4\n1 1\n1 2\n2 2\n3 2\n",
+        "output": "2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 3 4\n1 1\n1 2\n2 2\n3 2\n",
+        "output": "2\n"
+      },
+      {
+        "input": "2 3 3\n1 1\n1 2\n2 3\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 98
+  },
+  {
+    "id": "LL3019",
+    "title": "动态森林路径最大值",
+    "difficulty": "地狱",
+    "category": "树链剖分",
+    "knowledgePoints": [
+      "指针与邻接表",
+      "递归函数",
+      "重链剖分",
+      "线段树",
+      "路径查询"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "树形网络要即时修改道路权值，并查询两站之间路径上的最大边权。",
+    "description": "给定一棵树，CHANGE i w 修改第 i 条输入边权，QUERY u v 查询路径最大边权；u=v 时输出 0。",
+    "input": "第一行 n（1≤n≤100000）；随后 n-1 行边 u v w；再输入 q（≤100000）和 q 行操作 CHANGE i w 或 QUERY u v。",
+    "output": "每个 QUERY 输出路径最大边权。",
+    "examples": [
+      {
+        "input": "3\n1 2 4\n2 3 7\n3\nQUERY 1 3\nCHANGE 1 9\nQUERY 1 3\n",
+        "output": "7\n9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n1 2 4\n2 3 7\n3\nQUERY 1 3\nCHANGE 1 9\nQUERY 1 3\n",
+        "output": "7\n9\n"
+      },
+      {
+        "input": "2\n1 2 -5\n1\nQUERY 1 2\n",
+        "output": "-5\n"
+      }
+    ],
+    "difficultyCoefficient": 99
+  },
+  {
+    "id": "LL3020",
+    "title": "整数集合的异或极值",
+    "difficulty": "地狱",
+    "category": "线性基",
+    "knowledgePoints": [
+      "数组指针",
+      "函数拆分",
+      "线性基",
+      "高斯消元",
+      "位运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "background": "加密模块从若干校验码的异或组合中寻找数值最大的结果。",
+    "description": "给定 n 个非负 64 位整数，选择任意子集（可为空），求子集异或和的最大值。",
+    "input": "第一行 n（0≤n≤200000）；第二行 n 个整数，均小于 2^63。",
+    "output": "输出最大异或和。",
+    "examples": [
+      {
+        "input": "3\n1 2 3\n",
+        "output": "3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n1 2 3\n",
+        "output": "3\n"
+      },
+      {
+        "input": "4\n8 1 2 12\n",
+        "output": "15\n"
+      },
+      {
+        "input": "0\n\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 100
+  }
+]

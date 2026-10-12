@@ -13,7 +13,7 @@
     <aside class="sidebar" id="sidebar">
       <a class="brand" href="#" data-page="home" aria-label="天南地北艳姐最美OJ首页">
         <span class="brand-mark">艳</span>
-        <span class="brand-copy"><strong>天南地北艳姐最美OJ</strong><small>CODE · THINK · GROW</small></span>
+        <span class="brand-copy"><strong data-site-title>天南地北艳姐最美OJ</strong><small>CODE · THINK · GROW</small></span>
       </a>
       <div class="side-label">工作台</div>
       <nav class="side-nav" aria-label="主导航">
@@ -45,13 +45,14 @@
         <div class="breadcrumbs"><span>工作台</span><span class="crumb-sep">/</span><strong id="breadcrumb-current">首页</strong></div>
         <div class="topbar-actions">
           <div class="judge-status"><i id="judge-dot"></i><span id="judge-status-text">正在连接评测服务</span></div>
+          <button class="top-auth-action" id="desktop-update-button" type="button" hidden>检查更新</button>
           <button class="top-auth-action" id="top-auth-action" data-auth="login">登录 / 注册</button>
           <button class="icon-button" aria-label="通知">♧<span class="notification-dot"></span></button>
           <div class="top-avatar" id="top-avatar">访</div>
         </div>
       </header>
       <section id="page-content" class="page-content" aria-live="polite"></section>
-      <footer class="footer"><span>天南地北艳姐最美OJ</span><span>保持好奇，持续解题。</span><span>本地练习空间 · v1.0</span></footer>
+      <footer class="footer"><span data-site-title>天南地北艳姐最美OJ</span><span>保持好奇，持续解题。</span><span>本地练习空间 · <span id="app-version">Web</span></span></footer>
     </main>
   </div>
   <div id="auth-modal" class="auth-backdrop" hidden></div>

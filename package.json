@@ -1,14 +1,64 @@
 {
   "name": "liangliang-oj",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "private": true,
   "description": "天南地北艳姐最美OJ - a self-hosted programming practice site",
   "scripts": {
     "start": "node server.js",
-    "local-judge": "node local-judge.js"
+    "local-judge": "node local-judge.js",
+    "desktop": "electron .",
+    "desktop:build": "electron-builder --win nsis --x64",
+    "desktop:portable": "electron-builder --win portable --x64",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy"
   },
+  "main": "desktop/main.js",
   "dependencies": {
+    "electron-updater": "^6.6.2",
     "pg": "^8.16.3"
+  },
+  "devDependencies": {
+    "electron": "^38.2.0",
+    "electron-builder": "^26.0.12",
+    "wrangler": "^4.30.0"
+  },
+  "build": {
+    "appId": "online.yyzm.oj",
+    "productName": "天南地北艳姐最美OJ",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "desktop/main.js",
+      "desktop/preload.js",
+      "server.js",
+      "local-judge.js",
+      "problems.json",
+      "public/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "artifactName": "${productName}-Setup-${version}-${arch}.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "天南地北艳姐最美OJ",
+      "runAfterFinish": true
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "LiquidAccount",
+        "repo": "OJ-",
+        "releaseType": "release"
+      }
+    ]
   },
   "engines": {
     "node": ">=18.17"

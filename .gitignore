@@ -1,0 +1,9 @@
+node_modules/
+users.json
+submissions.json
+contests.json
+.env
+.env.*
+.wrangler/
+release/
+*.tmp

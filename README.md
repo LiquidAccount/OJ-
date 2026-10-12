@@ -2,6 +2,40 @@
 
 一个原创编程练习站，提供题库筛选、实际背景、难度与知识点标签、账号角色、代码提交及个人记录。内置题目和测试点均为本项目编写。
 
+## Windows 桌面版
+
+需要 Windows x64 和 Node.js。首次在开发机准备并启动：
+
+```powershell
+npm ci
+npm run desktop
+```
+
+构建 Windows 安装向导：
+
+```powershell
+npm run desktop:build
+```
+
+生成的 `天南地北艳姐最美OJ-Setup-<版本>-x64.exe` 位于 `release` 文件夹。运行 Setup 后可选择安装目录，并创建桌面/开始菜单快捷方式；安装向导包含 OJ 与本机评测器，无需公网连接。也可运行 `npm run desktop:portable` 构建免安装版本。程序会在本机启动仅绑定 `127.0.0.1` 的 OJ 服务和评测器；账号、提交、比赛和导入后的题库保存在当前 Windows 用户的 Electron 数据目录中，卸载/替换程序不会主动清理该目录。首次启动时会生成管理员注册口令，显示在提示框中并复制到剪贴板；先保存口令，再在软件中注册管理员。其他设备不会自动共享这份本地数据。
+
+桌面版首次启动会检测 GCC、G++ 和 Python。缺少时可以选择“尝试自动安装”，由 Windows Package Manager 安装 Python 和 MSYS2/GCC；需要可用的 winget、网络及可能的系统授权。也可跳过，使用 JavaScript 评测或稍后安装。用户程序以当前 Windows 用户权限运行，不属于操作系统级沙箱；仅评测自己信任的代码。
+
+桌面版题库导入仅对管理员开放：进入“管理后台” → “导入题库”，选择 UTF-8 JSON 文件。文件可直接是题目数组，也可以使用 `{ "problems": [...] }` 包装。导入采用合并策略：新 ID 会追加，相同 ID 的题目会被导入版本覆盖，其他已有题目保留。每题必须包含 `id`、`title`、`difficulty`、`category`、`description`、`input`、`output`、`knowledgePoints`、`examples`、`tests` 和 1–100 的 `difficultyCoefficient`。`examples` 和 `tests` 的每项需要 `input` 与 `output` 字符串。单次最多导入 1000 道题、每题最多 200 个测试点、文件最多 4 MB。测试数据会用于评测，请只导入可信题库，并在导入前保留自己的备份。
+
+题库数据文件位于 Windows 用户数据目录下的 `problems.json`。可在管理后台随时继续导入，题目无需重新打包软件。
+
+桌面安装版会在启动后自动检查 GitHub Releases，也可点击右上角“检查更新”。发现新版本后，软件会先询问再下载；下载完成后可立即重启安装，或在以后退出时安装。自动更新使用公开的 `LiquidAccount/OJ-` GitHub Releases；仓库必须保持公开，仓库中的源码及其他已提交内容会对所有人公开。1.0.0 和 1.0.1 安装版不含本次站点设置功能；安装 1.0.2 或更新版本后才可使用这些功能。
+
+发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.2：
+
+```powershell
+git tag v1.0.2
+git push origin v1.0.2
+```
+
+先把当前项目文件（包括 `.github/workflows/publish-release.yml`）上传到公开仓库的 `main` 分支，再给相同提交打版本标签。GitHub Actions 会自动构建并发布 Windows NSIS 安装器，不需要个人访问令牌；工作流会验证标签版本与 `package.json` 一致。发布后检查 GitHub Release 中包含 Setup 安装包、`latest.yml` 和 `.blockmap` 文件。自动更新仅适用于本项目构建的 NSIS 安装版；portable 版不支持自动安装更新。更新仓库须保持公开，否则客户端无法匿名下载 Release。
+
 ## 启动
 
 需要 Node.js 18.17 或更高版本。在项目目录运行：
@@ -12,17 +46,31 @@ npm start
 
 访问 <http://127.0.0.1:4173>。账户与提交记录保存在项目根目录的 `users.json` 和 `submissions.json`；这些运行时文件不应加入版本控制。未配置 Judge0 时，提交会明确提示评测服务尚未配置，不会伪造评测结果。
 
-## 发布到公网（Neon + Render）
+## 发布到公网（Cloudflare Workers + D1）
 
-项目包含 `render.yaml`，可将网站发布到 Render 免费 Web Service，并使用 Neon PostgreSQL 免费数据库持久保存账号及提交记录。Render 免费实例在空闲时会休眠，首次访问可能需要等待启动；休眠或重新部署不会删除 Neon 中的数据。平台实际分配的网址取决于 `yyzm` 这个名称是否可用；可用时通常为 `https://yyzm.onrender.com`，若已被占用则需在 Render 改用其他服务名。
+`worker.js` 是适配 Cloudflare Workers 的服务端入口；原有 `server.js` 仍用于本地 Node.js 开发。题库和前端静态资源随 Worker 发布，账号、比赛、提交及会话存入 Cloudflare D1。按 Cloudflare 文档当前列出的免费额度，Workers 每日 100,000 次动态请求、每次 10 ms CPU；D1 每日 5,000,000 行读取、100,000 行写入，数据库总存储 5 GB。静态资源请求免费且不限量。额度、可用性和条款可能变化；留在 Free 方案时，超额请求可能失败，不要升级到付费方案。`workers.dev` 地址可直接用于测试，绑定自定义域名需要你拥有该域名。
 
-1. 在 Neon 创建 PostgreSQL 项目，复制要求 SSL 的连接串。不要把连接串、管理员注册口令或其他密钥写入源码或提交到 GitHub。
-2. 将项目推送到你自己的 GitHub 仓库。
-3. 在 Render 选择 **New → Blueprint** 并连接该 GitHub 仓库，让 Render 读取 `render.yaml`。
-4. 按 Render 提示填写 `DATABASE_URL` 和 `ADMIN_REGISTRATION_PASSWORD`。管理员注册口令应使用新的长随机口令，不要复用容易猜到的短口令。
-5. 部署完成后，通过 Render 显示的 `onrender.com` HTTPS 地址访问站点。服务启动时会自动创建数据库表；若数据库为空且部署目录中存在旧版 JSON 数据文件，也会尝试导入。
+首次部署需在项目目录安装依赖并登录 Cloudflare：
 
-本地开发不设置 `DATABASE_URL` 时仍使用本地 JSON 文件。Render 与 Neon 账户需由站点所有者自行创建并授权连接；仓库连接和部署确认也需在你的 GitHub/Render 账户中完成。提交记录和账号数据存入 Neon；本地评测仍由每位用户在自己的电脑运行。给本机评测器配置网站来源时，使用部署后的准确 HTTPS origin（不要带路径）。
+```powershell
+npm ci
+npx wrangler login
+npx wrangler d1 create yyzm-oj
+```
+
+`d1 create` 会输出 `database_id`。将它填入 `wrangler.toml` 中对应数据库配置，替换 `REPLACE_WITH_D1_DATABASE_ID`。然后应用表结构、设置管理员注册口令并发布：
+
+```powershell
+npx wrangler d1 migrations apply yyzm-oj --remote
+npx wrangler secret put ADMIN_REGISTRATION_PASSWORD
+npm run worker:deploy
+```
+
+设置管理员口令时，按终端提示输入一个新的强随机口令；不要把它写入源码、聊天或 GitHub。部署完成后，从命令输出中打开 `https://yyzm.<你的Cloudflare子域>.workers.dev`。访问其 `/health` 路径应返回 `{"ok":true}`。绑定 GitHub 后可配置后续自动部署；数据库迁移仍应在部署代码前执行。
+
+Cloudflare Worker 版本使用 D1 而不是本地 JSON/Neon 存储。现有本机 `users.json`、`submissions.json` 和 `contests.json` 不会自动上传或导入，请勿为迁移而公开这些文件。学生本机评测器仍可使用，设置 `OJ_WEB_ORIGIN` 为实际的 `workers.dev` HTTPS 来源。中心 Judge0 是可选项，只有配置时才会启用服务器端代码执行。
+
+本地原版 Node.js 运行说明仍适用于 `npm start`。Cloudflare 版本用 `npm run worker:dev` 在本地运行。
 
 ## 账号和管理员
 
@@ -37,6 +85,14 @@ npm start
 - 学生首次通过一道题获得 `difficultyCoefficient × 10` EXP；同题再次通过不重复奖励。已有提交记录会在升级时用于初始化已解题目和经验。
 - Lv.1 到 Lv.999 使用递增曲线：当前等级为 n 时，升到 n+1 需要 `100 + 5 × n²` EXP。排行榜只统计学生账号，按总 EXP 降序排列。
 - 本机评测的通过结果由学生设备报告，因此本地模式的经验和排行榜适合练习激励，不是防作弊或可信比赛成绩。
+
+## 站点名称与动漫推荐
+
+- 经验排行榜已内置：学生首次通过题目时按难度系数领取 EXP，排行榜按累计经验排序；管理员不参与学生榜单。
+- 管理员可在“管理后台”修改网页大标题，更新会保存到本机用户数据目录；启用 PostgreSQL 或 Cloudflare D1 时会保存到相应数据库。
+- 管理员也可在后台输入日漫名称，并提交 DeepSeek API Key。服务端会从公开的 Jikan API 查询 MyAnimeList 作品资料和海报，再调用 DeepSeek `deepseek-flash` 模型生成原创中文推荐文。首页显示海报、文章和资料来源链接。
+- API Key 不会发给访客；在本机版以 AES-GCM 加密保存在 OJ 数据目录，在 Worker 版加密后保存于 D1。加密密钥由 `ADMIN_REGISTRATION_PASSWORD` 派生；更换该管理员注册口令后，需在管理后台重新输入 DeepSeek API Key。
+- 需要自行申请并保管 DeepSeek API Key。免费额度、价格和服务可用性以 DeepSeek 当前政策为准；生成推荐时会把动漫名称和资料简介发送至 DeepSeek API。Jikan / MyAnimeList 海报受来源网站的可用性和使用条款约束。
 
 ## 比赛
 

@@ -1,0 +1,15 @@
+name = "yyzm"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "yyzm-oj"
+database_id = "be3e2be1-68d0-4006-918b-e083c6ac3d24"
+migrations_dir = "migrations"

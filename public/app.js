@@ -25,6 +25,7 @@ const state = {
   contestLeaderboards: {},
   activeContestId: null,
   adminOverview: null,
+  siteSettings: { siteTitle: "天南地北艳姐最美OJ", anime: null, deepseekConfigured: false },
   authMode: "login",
   adminRegistrationEnabled: false,
   localJudgeConnected: false,
@@ -70,6 +71,14 @@ function render() {
     admin: renderAdmin
   };
   pageContent.innerHTML = (views[state.page] || renderHome)();
+}
+
+function updateSiteBrand() {
+  document.title = state.siteSettings.siteTitle;
+  document.querySelectorAll("[data-site-title]").forEach((element) => {
+    element.textContent = state.siteSettings.siteTitle;
+  });
+  document.querySelector(".brand")?.setAttribute("aria-label", `${state.siteSettings.siteTitle}首页`);
 }
 
 const dailyQuotes = [
@@ -121,7 +130,7 @@ function renderHome() {
   return `
     <section class="welcome-row">
       <div><p class="eyebrow"><span class="eyebrow-line"></span> YOUR PERSONAL CODING ARENA</p>
-        <h1>每一次思考，<span>都有回响。</span></h1>
+        <h1>${escapeHtml(state.siteSettings.siteTitle)}</h1>
         <p class="welcome-copy">欢迎${state.currentUser ? `回来，${escapeHtml(state.currentUser.username)}` : "来到练习空间"}。挑一道喜欢的题，继续你的编程冒险。</p>
         <button class="button button-primary" data-page="problems">开始刷题 <span>→</span></button>
       </div>
@@ -146,7 +155,19 @@ function renderHome() {
         <div class="note-footer"><span class="note-dot"></span> 写下今天的第一行代码</div>
       </aside>
     </div>
+    ${renderAnimeRecommendation()}
     <section class="bottom-banner"><div><span class="banner-icon">✳</span><div><strong>今天想练点什么？</strong><p>挑选一个主题，开启专注训练时间。</p></div></div><button class="button button-quiet" data-page="training">探索训练计划 <span>→</span></button></section>`;
+}
+
+function renderAnimeRecommendation() {
+  const anime = state.siteSettings.anime;
+  if (!anime) {
+    return `<section class="panel anime-recommendation"><div class="section-heading"><div><p class="eyebrow">ANIME PICK</p><h2>本周日漫推荐</h2></div><span class="note-spark">✦</span></div><p class="anime-empty">管理员还没有设置动漫推荐，敬请期待。</p></section>`;
+  }
+  return `<section class="panel anime-recommendation"><div class="section-heading"><div><p class="eyebrow">ANIME PICK · AI RECOMMENDATION</p><h2>${escapeHtml(anime.requestedTitle || anime.title)}</h2></div><span class="pill pill-muted">日漫推荐</span></div>
+    <div class="anime-recommendation-body"><a class="anime-poster-link" href="${escapeHtml(anime.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="在动漫资料库查看 ${escapeHtml(anime.title)}"><img class="anime-poster" src="${escapeHtml(anime.imageUrl)}" alt="${escapeHtml(anime.title)} 海报" loading="lazy" referrerpolicy="no-referrer"></a>
+      <div class="anime-article"><p class="anime-original-title">${escapeHtml(anime.title)}</p><p>${escapeHtml(anime.article).split("\n").join("<br>")}</p><a href="${escapeHtml(anime.sourceUrl)}" target="_blank" rel="noopener noreferrer">海报与作品资料：MyAnimeList / Jikan →</a></div></div>
+    <p class="anime-attribution">海报由 Jikan API 检索并链接至 MyAnimeList 作品资料。推荐文章由 DeepSeek AI 生成。</p></section>`;
 }
 
 function problemRow(problem) {
@@ -290,6 +311,21 @@ function renderAdmin() {
       <article class="stat-card"><div class="stat-icon amber">⚙</div><div class="stat-label">管理员账号</div><div class="stat-value">${overview.admins}</div></article>
       <article class="stat-card"><div class="stat-icon blue">⌁</div><div class="stat-label">累计提交</div><div class="stat-value">${overview.submissions}</div></article>
       <article class="stat-card"><div class="stat-icon green">✓</div><div class="stat-label">通过次数</div><div class="stat-value">${overview.accepted}</div></article>
+    </section>
+    <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">SITE BRANDING</p><h2>网页大标题</h2></div></div>
+      <form id="site-title-form"><label class="auth-field">站点名称<input name="siteTitle" required maxlength="60" value="${escapeHtml(state.siteSettings.siteTitle)}"></label><p class="form-feedback" id="site-title-feedback" role="status"></p><button class="button button-primary" type="submit">保存网页大标题</button></form>
+    </section>
+    <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">ANIME PICK</p><h2>主页日漫推荐</h2></div><span class="pill pill-muted">${state.siteSettings.deepseekConfigured ? "DeepSeek 已配置" : "需要 DeepSeek Key"}</span></div>
+      <form id="anime-recommendation-form"><label class="auth-field">动漫名称<input name="title" required maxlength="120" value="${escapeHtml(state.siteSettings.anime?.requestedTitle || "")}" placeholder="输入日漫名称"></label>
+        <label class="auth-field">DeepSeek API Key<input name="apiKey" type="password" autocomplete="new-password" maxlength="500" placeholder="${state.siteSettings.deepseekConfigured ? "已配置；留空则继续使用现有密钥" : "粘贴你的 DeepSeek API Key"}"></label>
+        <p class="auth-help">保存后会从 Jikan / MyAnimeList 检索海报，并调用 DeepSeek 生成原创中文推荐文。API Key 只在服务端加密保存，不会返回给访客；请自行确认 DeepSeek 账户的额度/费用政策。</p>
+        <p class="form-feedback" id="anime-recommendation-feedback" role="status"></p><button class="button button-primary" type="submit">检索海报并生成推荐</button>
+      </form>
+    </section>
+    <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">PROBLEM CATALOGUE</p><h2>导入题库</h2></div><span class="pill pill-muted">${state.problems.length} 道题</span></div>
+      <p>选择符合题库格式的 JSON 文件。导入会保留现有题目；相同 ID 的题目以文件内容更新。测试点将用于本机评测，请勿导入不可信文件。</p>
+      <input id="problem-import-file" type="file" accept=".json,application/json" hidden>
+      <button class="button button-primary" id="choose-problem-import" type="button">选择 JSON 题库</button>
     </section>
     <section class="panel admin-users"><div class="section-heading"><div><p class="eyebrow">RECENT ACCOUNTS</p><h2>最近注册的账号</h2></div></div>
       <div class="history-head admin-user-head"><span>用户名</span><span>角色</span><span>注册时间</span></div>
@@ -577,6 +613,80 @@ async function loadAdminOverview() {
   }
 }
 
+async function handleSiteTitleSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const button = form.querySelector('[type="submit"]');
+  const feedback = form.querySelector("#site-title-feedback");
+  button.disabled = true;
+  feedback.textContent = "";
+  try {
+    state.siteSettings = await requestJson("/api/admin/site-title", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ siteTitle: new FormData(form).get("siteTitle") })
+    });
+    updateSiteBrand();
+    if (state.page === "home") render();
+    showToast("网页大标题已更新。");
+  } catch (error) {
+    feedback.textContent = error.message;
+  } finally {
+    if (button.isConnected) button.disabled = false;
+  }
+}
+
+async function handleAnimeRecommendationSubmit(event) {
+  event.preventDefault();
+  const form = event.target;
+  const button = form.querySelector('[type="submit"]');
+  const feedback = form.querySelector("#anime-recommendation-feedback");
+  const values = new FormData(form);
+  button.disabled = true;
+  button.textContent = "正在检索并生成…";
+  feedback.textContent = "正在查询动漫资料并请求 DeepSeek，可能需要几十秒。";
+  try {
+    state.siteSettings = await requestJson("/api/admin/anime-recommendation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title: values.get("title"), apiKey: values.get("apiKey") })
+    });
+    render();
+    showToast("主页日漫推荐已更新。");
+  } catch (error) {
+    feedback.textContent = error.message;
+  } finally {
+    if (button.isConnected) {
+      button.disabled = false;
+      button.textContent = "检索海报并生成推荐";
+    }
+  }
+}
+
+async function importProblemFile(file) {
+  if (!file) return;
+  if (file.size > 4 * 1024 * 1024) {
+    showToast("题库文件不能超过 4 MB。");
+    return;
+  }
+  try {
+    const text = (await file.text()).replace(/^\uFEFF/, "");
+    const parsed = JSON.parse(text);
+    const result = await requestJson("/api/admin/problems/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(Array.isArray(parsed) ? parsed : parsed?.problems)
+    });
+    state.problems = await requestJson("/api/problems");
+    state.contests = null;
+    document.querySelector("#problem-count").textContent = String(state.problems.length).padStart(2, "0");
+    render();
+    showToast(`已导入 ${result.imported} 道，更新 ${result.replaced} 道，题库共 ${result.total} 道。`);
+  } catch (error) {
+    showToast(error instanceof SyntaxError ? "文件不是有效的 JSON。" : error.message);
+  }
+}
+
 async function handleContestFormSubmit(event) {
   event.preventDefault();
   const form = event.target;
@@ -761,6 +871,10 @@ document.addEventListener("click", (event) => {
     toggleContestLeaderboard(contestLeaderboardButton.dataset.contestLeaderboard);
     return;
   }
+  if (event.target.closest("#choose-problem-import")) {
+    document.querySelector("#problem-import-file")?.click();
+    return;
+  }
   const pageLink = event.target.closest("[data-page]");
   if (pageLink) {
     event.preventDefault();
@@ -793,6 +907,15 @@ document.addEventListener("submit", (event) => {
   if (event.target.id === "auth-form") handleAuthSubmit(event);
   if (event.target.id === "local-judge-form") handleLocalJudgeSubmit(event);
   if (event.target.id === "contest-form") handleContestFormSubmit(event);
+  if (event.target.id === "site-title-form") handleSiteTitleSubmit(event);
+  if (event.target.id === "anime-recommendation-form") handleAnimeRecommendationSubmit(event);
+});
+
+document.addEventListener("change", (event) => {
+  if (event.target.id === "problem-import-file") {
+    importProblemFile(event.target.files?.[0]);
+    event.target.value = "";
+  }
 });
 
 document.addEventListener("input", (event) => {
@@ -838,19 +961,56 @@ document.querySelector("#mobile-menu").addEventListener("click", () => {
   document.querySelector("#sidebar").classList.toggle("sidebar-open");
 });
 
+const updateButton = document.querySelector("#desktop-update-button");
+if (window.ojDesktop) {
+  updateButton.hidden = true;
+  updateButton.addEventListener("click", () => {
+    updateButton.disabled = true;
+    void window.ojDesktop.checkForUpdates().finally(() => {
+      updateButton.disabled = false;
+    });
+  });
+  window.ojDesktop.onUpdateStatus(({ state: updateState, message }) => {
+    if (updateState === "downloading") {
+      updateButton.textContent = message.match(/\d+%/)?.[0] || "下载中";
+    } else {
+      updateButton.textContent = "检查更新";
+      if (["current", "error", "deferred", "downloaded"].includes(updateState)) showToast(message);
+    }
+  });
+}
+
 async function initialize() {
   try {
-    const [problemResponse, statusResponse, meResponse] = await Promise.all([
+    const [problemResponse, statusResponse, meResponse, siteSettingsResponse] = await Promise.all([
       fetch("/api/problems"),
       fetch("/api/status"),
-      fetch("/api/me")
+      fetch("/api/me"),
+      fetch("/api/site-settings")
     ]);
-    if (!problemResponse.ok || !statusResponse.ok || !meResponse.ok) throw new Error("服务暂不可用");
+    if (!problemResponse.ok || !statusResponse.ok || !meResponse.ok || !siteSettingsResponse.ok) throw new Error("服务暂不可用");
     state.problems = await problemResponse.json();
     const status = await statusResponse.json();
     state.currentUser = (await meResponse.json()).user;
+    state.siteSettings = await siteSettingsResponse.json();
+    updateSiteBrand();
     state.adminRegistrationEnabled = status.adminRegistrationEnabled;
     state.judgeConfigured = status.judgeConfigured;
+    if (window.ojDesktop) {
+      const desktop = await window.ojDesktop.initialize();
+      updateButton.hidden = !desktop.packaged;
+      document.querySelector("#app-version").textContent = `v${desktop.version}`;
+      state.localPairingToken = desktop.token;
+      state.localJudgeConnected = Boolean(desktop.token);
+      if (!desktop.tools.complete) {
+        const missing = [
+          desktop.tools.gcc ? "" : "GCC",
+          desktop.tools.gpp ? "" : "G++",
+          desktop.tools.python ? "" : "Python"
+        ].filter(Boolean);
+        showToast(`本地评测器已连接；未安装 ${missing.join("、")}，对应语言暂不可用。`);
+      }
+    }
     updateAccountUI();
     if (state.localPairingToken && !state.judgeConfigured) {
       try {
