@@ -19,19 +19,21 @@ npm run desktop:build
 
 生成的 `天南地北艳姐最美OJ-Setup-<版本>-x64.exe` 位于 `release` 文件夹。运行 Setup 后可选择安装目录，并创建桌面/开始菜单快捷方式；安装向导包含 OJ 与本机评测器，无需公网连接。也可运行 `npm run desktop:portable` 构建免安装版本。程序会在本机启动仅绑定 `127.0.0.1` 的 OJ 服务和评测器；账号、提交、比赛和导入后的题库保存在当前 Windows 用户的 Electron 数据目录中，卸载/替换程序不会主动清理该目录。首次启动时会生成管理员注册口令，显示在提示框中并复制到剪贴板；先保存口令，再在软件中注册管理员。其他设备不会自动共享这份本地数据。
 
+安装包必须保持 `"asar": false`：OJ 后端服务与本地评测器由 Electron `utilityProcess` 以独立 Node 进程启动，而指向 `app.asar` 内部脚本的启动路径不会真正执行（子进程既不报错也不监听端口），会导致软件停在“OJ 后端服务启动超时”。如果以后要重新启用 asar，需同时改造这两个子进程的加载方式。
+
 桌面版首次启动会检测 GCC、G++ 和 Python。缺少时可以选择“尝试自动安装”，由 Windows Package Manager 安装 Python 和 MSYS2/GCC；需要可用的 winget、网络及可能的系统授权。也可跳过，使用 JavaScript 评测或稍后安装。用户程序以当前 Windows 用户权限运行，不属于操作系统级沙箱；仅评测自己信任的代码。
 
 桌面版题库导入仅对管理员开放：进入“管理后台” → “导入题库”，选择 UTF-8 JSON 文件。文件可直接是题目数组，也可以使用 `{ "problems": [...] }` 包装。导入采用合并策略：新 ID 会追加，相同 ID 的题目会被导入版本覆盖，其他已有题目保留。每题必须包含 `id`、`title`、`difficulty`、`category`、`description`、`input`、`output`、`knowledgePoints`、`examples`、`tests` 和 1–100 的 `difficultyCoefficient`。`examples` 和 `tests` 的每项需要 `input` 与 `output` 字符串。单次最多导入 1000 道题、每题最多 200 个测试点、文件最多 4 MB。测试数据会用于评测，请只导入可信题库，并在导入前保留自己的备份。
 
 题库数据文件位于 Windows 用户数据目录下的 `problems.json`。可在管理后台随时继续导入，题目无需重新打包软件。
 
-桌面安装版会在启动后自动检查 GitHub Releases，也可点击右上角“检查更新”。发现新版本后，软件会先询问再下载；下载完成后可立即重启安装，或在以后退出时安装。自动更新使用公开的 `LiquidAccount/OJ-` GitHub Releases；仓库必须保持公开，仓库中的源码及其他已提交内容会对所有人公开。1.0.0 和 1.0.1 安装版不含本次站点设置功能；安装 1.0.2 或更新版本后才可使用这些功能。
+桌面安装版会在启动后自动检查 GitHub Releases，也可点击右上角“检查更新”。发现新版本后，软件会先询问再下载；下载完成后可立即重启安装，或在以后退出时安装。自动更新使用公开的 `LiquidAccount/OJ-` GitHub Releases；仓库必须保持公开，仓库中的源码及其他已提交内容会对所有人公开。1.0.0 和 1.0.1 安装版不含本次站点设置功能；1.0.2 至 1.0.4 的安装版存在后端启动缺陷（软件会提示“OJ 后端服务启动超时”），请使用 1.0.5 或更新版本。
 
-发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.4：
+发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.5：
 
 ```powershell
-git tag v1.0.4
-git push origin v1.0.4
+git tag v1.0.5
+git push origin v1.0.5
 ```
 
 先把当前项目文件（包括 `.github/workflows/publish-release.yml`）上传到公开仓库的 `main` 分支，再给相同提交打版本标签。GitHub Actions 会自动构建 Windows NSIS 安装器，并在 Release 中一并上传 Setup 安装包、`latest.yml` 和 `.blockmap`；不需要个人访问令牌。工作流会验证标签版本与 `package.json` 一致。自动更新仅适用于本项目构建的 NSIS 安装版；portable 版不支持自动安装更新。更新仓库须保持公开，否则客户端无法匿名下载 Release。

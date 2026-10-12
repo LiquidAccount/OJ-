@@ -132,12 +132,17 @@ function getAdminRegistrationPassword() {
   }
 }
 
-async function waitForServer(port) {
+function serverLogSummary(logs) {
+  const trimmed = logs.trim();
+  return trimmed ? `\n服务日志：\n${trimmed.slice(-400)}` : "";
+}
+
+async function waitForServer(port, readLogs) {
   const deadline = Date.now() + 20_000;
   let lastError;
   while (Date.now() < deadline) {
     if (!serverProcess || (serverProcess.exitCode !== null && serverProcess.exitCode !== undefined)) {
-      throw new Error("OJ 后端服务提前退出。");
+      throw new Error(`OJ 后端服务提前退出。${serverLogSummary(readLogs())}`);
     }
     try {
       const response = await fetch(`http://127.0.0.1:${port}/health`, { signal: AbortSignal.timeout(1000) });
@@ -147,7 +152,7 @@ async function waitForServer(port) {
     }
     await new Promise((resolve) => setTimeout(resolve, 250));
   }
-  throw new Error(`OJ 后端服务启动超时。${lastError ? ` ${lastError.message}` : ""}`);
+  throw new Error(`OJ 后端服务启动超时。${lastError ? ` ${lastError.message}` : ""}${serverLogSummary(readLogs())}`);
 }
 
 function runCommand(command, args, timeoutMs = 15 * 60 * 1000) {
@@ -325,10 +330,18 @@ async function createWindow() {
       dialog.showErrorBox("OJ 服务已停止", `本地服务意外退出（代码 ${code}）。请重新打开软件。`);
     }
   });
-  serverProcess.stderr.on("data", (chunk) => console.error(`[OJ server] ${chunk.toString().trimEnd()}`));
+  let serverLogs = "";
+  const collectServerLogs = (chunk) => {
+    serverLogs = `${serverLogs}${chunk.toString()}`.slice(-4000);
+  };
+  serverProcess.stdout.on("data", collectServerLogs);
+  serverProcess.stderr.on("data", (chunk) => {
+    collectServerLogs(chunk);
+    console.error(`[OJ server] ${chunk.toString().trimEnd()}`);
+  });
 
   try {
-    await waitForServer(port);
+    await waitForServer(port, () => serverLogs);
   } catch (error) {
     serverProcess?.kill();
     serverProcess = null;

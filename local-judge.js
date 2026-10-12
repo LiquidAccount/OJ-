@@ -42,7 +42,9 @@ const LANGUAGES = {
     name: "JavaScript",
     extension: ".js",
     compiler: process.execPath,
-    args: (source) => [source]
+    args: (source) => [source],
+    // Electron only acts as a Node runtime for spawned children when this flag is set.
+    env: process.versions.electron ? { ELECTRON_RUN_AS_NODE: "1" } : {}
   }
 };
 
@@ -79,7 +81,7 @@ function readBody(request) {
   });
 }
 
-function sendCommand(command, args, stdin, timeoutMs) {
+function sendCommand(command, args, stdin, timeoutMs, extraEnv = {}) {
   return new Promise((resolve) => {
     let stdout = "";
     let stderr = "";
@@ -100,7 +102,8 @@ function sendCommand(command, args, stdin, timeoutMs) {
         TMP: process.env.TMP || os.tmpdir(),
         TEMP: process.env.TEMP || os.tmpdir(),
         LANG: "C.UTF-8",
-        LC_ALL: "C.UTF-8"
+        LC_ALL: "C.UTF-8",
+        ...extraEnv
       }
     });
     const stop = (reason) => {
@@ -182,7 +185,8 @@ async function evaluate(payload) {
         languageInfo.compiler,
         languageInfo.args(sourcePath, binaryPath),
         "",
-        15_000
+        15_000,
+        languageInfo.env
       );
       if (compilation.spawnError) {
         return { httpStatus: 200, body: { verdict: "Runtime Error", passed: 0, total: tests.length, failedCase: 1, compileOutput: compilation.spawnError } };
@@ -217,7 +221,8 @@ async function evaluate(payload) {
         language === "c" || language === "cpp" ? binaryPath : languageInfo.compiler,
         language === "c" || language === "cpp" ? [] : args,
         tests[index].input,
-        TEST_TIMEOUT_MS
+        TEST_TIMEOUT_MS,
+        languageInfo.env
       );
       if (result.spawnError) {
         return { httpStatus: 200, body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: result.spawnError } };

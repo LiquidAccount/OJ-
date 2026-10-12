@@ -1545,7 +1545,7 @@ async function startServer() {
 if (require.main === module) {
   startServer().catch((error) => {
     console.error("Server startup failed:", error);
-    process.exitCode = 1;
     if (pool) void pool.end();
+    process.exit(1);
   });
 }
