@@ -14,15 +14,18 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const SUBMISSIONS_FILE = path.join(DATA_DIR, "submissions.json");
 const CONTESTS_FILE = path.join(DATA_DIR, "contests.json");
 const SITE_SETTINGS_FILE = path.join(DATA_DIR, "site-settings.json");
-const DEFAULT_SITE_TITLE = "天南地北艳姐最美OJ";
+const DEFAULT_SITE_TITLE = "亮亮专属欧金金";
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || "127.0.0.1";
 const DATABASE_URL = process.env.DATABASE_URL || "";
+const TITLE_SYNC_URL = (process.env.OJ_TITLE_SYNC_URL || "").replace(/\/+$/, "");
+const TITLE_SYNC_ADMIN_KEY = process.env.OJ_TITLE_SYNC_ADMIN_KEY || "";
 const JUDGE_URL = (process.env.JUDGE0_URL || "").replace(/\/+$/, "");
 const JUDGE_KEY = process.env.JUDGE0_API_KEY || "";
 const ADMIN_REGISTRATION_PASSWORD = process.env.ADMIN_REGISTRATION_PASSWORD || "";
 const SECURE_COOKIE = process.env.COOKIE_SECURE === "true";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000;
+const TITLE_SYNC_CACHE_TTL_MS = 15_000;
 const MAX_LEVEL = 999;
 const scrypt = promisify(crypto.scrypt);
 const LANGUAGES = {
@@ -43,6 +46,10 @@ const recentSubmissions = new Map();
 const sessions = new Map();
 let storeQueue = Promise.resolve();
 let siteSettingsQueue = Promise.resolve();
+let sharedTitleCache = null;
+let sharedTitleFetchedAt = 0;
+let sharedTitleFetchPromise = null;
+let sharedTitleError = null;
 const pool = DATABASE_URL
   ? new Pool({ connectionString: DATABASE_URL, max: 5, idleTimeoutMillis: 30_000, connectionTimeoutMillis: 10_000 })
   : null;
@@ -87,6 +94,54 @@ function readJson(request, maxBytes = 48 * 1024) {
 
 function normalizeOutput(value) {
   return value.replace(/\r\n/g, "\n").trim();
+}
+
+function limitText(value, maxLength = 1200) {
+  return Array.from(String(value || "")).slice(0, maxLength).join("");
+}
+
+function judgeVerdict(result) {
+  const statusId = result.status?.id;
+  if (statusId === 3) return "Accepted";
+  if (statusId === 6) return "Compilation Error";
+  if (statusId === 5) return "Time Limit Exceeded";
+  if (statusId >= 7 && statusId <= 12) return "Runtime Error";
+  return "Wrong Answer";
+}
+
+function sanitizeTestResults(reports, total) {
+  if (reports === undefined) return [];
+  const allowedVerdicts = new Set([
+    "Accepted", "Wrong Answer", "Compilation Error", "Runtime Error", "Time Limit Exceeded"
+  ]);
+  if (!Array.isArray(reports) || reports.length > total) {
+    throw new Error("测试点详情格式无效。");
+  }
+  const seenCases = new Set();
+  return reports.map((report) => {
+    if (
+      !report || typeof report !== "object" || Array.isArray(report) ||
+      !Number.isInteger(report.case) || report.case < 1 || report.case > total ||
+      seenCases.has(report.case) || !allowedVerdicts.has(report.verdict)
+    ) {
+      throw new Error("测试点详情格式无效。");
+    }
+    seenCases.add(report.case);
+    const normalized = { case: report.case, verdict: report.verdict };
+    if (report.time !== undefined) {
+      if (!Number.isFinite(report.time) || report.time < 0 || report.time > 60) {
+        throw new Error("测试点耗时格式无效。");
+      }
+      normalized.time = report.time;
+    }
+    for (const field of ["input", "expectedOutput", "actualOutput", "error"]) {
+      if (report[field] !== undefined) {
+        if (typeof report[field] !== "string") throw new Error("测试点详情格式无效。");
+        normalized[field] = limitText(report[field], field === "error" ? 3000 : 1200);
+      }
+    }
+    return normalized;
+  });
 }
 
 async function judgeCase(languageId, sourceCode, testCase) {
@@ -261,8 +316,73 @@ function publicSiteSettings(settings) {
   return {
     siteTitle: settings.siteTitle,
     anime: settings.anime || null,
-    deepseekConfigured: Boolean(settings.deepseekApiKey)
+    deepseekConfigured: Boolean(settings.deepseekApiKey),
+    titleSync: {
+      enabled: Boolean(TITLE_SYNC_URL),
+      canEdit: Boolean(TITLE_SYNC_URL && TITLE_SYNC_ADMIN_KEY),
+      error: sharedTitleError
+    }
   };
+}
+
+async function readEffectiveSiteSettings() {
+  const settings = await readSiteSettings();
+  if (!TITLE_SYNC_URL) return settings;
+
+  const sharedTitle = await readSharedTitle();
+  return sharedTitle ? { ...settings, siteTitle: sharedTitle } : settings;
+}
+
+async function readSharedTitle() {
+  if (!TITLE_SYNC_URL) return null;
+  if (sharedTitleFetchPromise) return sharedTitleFetchPromise;
+  if (Date.now() - sharedTitleFetchedAt < TITLE_SYNC_CACHE_TTL_MS) return sharedTitleCache;
+
+  sharedTitleFetchPromise = (async () => {
+    try {
+      const response = await fetch(`${TITLE_SYNC_URL}/api/title`, {
+        headers: { Accept: "application/json" },
+        signal: AbortSignal.timeout(3_000)
+      });
+      if (!response.ok) throw new Error(`标题同步服务返回 HTTP ${response.status}。`);
+      const result = await response.json();
+      const title = typeof result.siteTitle === "string" ? result.siteTitle.trim() : "";
+      sharedTitleCache = title && title.length <= 60 ? title : null;
+      sharedTitleError = null;
+      return sharedTitleCache;
+    } catch (error) {
+      sharedTitleError = error.message || "标题同步服务暂不可用。";
+      console.error("Shared desktop title could not be fetched:", error);
+      return sharedTitleCache;
+    } finally {
+      sharedTitleFetchedAt = Date.now();
+      sharedTitleFetchPromise = null;
+    }
+  })();
+  return sharedTitleFetchPromise;
+}
+
+async function writeSharedTitle(siteTitle) {
+  if (!TITLE_SYNC_URL) return;
+  if (!TITLE_SYNC_ADMIN_KEY) {
+    throw new Error("此设备没有共享标题管理权限，请在授权的管理员设备上修改标题。");
+  }
+  const response = await fetch(`${TITLE_SYNC_URL}/api/title`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${TITLE_SYNC_ADMIN_KEY}`
+    },
+    body: JSON.stringify({ siteTitle }),
+    signal: AbortSignal.timeout(5_000)
+  });
+  if (!response.ok) {
+    const result = await response.json().catch(() => ({}));
+    throw new Error(result.error || `标题同步服务返回 HTTP ${response.status}。`);
+  }
+  sharedTitleCache = siteTitle;
+  sharedTitleFetchedAt = Date.now();
+  sharedTitleError = null;
 }
 
 function encryptDeepseekApiKey(apiKey) {
@@ -366,11 +486,14 @@ async function handleSiteTitleUpdate(request, response) {
     return;
   }
   try {
+    await writeSharedTitle(siteTitle);
     const settings = await updateSiteSettings((current) => ({ ...current, siteTitle }));
     sendJson(response, 200, publicSiteSettings(settings));
   } catch (error) {
     console.error("Site title could not be saved:", error);
-    sendJson(response, 500, { error: "站点大标题保存失败，请检查服务端存储。" });
+    sendJson(response, TITLE_SYNC_URL && !TITLE_SYNC_ADMIN_KEY ? 403 : 502, {
+      error: error.message || "桌面端标题保存或同步失败。"
+    });
   }
 }
 
@@ -1181,28 +1304,32 @@ async function handleSubmission(request, response, user) {
 
   try {
     const results = [];
+    const testResults = [];
     let failedIndex = -1;
     for (let index = 0; index < problem.tests.length; index += 1) {
       const result = await judgeCase(LANGUAGES[language].id, code, problem.tests[index]);
       results.push(result);
-      if (
-        result.status.id !== 3 ||
-        normalizeOutput(result.stdout || "") !== normalizeOutput(problem.tests[index].output)
-      ) {
+      const outputMatches = result.status.id === 3 &&
+        normalizeOutput(result.stdout || "") === normalizeOutput(problem.tests[index].output);
+      const caseVerdict = outputMatches ? "Accepted" : judgeVerdict(result);
+      const caseResult = {
+        case: index + 1,
+        verdict: caseVerdict,
+        time: Number(result.time || 0),
+        memory: Number(result.memory || 0)
+      };
+      if (!outputMatches) {
+        caseResult.input = limitText(problem.tests[index].input);
+        caseResult.expectedOutput = limitText(problem.tests[index].output);
+        caseResult.actualOutput = limitText(result.stdout || "");
+        caseResult.error = limitText(result.compile_output || result.stderr || result.message || "", 3000);
         failedIndex = index;
-        break;
       }
+      testResults.push(caseResult);
+      if (failedIndex >= 0) break;
     }
     const firstFailure = failedIndex >= 0 ? results[failedIndex] : null;
-    const verdict = !firstFailure
-      ? "Accepted"
-      : firstFailure.status.id === 6
-        ? "Compilation Error"
-        : firstFailure.status.id === 5
-          ? "Time Limit Exceeded"
-          : firstFailure.status.id >= 7 && firstFailure.status.id <= 12
-            ? "Runtime Error"
-            : "Wrong Answer";
+    const verdict = !firstFailure ? "Accepted" : judgeVerdict(firstFailure);
     const responseBody = {
       verdict,
       passed: failedIndex < 0 ? results.length : failedIndex,
@@ -1210,6 +1337,7 @@ async function handleSubmission(request, response, user) {
       time: firstFailure ? firstFailure.time : results.reduce((sum, item) => sum + Number(item.time || 0), 0),
       memory: firstFailure ? firstFailure.memory : Math.max(...results.map((item) => Number(item.memory || 0))),
       failedCase: failedIndex < 0 ? null : failedIndex + 1,
+      testResults,
       compileOutput: firstFailure && firstFailure.compile_output
         ? firstFailure.compile_output.slice(0, 4000)
         : null
@@ -1224,6 +1352,10 @@ async function handleSubmission(request, response, user) {
       verdict,
       passed: failedIndex < 0 ? results.length : failedIndex,
       total: problem.tests.length,
+      time: responseBody.time,
+      memory: responseBody.memory,
+      testResults,
+      compileOutput: responseBody.compileOutput,
       contestId: contest?.id || null,
       difficultyCoefficient: problem.difficultyCoefficient,
       createdAt: new Date().toISOString()
@@ -1280,7 +1412,7 @@ async function handleLocalResult(request, response, user) {
   if (!verifySameOrigin(request, response)) return;
   let payload;
   try {
-    payload = await readJson(request, 8 * 1024);
+    payload = await readJson(request, 32 * 1024);
   } catch (error) {
     sendJson(response, 400, { error: error.message });
     return;
@@ -1303,12 +1435,23 @@ async function handleLocalResult(request, response, user) {
     passed > total ||
     (verdict === "Accepted" && passed !== total) ||
     (verdict !== "Accepted" && passed >= total) ||
-    (time !== undefined && (!Number.isFinite(time) || time < 0 || time > 60)) ||
+    (time !== undefined && (!Number.isFinite(time) || time < 0 || time > 120)) ||
+    (payload.memory !== undefined && (!Number.isFinite(payload.memory) || payload.memory < 0 || payload.memory > 1_000_000)) ||
     (failedCase !== null && failedCase !== undefined && (!Number.isInteger(failedCase) || failedCase < 1 || failedCase > total))
   ) {
     sendJson(response, 400, { error: "评测记录内容无效。" });
     return;
   }
+  let testResults;
+  try {
+    testResults = sanitizeTestResults(payload.testResults, total);
+  } catch (error) {
+    sendJson(response, 400, { error: error.message });
+    return;
+  }
+  const compileOutput = typeof payload.compileOutput === "string"
+    ? limitText(payload.compileOutput, 3000)
+    : null;
   let contest;
   try {
     contest = await contestForSubmission(contestId, user, problem.id);
@@ -1330,9 +1473,14 @@ async function handleLocalResult(request, response, user) {
     verdict,
     passed,
     total,
+    time,
+    memory: payload.memory,
+    failedCase,
     contestId: contest?.id || null,
     difficultyCoefficient: problem.difficultyCoefficient,
     experienceAwarded,
+    testResults,
+    compileOutput,
     evaluationSource: "本机评测（用户设备）",
     createdAt: new Date().toISOString()
   };
@@ -1389,7 +1537,7 @@ const server = http.createServer(async (request, response) => {
       return;
     }
     if (request.method === "GET" && request.url === "/api/site-settings") {
-      sendJson(response, 200, publicSiteSettings(await readSiteSettings()));
+      sendJson(response, 200, publicSiteSettings(await readEffectiveSiteSettings()));
       return;
     }
     if (request.method === "POST" && request.url === "/api/admin/site-title") {

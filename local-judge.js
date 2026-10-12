@@ -11,6 +11,7 @@ const PORT = Number(process.env.LOCAL_JUDGE_PORT || 4174);
 const WEB_ORIGIN = process.env.OJ_WEB_ORIGIN || "";
 const PAIRING_TOKEN = crypto.randomBytes(32).toString("base64url");
 const MAX_BODY_BYTES = 40 * 1024;
+const MAX_RUN_BODY_BYTES = 256 * 1024;
 const MAX_OUTPUT_BYTES = 64 * 1024;
 const TEST_TIMEOUT_MS = 3000;
 const recentEvaluations = [];
@@ -57,14 +58,14 @@ function json(response, status, payload) {
   response.end(JSON.stringify(payload));
 }
 
-function readBody(request) {
+function readBody(request, maxBytes = MAX_BODY_BYTES) {
   return new Promise((resolve, reject) => {
     let body = "";
     let bytes = 0;
     request.on("data", (chunk) => {
       bytes += chunk.length;
-      if (bytes > MAX_BODY_BYTES) {
-        reject(new Error("提交内容太大（上限 40 KB）。"));
+      if (bytes > maxBytes) {
+        reject(new Error(`提交内容太大（上限 ${Math.floor(maxBytes / 1024)} KB）。`));
         request.destroy();
         return;
       }
@@ -151,6 +152,10 @@ function normalizeOutput(output) {
   return output.replace(/\r\n/g, "\n").trim();
 }
 
+function boundedText(value, maxLength = 1000) {
+  return Array.from(String(value || "")).slice(0, maxLength).join("");
+}
+
 async function evaluate(payload) {
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
     return { httpStatus: 400, body: { error: "提交参数无效。" } };
@@ -189,15 +194,37 @@ async function evaluate(payload) {
         languageInfo.env
       );
       if (compilation.spawnError) {
-        return { httpStatus: 200, body: { verdict: "Runtime Error", passed: 0, total: tests.length, failedCase: 1, compileOutput: compilation.spawnError } };
+        return {
+          httpStatus: 200,
+          body: {
+            verdict: "Runtime Error", passed: 0, total: tests.length, failedCase: 1,
+            compileOutput: compilation.spawnError,
+            testResults: [{ case: 1, verdict: "Runtime Error", error: boundedText(compilation.spawnError, 3000) }]
+          }
+        };
       }
       if (compilation.timedOut) {
-        return { httpStatus: 200, body: { verdict: "Compilation Error", passed: 0, total: tests.length, failedCase: 1, compileOutput: "编译超时。" } };
+        return {
+          httpStatus: 200,
+          body: {
+            verdict: "Compilation Error", passed: 0, total: tests.length, failedCase: 1,
+            compileOutput: "编译超时。",
+            testResults: [{ case: 1, verdict: "Compilation Error", error: "编译超时。" }]
+          }
+        };
       }
       if (compilation.outputLimited) {
-        return { httpStatus: 200, body: { verdict: "Compilation Error", passed: 0, total: tests.length, failedCase: 1, compileOutput: "编译器输出超过 64 KB。" } };
+        return {
+          httpStatus: 200,
+          body: {
+            verdict: "Compilation Error", passed: 0, total: tests.length, failedCase: 1,
+            compileOutput: "编译器输出超过 64 KB。",
+            testResults: [{ case: 1, verdict: "Compilation Error", error: "编译器输出超过 64 KB。" }]
+          }
+        };
       }
       if (compilation.exitCode !== 0) {
+        const compileOutput = boundedText(compilation.stderr || compilation.stdout, 3000);
         return {
           httpStatus: 200,
           body: {
@@ -205,13 +232,15 @@ async function evaluate(payload) {
             passed: 0,
             total: tests.length,
             failedCase: 1,
-            compileOutput: (compilation.stderr || compilation.stdout).slice(0, 4000)
+            compileOutput,
+            testResults: [{ case: 1, verdict: "Compilation Error", error: compileOutput }]
           }
         };
       }
     }
 
     let time = 0;
+    const testResults = [];
     for (let index = 0; index < tests.length; index += 1) {
       const args = language === "c" || language === "cpp"
         ? [binaryPath]
@@ -225,23 +254,151 @@ async function evaluate(payload) {
         languageInfo.env
       );
       if (result.spawnError) {
-        return { httpStatus: 200, body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: result.spawnError } };
+        const error = boundedText(result.spawnError, 3000);
+        testResults.push({
+          case: index + 1,
+          verdict: "Runtime Error",
+          input: boundedText(tests[index].input),
+          expectedOutput: boundedText(tests[index].output),
+          actualOutput: boundedText(result.stdout),
+          error
+        });
+        return {
+          httpStatus: 200,
+          body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: error, testResults }
+        };
       }
       if (result.timedOut) {
-        return { httpStatus: 200, body: { verdict: "Time Limit Exceeded", passed: index, total: tests.length, failedCase: index + 1, time: TEST_TIMEOUT_MS / 1000 } };
+        testResults.push({
+          case: index + 1,
+          verdict: "Time Limit Exceeded",
+          input: boundedText(tests[index].input),
+          expectedOutput: boundedText(tests[index].output),
+          actualOutput: boundedText(result.stdout),
+          error: "运行超时。"
+        });
+        return {
+          httpStatus: 200,
+          body: { verdict: "Time Limit Exceeded", passed: index, total: tests.length, failedCase: index + 1, time: TEST_TIMEOUT_MS / 1000, testResults }
+        };
       }
       if (result.outputLimited) {
-        return { httpStatus: 200, body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: "程序输出超过 64 KB。" } };
+        const error = "程序输出超过 64 KB。";
+        testResults.push({
+          case: index + 1,
+          verdict: "Runtime Error",
+          input: boundedText(tests[index].input),
+          expectedOutput: boundedText(tests[index].output),
+          actualOutput: boundedText(result.stdout),
+          error
+        });
+        return {
+          httpStatus: 200,
+          body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: error, testResults }
+        };
       }
       if (result.exitCode !== 0) {
-        return { httpStatus: 200, body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: result.stderr.slice(0, 4000) || null } };
+        const error = boundedText(result.stderr, 3000) || "程序异常退出。";
+        testResults.push({
+          case: index + 1,
+          verdict: "Runtime Error",
+          input: boundedText(tests[index].input),
+          expectedOutput: boundedText(tests[index].output),
+          actualOutput: boundedText(result.stdout),
+          error
+        });
+        return {
+          httpStatus: 200,
+          body: { verdict: "Runtime Error", passed: index, total: tests.length, failedCase: index + 1, compileOutput: error, testResults }
+        };
       }
-      time += (performance.now() - startedAt) / 1000;
+      const caseTime = (performance.now() - startedAt) / 1000;
+      time += caseTime;
       if (normalizeOutput(result.stdout) !== normalizeOutput(tests[index].output)) {
-        return { httpStatus: 200, body: { verdict: "Wrong Answer", passed: index, total: tests.length, failedCase: index + 1, time } };
+        testResults.push({
+          case: index + 1,
+          verdict: "Wrong Answer",
+          time: caseTime,
+          input: boundedText(tests[index].input),
+          expectedOutput: boundedText(tests[index].output),
+          actualOutput: boundedText(result.stdout)
+        });
+        return {
+          httpStatus: 200,
+          body: { verdict: "Wrong Answer", passed: index, total: tests.length, failedCase: index + 1, time, testResults }
+        };
+      }
+      testResults.push({ case: index + 1, verdict: "Accepted", time: caseTime });
+    }
+    return { httpStatus: 200, body: { verdict: "Accepted", passed: tests.length, total: tests.length, time, testResults } };
+  } finally {
+    await fs.rm(workDir, { recursive: true, force: true });
+  }
+}
+
+async function runCustomInput(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return { httpStatus: 400, body: { error: "自测参数无效。" } };
+  }
+  const { language, code, input } = payload;
+  if (!Object.hasOwn(LANGUAGES, language)) {
+    return { httpStatus: 400, body: { error: "不支持所选编程语言。" } };
+  }
+  if (typeof code !== "string" || !code.trim() || Buffer.byteLength(code, "utf8") > 32 * 1024) {
+    return { httpStatus: 400, body: { error: "源代码不能为空且不能超过 32 KB。" } };
+  }
+  if (typeof input !== "string" || Buffer.byteLength(input, "utf8") > 32 * 1024) {
+    return { httpStatus: 400, body: { error: "自测输入不能超过 32 KB。" } };
+  }
+
+  const languageInfo = LANGUAGES[language];
+  const workDir = await fs.mkdtemp(path.join(os.tmpdir(), "liangliang-oj-run-"));
+  try {
+    const sourcePath = path.join(workDir, `program${languageInfo.extension}`);
+    const binaryPath = path.join(workDir, process.platform === "win32" ? "program.exe" : "program");
+    await fs.writeFile(sourcePath, code, { encoding: "utf8", mode: 0o600 });
+
+    if (language === "c" || language === "cpp") {
+      const compilation = await sendCommand(
+        languageInfo.compiler,
+        languageInfo.args(sourcePath, binaryPath),
+        "",
+        15_000,
+        languageInfo.env
+      );
+      if (compilation.spawnError || compilation.timedOut || compilation.outputLimited || compilation.exitCode !== 0) {
+        return {
+          httpStatus: 200,
+          body: {
+            verdict: compilation.spawnError ? "Runtime Error" : "Compilation Error",
+            compileOutput: boundedText(
+              compilation.spawnError || (compilation.timedOut ? "编译超时。" : compilation.outputLimited ? "编译器输出超过 64 KB。" : compilation.stderr || compilation.stdout),
+              4000
+            )
+          }
+        };
       }
     }
-    return { httpStatus: 200, body: { verdict: "Accepted", passed: tests.length, total: tests.length, time } };
+
+    const args = language === "c" || language === "cpp" ? [] : languageInfo.args(sourcePath);
+    const command = language === "c" || language === "cpp" ? binaryPath : languageInfo.compiler;
+    const startedAt = performance.now();
+    const result = await sendCommand(command, args, input, TEST_TIMEOUT_MS, languageInfo.env);
+    const time = (performance.now() - startedAt) / 1000;
+    if (result.spawnError || result.outputLimited || result.exitCode !== 0 || result.timedOut) {
+      return {
+        httpStatus: 200,
+        body: {
+          verdict: result.timedOut ? "Time Limit Exceeded" : "Runtime Error",
+          compileOutput: boundedText(result.spawnError || (result.outputLimited ? "程序输出超过 64 KB。" : result.stderr), 4000),
+          time
+        }
+      };
+    }
+    return {
+      httpStatus: 200,
+      body: { verdict: "运行成功", stdout: result.stdout, stderr: result.stderr, time }
+    };
   } finally {
     await fs.rm(workDir, { recursive: true, force: true });
   }
@@ -275,7 +432,7 @@ const server = http.createServer(async (request, response) => {
     json(response, 200, { ready: true, languages: Object.keys(LANGUAGES) });
     return;
   }
-  if (request.method !== "POST" || request.url !== "/api/evaluate") {
+  if (request.method !== "POST" || !["/api/evaluate", "/api/run"].includes(request.url)) {
     json(response, 404, { error: "本地评测接口不存在。" });
     return;
   }
@@ -293,7 +450,7 @@ const server = http.createServer(async (request, response) => {
   }
   let payload;
   try {
-    payload = await readBody(request);
+    payload = await readBody(request, request.url === "/api/run" ? MAX_RUN_BODY_BYTES : MAX_BODY_BYTES);
   } catch (error) {
     if (!response.destroyed) json(response, 400, { error: error.message });
     return;
@@ -301,7 +458,9 @@ const server = http.createServer(async (request, response) => {
   evaluationInProgress = true;
   recentEvaluations.push(now);
   try {
-    const result = await evaluate(payload);
+    const result = request.url === "/api/run"
+      ? await runCustomInput(payload)
+      : await evaluate(payload);
     json(response, result.httpStatus, result.body);
   } catch (error) {
     console.error("Local judge error:", error);

@@ -24,8 +24,9 @@ const state = {
   contests: null,
   contestLeaderboards: {},
   activeContestId: null,
+  selectedSubmissionId: null,
   adminOverview: null,
-  siteSettings: { siteTitle: "天南地北艳姐最美OJ", anime: null, deepseekConfigured: false },
+  siteSettings: { siteTitle: "亮亮专属欧金金", anime: null, deepseekConfigured: false },
   authMode: "login",
   adminRegistrationEnabled: false,
   localJudgeConnected: false,
@@ -74,11 +75,15 @@ function render() {
 }
 
 function updateSiteBrand() {
-  document.title = state.siteSettings.siteTitle;
+  const siteTitle = state.siteSettings.siteTitle || "亮亮专属欧金金";
+  document.title = siteTitle;
   document.querySelectorAll("[data-site-title]").forEach((element) => {
-    element.textContent = state.siteSettings.siteTitle;
+    element.textContent = siteTitle;
   });
-  document.querySelector(".brand")?.setAttribute("aria-label", `${state.siteSettings.siteTitle}首页`);
+  document.querySelectorAll("[data-site-mark]").forEach((element) => {
+    element.textContent = Array.from(siteTitle.trim())[0] || "OJ";
+  });
+  document.querySelector(".brand")?.setAttribute("aria-label", `${siteTitle}首页`);
 }
 
 const dailyQuotes = [
@@ -120,9 +125,15 @@ function dailyQuote(date = new Date()) {
   return dailyQuotes[index];
 }
 
+function solvedProblemIds() {
+  return new Set((state.mySubmissions || [])
+    .filter((submission) => submission.verdict === "Accepted")
+    .map((submission) => submission.problemId));
+}
+
 function renderHome() {
   const submissions = state.mySubmissions || [];
-  const solved = new Set(submissions.filter((item) => item.verdict === "Accepted").map((item) => item.problemId));
+  const solved = solvedProblemIds();
   const recommended = state.problems.slice(0, 3);
   const level = state.currentUser?.level || 1;
   const experience = state.currentUser?.experience || 0;
@@ -148,7 +159,7 @@ function renderHome() {
     ${state.currentUser ? `<section class="panel xp-summary"><div><span class="level-badge">Lv.${level}</span><div><strong>${experience.toLocaleString()} EXP</strong><small>下一等级还需 ${state.currentUser.xpToNextLevel.toLocaleString()} EXP</small></div></div><div class="xp-track"><i style="width:${levelProgress}%"></i></div></section>` : ""}
     <div class="content-grid">
       <section class="panel problem-panel"><div class="section-heading"><div><p class="eyebrow">PICK UP WHERE YOU LEFT OFF</p><h2>推荐练习</h2></div><button class="text-button" data-page="problems">全部题目 <span>→</span></button></div>
-        <div class="mini-problem-list">${recommended.length ? recommended.map(problemRow).join("") : emptyState("题目正在准备中")}</div>
+        <div class="mini-problem-list">${recommended.length ? recommended.map((problem) => problemRow(problem, solved)).join("") : emptyState("题目正在准备中")}</div>
       </section>
       <aside class="panel side-panel"><div class="section-heading"><div><p class="eyebrow">A LITTLE NOTE</p><h2>今日寄语</h2></div><span class="note-spark">✦</span></div>
         <div class="quote-mark">“</div><blockquote>${escapeHtml(dailyQuote())}</blockquote>
@@ -170,10 +181,11 @@ function renderAnimeRecommendation() {
     <p class="anime-attribution">海报由 Jikan API 检索并链接至 MyAnimeList 作品资料。推荐文章由 DeepSeek AI 生成。</p></section>`;
 }
 
-function problemRow(problem) {
+function problemRow(problem, solved = solvedProblemIds()) {
   const difficultyClass = difficultyTone(problem.difficulty);
+  const isSolved = solved.has(problem.id);
   return `<button class="problem-row" data-problem="${escapeHtml(problem.id)}">
-    <span class="problem-status"></span><span class="problem-id">${escapeHtml(problem.id)}</span>
+    <span class="problem-status${isSolved ? " solved" : ""}"${isSolved ? ' aria-label="已通过" title="已通过"' : ' aria-hidden="true"'}>${isSolved ? "✓ 已通过" : ""}</span><span class="problem-id">${escapeHtml(problem.id)}</span>
     <span class="problem-title">${escapeHtml(problem.title)}<small>考点：${escapeHtml((problem.knowledgePoints || []).join("、") || problem.category)} · 系数 ${problem.difficultyCoefficient} · 首通 +${problem.difficultyCoefficient * 10} EXP</small></span>
     <span class="difficulty ${difficultyClass}">${escapeHtml(problem.difficulty)}</span><span class="row-arrow">↗</span></button>`;
 }
@@ -187,6 +199,7 @@ function difficultyTone(difficulty) {
 }
 
 function renderProblems() {
+  const solved = solvedProblemIds();
   const filtered = state.problems.filter((problem) => {
     const text = `${problem.id} ${problem.title} ${problem.category} ${problem.background || ""} ${(problem.knowledgePoints || []).join(" ")}`.toLowerCase();
     return text.includes(state.search.toLowerCase()) &&
@@ -203,7 +216,8 @@ function renderProblems() {
         const rate = problem.attempts ? Math.round(problem.accepted / problem.attempts * 100) : 0;
         const difficultyClass = difficultyTone(problem.difficulty);
         const knowledge = [...(problem.knowledgePoints || []).map((point) => `<i class="knowledge-chip">${escapeHtml(point)}</i>`), `<i class="knowledge-chip">难度系数 ${problem.difficultyCoefficient}</i>`].join("");
-        return `<button class="table-row" data-problem="${escapeHtml(problem.id)}"><span class="problem-status"></span><span class="table-title"><b>${escapeHtml(problem.id)}</b><span class="table-main">${escapeHtml(problem.title)}<small class="knowledge-list">${knowledge || `<i class="knowledge-chip">${escapeHtml(problem.category)}</i>`}</small></span></span><span><i class="difficulty ${difficultyClass}">${escapeHtml(problem.difficulty)}</i></span><span class="table-muted">${escapeHtml(problem.category)}</span><span class="rate-cell"><span class="rate-track"><i style="width:${rate}%"></i></span>${rate}%</span><span class="row-arrow">↗</span></button>`;
+        const isSolved = solved.has(problem.id);
+        return `<button class="table-row" data-problem="${escapeHtml(problem.id)}"><span class="problem-status${isSolved ? " solved" : ""}"${isSolved ? ' aria-label="已通过" title="已通过"' : ' aria-hidden="true"'}>${isSolved ? "✓ 已通过" : ""}</span><span class="table-title"><b>${escapeHtml(problem.id)}</b><span class="table-main">${escapeHtml(problem.title)}<small class="knowledge-list">${knowledge || `<i class="knowledge-chip">${escapeHtml(problem.category)}</i>`}</small></span></span><span><i class="difficulty ${difficultyClass}">${escapeHtml(problem.difficulty)}</i></span><span class="table-muted">${escapeHtml(problem.category)}</span><span class="rate-cell"><span class="rate-track"><i style="width:${rate}%"></i></span>${rate}%</span><span class="row-arrow">↗</span></button>`;
       }).join("") || emptyState("没有找到匹配的题目")}</div>
     </section>${detail}`;
 }
@@ -222,6 +236,7 @@ function renderProblemDetail(problem) {
     </div>
     <div class="editor-heading"><div><h3>提交代码</h3><span>${state.judgeConfigured ? "使用网站评测服务" : state.localJudgeConnected ? "代码将在你的电脑上运行" : "连接本机评测器后即可在自己的电脑运行"}</span></div><div class="editor-controls"><button class="button button-outline local-connect-button" id="local-judge-config">${state.localJudgeConnected ? "本机评测器已连接 · 设置" : "连接本机评测器"}</button><select id="language-select" aria-label="编程语言"><option value="c" ${state.language === "c" ? "selected" : ""}>C17</option><option value="cpp" ${state.language === "cpp" ? "selected" : ""}>C++17</option><option value="python" ${state.language === "python" ? "selected" : ""}>Python 3</option><option value="javascript" ${state.language === "javascript" ? "selected" : ""}>JavaScript</option></select></div></div>
     <div class="editor-wrap"><div class="editor-gutter">${Array.from({ length: 9 }, (_, index) => `<span>${index + 1}</span>`).join("")}</div><textarea id="code-editor" spellcheck="false" aria-label="代码编辑器">${escapeHtml(state.codeByLanguage[state.language] ?? starterCode[state.language])}</textarea></div>
+    <section class="self-test-panel"><div class="self-test-heading"><div><strong>自测</strong><small>仅在本机运行，不会保存为正式提交</small></div><button class="button button-outline" id="run-self-test" type="button">运行自测</button></div><label class="self-test-input-label" for="self-test-input">自定义输入（已填入第一组样例，可自行修改）</label><textarea id="self-test-input" spellcheck="false">${escapeHtml(problem.examples?.[0]?.input || "")}</textarea><div id="self-test-result" aria-live="polite"></div></section>
     <div class="submit-row"><span class="editor-hint">⌘/Ctrl + Enter 快速提交 · 最大 32 KB</span><button class="button button-primary" id="submit-code">提交评测 <span>→</span></button></div>
     <div id="submission-result"></div></section>`;
 }
@@ -281,9 +296,66 @@ function renderSubmissions() {
   }
   const history = state.mySubmissions;
   if (history === null) return `<section class="panel empty-panel"><span class="spinner"></span><p>正在读取提交记录…</p></section>`;
+  const selectedSubmission = history.find((item) => item.id === state.selectedSubmissionId);
   return `<div class="page-heading"><div><p class="eyebrow">YOUR CODE JOURNEY</p><h1>提交记录</h1><p>每次尝试都会留下进步的痕迹。</p></div></div>
     <section class="panel history-panel"><div class="history-head"><span>题目</span><span>语言</span><span>结果</span><span>提交时间</span></div>
-    ${history.length ? history.map((item) => `<div class="history-row"><span><b>${escapeHtml(item.problemId)}</b> ${escapeHtml(item.title)}</span><span>${escapeHtml(item.language)}${item.evaluationSource ? `<small class="history-source">${escapeHtml(item.evaluationSource)}</small>` : ""}</span><span class="${item.verdict === "Accepted" ? "verdict-ok" : "verdict-other"}">${escapeHtml(item.verdict)}</span><span>${escapeHtml(new Date(item.createdAt).toLocaleString("zh-CN", { hour12: false }))}</span></div>`).join("") : emptyState("还没有提交记录。完成一道题后，记录会显示在这里。")}</section>`;
+    ${history.length ? history.map((item) => `<button class="history-row" type="button" data-submission="${escapeHtml(item.id)}" aria-expanded="${item.id === state.selectedSubmissionId}"><span><b>${escapeHtml(item.problemId)}</b> ${escapeHtml(item.title)}<small class="history-source">${item.id === state.selectedSubmissionId ? "点击收起详情" : "点击查看评测详情"}</small></span><span>${escapeHtml(item.language)}${item.evaluationSource ? `<small class="history-source">${escapeHtml(item.evaluationSource)}</small>` : ""}</span><span class="${item.verdict === "Accepted" ? "verdict-ok" : "verdict-other"}">${escapeHtml(formatVerdict(item.verdict))}</span><span>${escapeHtml(new Date(item.createdAt).toLocaleString("zh-CN", { hour12: false }))}</span></button>`).join("") : emptyState("还没有提交记录。完成一道题后，记录会显示在这里。")}
+    ${selectedSubmission ? renderSubmissionDetail(selectedSubmission) : ""}</section>`;
+}
+
+function renderSubmissionDetail(submission) {
+  const testResults = Array.isArray(submission.testResults) ? submission.testResults : [];
+  const total = Number.isInteger(submission.total) ? submission.total : testResults.length;
+  return `<section class="submission-detail" id="submission-detail"><div class="submission-detail-heading"><div><h2>${escapeHtml(submission.problemId)} · ${escapeHtml(submission.title)}</h2><p>${escapeHtml(submission.language)} · ${escapeHtml(new Date(submission.createdAt).toLocaleString("zh-CN", { hour12: false }))}</p></div><button class="text-button" type="button" data-action="close-submission-detail">收起</button></div>
+    <div class="submission-summary"><strong class="${submission.verdict === "Accepted" ? "verdict-ok" : "verdict-other"}">${escapeHtml(formatVerdict(submission.verdict))}</strong><span>${Number(submission.passed) || 0} / ${total} 个测试点通过</span>${submission.time !== undefined ? `<span>用时 ${escapeHtml(String(submission.time))} s</span>` : ""}${submission.memory !== undefined ? `<span>内存 ${escapeHtml(String(submission.memory))} KB</span>` : ""}</div>
+    ${submission.compileOutput ? `<div class="case-diagnostic"><strong>编译/运行信息</strong><pre>${escapeHtml(submission.compileOutput)}</pre></div>` : ""}
+    ${testResults.length ? renderCaseResults(testResults, total) : `<p class="history-detail-note">此记录来自旧版本，尚未保存逐测试点详情。</p>`}</section>`;
+}
+
+function verdictCode(verdict) {
+  return ({
+    Accepted: "AC",
+    "Wrong Answer": "WA",
+    "Time Limit Exceeded": "TLE",
+    "Memory Limit Exceeded": "MLE",
+    "Runtime Error": "RTE",
+    "Compilation Error": "CE"
+  })[verdict] || verdict;
+}
+
+function formatVerdict(verdict) {
+  const names = {
+    AC: "通过",
+    WA: "答案错误",
+    TLE: "超时",
+    MLE: "超出内存",
+    RTE: "运行错误",
+    CE: "编译错误"
+  };
+  const code = verdictCode(verdict);
+  return names[code] ? `${code}（${names[code]}）` : verdict;
+}
+
+function renderCaseResults(testResults, total = testResults.length) {
+  if (!testResults?.length) return "";
+  const resultByCase = new Map(testResults.map((result) => [result.case, result]));
+  const count = Math.max(total, ...testResults.map((result) => result.case));
+  const statusCodes = ["AC", "WA", "TLE", "MLE", "RTE", "CE"];
+  const statusCounts = Object.fromEntries(statusCodes.map((code) => [code, 0]));
+  for (const result of testResults) {
+    const code = verdictCode(result.verdict);
+    if (Object.hasOwn(statusCounts, code)) statusCounts[code] += 1;
+  }
+  return `<div class="case-summary">${statusCodes.map((code) => `${code}: ${statusCounts[code]}`).join("　")}</div><div class="case-results">${Array.from({ length: count }, (_, index) => {
+    const result = resultByCase.get(index + 1);
+    if (!result) {
+      return `<article class="case-result case-not-run"><strong>测试点 ${index + 1}</strong><span>未运行（前序测试点已失败）</span></article>`;
+    }
+    const passed = result.verdict === "Accepted";
+    return `<article class="case-result ${passed ? "case-passed" : "case-failed"}"><div class="case-result-heading"><strong>${passed ? "✓" : "×"} 测试点 ${result.case} · ${escapeHtml(formatVerdict(result.verdict))}</strong>${result.time !== undefined ? `<span>${escapeHtml(String(result.time))} s</span>` : ""}</div>
+      ${result.error ? `<div class="case-diagnostic"><strong>错误信息</strong><pre>${escapeHtml(result.error)}</pre></div>` : ""}
+      ${typeof result.input === "string" ? `<div class="case-output-grid"><div><label>输入</label><pre>${escapeHtml(result.input)}</pre></div><div><label>标准输出</label><pre>${escapeHtml(result.expectedOutput ?? "")}</pre></div><div><label>你的输出</label><pre>${escapeHtml(result.actualOutput ?? "")}</pre></div></div>` : ""}</article>`;
+  }).join("")}</div>`;
 }
 
 function renderDiscuss() {
@@ -312,8 +384,8 @@ function renderAdmin() {
       <article class="stat-card"><div class="stat-icon blue">⌁</div><div class="stat-label">累计提交</div><div class="stat-value">${overview.submissions}</div></article>
       <article class="stat-card"><div class="stat-icon green">✓</div><div class="stat-label">通过次数</div><div class="stat-value">${overview.accepted}</div></article>
     </section>
-    <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">SITE BRANDING</p><h2>网页大标题</h2></div></div>
-      <form id="site-title-form"><label class="auth-field">站点名称<input name="siteTitle" required maxlength="60" value="${escapeHtml(state.siteSettings.siteTitle)}"></label><p class="form-feedback" id="site-title-feedback" role="status"></p><button class="button button-primary" type="submit">保存网页大标题</button></form>
+    <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">DESKTOP BRANDING</p><h2>桌面端标题</h2></div></div>
+      <form id="site-title-form"><label class="auth-field">桌面端名称<input name="siteTitle" required maxlength="60" value="${escapeHtml(state.siteSettings.siteTitle)}"></label><p class="auth-help">${state.siteSettings.titleSync?.error ? `共享标题服务暂不可用：${escapeHtml(state.siteSettings.titleSync.error)}` : state.siteSettings.titleSync?.enabled ? (state.siteSettings.titleSync.canEdit ? "标题会同步给所有已联网的桌面客户端。" : "共享标题已启用；当前设备可以接收更新，但不能修改共享标题。") : "标题保存在本机。"} </p><p class="form-feedback" id="site-title-feedback" role="status"></p><button class="button button-primary" type="submit">保存桌面端标题</button></form>
     </section>
     <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">ANIME PICK</p><h2>主页日漫推荐</h2></div><span class="pill pill-muted">${state.siteSettings.deepseekConfigured ? "DeepSeek 已配置" : "需要 DeepSeek Key"}</span></div>
       <form id="anime-recommendation-form"><label class="auth-field">动漫名称<input name="title" required maxlength="120" value="${escapeHtml(state.siteSettings.anime?.requestedTitle || "")}" placeholder="输入日漫名称"></label>
@@ -433,6 +505,18 @@ async function requestJson(url, options = {}) {
   const body = await response.json();
   if (!response.ok) throw new Error(body.error || `请求失败（${response.status}）`);
   return body;
+}
+
+async function refreshSharedSiteTitle() {
+  try {
+    const siteSettings = await requestJson("/api/site-settings");
+    if (siteSettings.siteTitle === state.siteSettings.siteTitle) return;
+    state.siteSettings = { ...state.siteSettings, ...siteSettings };
+    updateSiteBrand();
+    if (state.page === "home") render();
+  } catch (error) {
+    console.error("Shared desktop title refresh failed:", error);
+  }
 }
 
 async function handleAuthSubmit(event) {
@@ -628,7 +712,7 @@ async function handleSiteTitleSubmit(event) {
     });
     updateSiteBrand();
     if (state.page === "home") render();
-    showToast("网页大标题已更新。");
+    showToast(state.siteSettings.titleSync?.enabled ? "桌面端标题已更新并同步。" : "桌面端标题已更新。");
   } catch (error) {
     feedback.textContent = error.message;
   } finally {
@@ -734,7 +818,10 @@ function saveLocalResult(problemId, language, result, contestId) {
       passed: result.passed,
       total: result.total,
       time: result.time,
-      failedCase: result.failedCase ?? null
+      memory: result.memory,
+      failedCase: result.failedCase ?? null,
+      testResults: result.testResults || [],
+      compileOutput: result.compileOutput || null
     })
   });
 }
@@ -802,6 +889,7 @@ async function submitCode() {
       <div><strong>${accepted ? "✓ " : "× "}${escapeHtml(result.verdict)}</strong><span>${result.passed} / ${result.total} 个测试点通过</span></div>
       ${result.failedCase ? `<p>失败测试点：${result.failedCase}</p>` : ""}
       ${result.compileOutput ? `<pre>${escapeHtml(result.compileOutput)}</pre>` : ""}
+      ${renderCaseResults(result.testResults, result.total)}
       <small>评测时间 ${escapeHtml(String(result.time ?? "-"))} s · 内存 ${escapeHtml(String(result.memory ?? "-"))} KB</small></div>`;
     showToast(accepted
       ? (result.experienceAwarded ? `恭喜通过！首次解出，获得 ${result.experienceAwarded} EXP。` : "恭喜通过！这道题的首次通过经验已领取。")
@@ -816,6 +904,57 @@ async function submitCode() {
     if (currentButton) {
       currentButton.disabled = false;
       currentButton.innerHTML = '提交评测 <span>→</span>';
+    }
+  }
+}
+
+async function runSelfTest() {
+  const button = document.querySelector("#run-self-test");
+  const codeEditor = document.querySelector("#code-editor");
+  const inputEditor = document.querySelector("#self-test-input");
+  const resultContainer = document.querySelector("#self-test-result");
+  if (!button || !codeEditor || !inputEditor || !resultContainer) return;
+  if (!state.localJudgeConnected || !state.localPairingToken) {
+    openLocalJudgeModal();
+    resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>请先连接本机评测器</strong></div>`;
+    return;
+  }
+  if (!codeEditor.value.trim()) {
+    resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>请先编写代码</strong></div>`;
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "运行中…";
+  resultContainer.innerHTML = `<div class="submission-message pending-result"><span class="spinner"></span>正在本机运行自测。</div>`;
+  try {
+    const response = await fetch("http://127.0.0.1:4174/api/run", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Local-Judge-Token": state.localPairingToken
+      },
+      body: JSON.stringify({
+        language: document.querySelector("#language-select").value,
+        code: codeEditor.value,
+        input: inputEditor.value
+      }),
+      signal: AbortSignal.timeout(25_000)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || `自测失败（${response.status}）。`);
+    const succeeded = result.verdict === "运行成功";
+    resultContainer.innerHTML = `<div class="submission-message ${succeeded ? "accepted-result" : "failed-result"}"><strong>${escapeHtml(result.verdict)}</strong>
+      ${result.compileOutput ? `<div class="case-diagnostic"><strong>错误信息</strong><pre>${escapeHtml(result.compileOutput)}</pre></div>` : ""}
+      ${typeof result.stdout === "string" ? `<div class="case-diagnostic"><strong>程序输出</strong><pre>${escapeHtml(result.stdout)}</pre></div>` : ""}
+      ${result.stderr ? `<div class="case-diagnostic"><strong>标准错误</strong><pre>${escapeHtml(result.stderr)}</pre></div>` : ""}
+      ${result.time !== undefined ? `<small>运行时间 ${escapeHtml(String(result.time))} s</small>` : ""}</div>`;
+  } catch (error) {
+    resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>自测未完成</strong><p>${escapeHtml(error.message)}</p></div>`;
+  } finally {
+    if (button.isConnected) {
+      button.disabled = false;
+      button.textContent = "运行自测";
     }
   }
 }
@@ -875,6 +1014,22 @@ document.addEventListener("click", (event) => {
     document.querySelector("#problem-import-file")?.click();
     return;
   }
+  if (event.target.closest("#run-self-test")) {
+    void runSelfTest();
+    return;
+  }
+  if (event.target.closest('[data-action="close-submission-detail"]')) {
+    state.selectedSubmissionId = null;
+    render();
+    return;
+  }
+  const submissionButton = event.target.closest("[data-submission]");
+  if (submissionButton) {
+    state.selectedSubmissionId = submissionButton.dataset.submission;
+    render();
+    document.querySelector("#submission-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    return;
+  }
   const pageLink = event.target.closest("[data-page]");
   if (pageLink) {
     event.preventDefault();
@@ -890,7 +1045,11 @@ document.addEventListener("click", (event) => {
     state.activeContestId = problemButton.dataset.contestId || null;
     state.selectedProblem = state.problems.find((problem) => problem.id === problemButton.dataset.problem) || null;
     if (state.selectedProblem) {
-      render();
+      if (state.page !== "problems") {
+        setPage("problems");
+      } else {
+        render();
+      }
       document.querySelector("#problem-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     return;
@@ -975,7 +1134,7 @@ if (window.ojDesktop) {
       updateButton.textContent = message.match(/\d+%/)?.[0] || "下载中";
     } else {
       updateButton.textContent = "检查更新";
-      if (["current", "error", "deferred", "downloaded"].includes(updateState)) showToast(message);
+      if (["error", "deferred", "downloaded"].includes(updateState)) showToast(message);
     }
   });
 }
@@ -994,6 +1153,9 @@ async function initialize() {
     state.currentUser = (await meResponse.json()).user;
     state.siteSettings = await siteSettingsResponse.json();
     updateSiteBrand();
+    if (window.ojDesktop) {
+      window.setInterval(() => void refreshSharedSiteTitle(), 30_000);
+    }
     state.adminRegistrationEnabled = status.adminRegistrationEnabled;
     state.judgeConfigured = status.judgeConfigured;
     if (window.ojDesktop) {
@@ -1010,6 +1172,7 @@ async function initialize() {
         ].filter(Boolean);
         showToast(`本地评测器已连接；未安装 ${missing.join("、")}，对应语言暂不可用。`);
       }
+
     }
     updateAccountUI();
     if (state.localPairingToken && !state.judgeConfigured) {

@@ -1,8 +1,8 @@
 {
   "name": "liangliang-oj",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "private": true,
-  "description": "天南地北艳姐最美OJ - a self-hosted programming practice site",
+  "description": "亮亮专属欧金金 - a local programming practice desktop app",
   "scripts": {
     "start": "node server.js",
     "local-judge": "node local-judge.js",
@@ -24,7 +24,7 @@
   },
   "build": {
     "appId": "online.yyzm.oj",
-    "productName": "天南地北艳姐最美OJ",
+    "productName": "亮亮专属欧金金",
     "asar": false,
     "directories": {
       "output": "release"
@@ -49,7 +49,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "天南地北艳姐最美OJ",
+      "shortcutName": "亮亮专属欧金金",
       "runAfterFinish": true
     },
     "publish": [

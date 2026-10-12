@@ -1,0 +1,10 @@
+name = "liangliang-oj-title-sync"
+main = "worker.js"
+compatibility_date = "2025-06-01"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "liangliang-oj-desktop-title"
+database_id = "d21dcfb5-4e8a-4c16-8bc7-4de2cc14c8a4"
+migrations_dir = "migrations"

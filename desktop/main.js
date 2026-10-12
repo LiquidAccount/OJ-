@@ -13,6 +13,8 @@ let judgeStartup;
 let updateCheckPromise;
 let updaterWindow;
 let autoUpdatesConfigured = false;
+let updateCheckTimer;
+const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 function sendUpdateStatus(window, status) {
   if (!window.isDestroyed()) window.webContents.send("oj:update-status", status);
@@ -105,6 +107,11 @@ function setupAutoUpdates(window) {
     console.error("Auto-update error:", error);
     sendUpdateStatus(updaterWindow, { state: "error", message: `自动更新失败：${error.message}` });
   });
+  updateCheckTimer = setInterval(() => {
+    if (updaterWindow && !updaterWindow.isDestroyed() && !app.isQuitting) {
+      void checkForUpdates(updaterWindow);
+    }
+  }, UPDATE_CHECK_INTERVAL_MS);
 }
 
 function availablePort() {
@@ -305,6 +312,10 @@ async function createWindow() {
   const appPath = app.getAppPath();
   const adminPassword = getAdminRegistrationPassword();
   const appDataPath = app.getPath("userData");
+  const titleSyncAdminKeyPath = path.join(appDataPath, "desktop-title-sync.key");
+  const titleSyncAdminKey = fs.existsSync(titleSyncAdminKeyPath)
+    ? fs.readFileSync(titleSyncAdminKeyPath, "utf8").trim()
+    : "";
   const adminPasswordNoticePath = path.join(appDataPath, ".admin-code-shown");
   const showAdminPasswordNotice = app.isPackaged && !fs.existsSync(adminPasswordNoticePath);
   let finishOnboarding;
@@ -318,6 +329,8 @@ async function createWindow() {
       PORT: String(port),
       OJ_DATA_DIR: appDataPath,
       ADMIN_REGISTRATION_PASSWORD: adminPassword,
+      OJ_TITLE_SYNC_URL: "https://liangliang-oj-title-sync.yyzm.workers.dev",
+      OJ_TITLE_SYNC_ADMIN_KEY: titleSyncAdminKey,
       DATABASE_URL: "",
       COOKIE_SECURE: ""
     },
@@ -470,6 +483,7 @@ app.on("activate", () => {
 
 app.on("before-quit", () => {
   app.isQuitting = true;
+  if (updateCheckTimer) clearInterval(updateCheckTimer);
   judgeProcess?.kill();
   serverProcess?.kill();
 });
