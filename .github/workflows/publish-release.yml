@@ -13,10 +13,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -33,7 +33,46 @@ jobs:
             throw "Tag '$env:GITHUB_REF_NAME' does not match package version '$expectedTag'."
           }
 
-      - name: Build and publish Windows installer
-        run: npm run desktop:build -- --publish always
+      - name: Build Windows installer and update metadata
+        run: npm run desktop:build -- --publish never
+
+      - name: Verify release files
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem release -File -Filter '*Setup-*-x64.exe' | Where-Object { $_.Name -notmatch '__uninstaller' })
+          if ($installers.Count -ne 1) {
+            throw "Expected exactly one x64 NSIS installer, found $($installers.Count)."
+          }
+
+          $installer = $installers[0]
+          $metadata = Join-Path $installer.DirectoryName 'latest.yml'
+          $blockmap = "$($installer.FullName).blockmap"
+          if (-not (Test-Path $metadata -PathType Leaf)) {
+            throw "electron-builder did not create latest.yml."
+          }
+          if (-not (Test-Path $blockmap -PathType Leaf)) {
+            throw "electron-builder did not create the installer blockmap."
+          }
+          if (-not (Select-String -Path $metadata -SimpleMatch $installer.Name -Quiet)) {
+            throw "latest.yml does not reference the generated installer '$($installer.Name)'."
+          }
+
+          "Installer: $($installer.FullName)"
+          "Update metadata: $metadata"
+          "Blockmap: $blockmap"
+
+      - name: Create GitHub Release with installer and update files
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem release -File -Filter '*Setup-*-x64.exe' | Where-Object { $_.Name -notmatch '__uninstaller' })
+          $installer = $installers[0]
+          $metadata = Join-Path $installer.DirectoryName 'latest.yml'
+          $blockmap = "$($installer.FullName).blockmap"
+          $assets = @($installer.FullName, $metadata, $blockmap)
+
+          gh release create "$env:GITHUB_REF_NAME" @assets `
+            --repo "$env:GITHUB_REPOSITORY" `
+            --title "$env:GITHUB_REF_NAME" `
+            --generate-notes
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
