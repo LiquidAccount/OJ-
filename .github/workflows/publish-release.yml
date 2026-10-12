@@ -53,22 +53,42 @@ jobs:
           if (-not (Test-Path $blockmap -PathType Leaf)) {
             throw "electron-builder did not create the installer blockmap."
           }
-          if (-not (Select-String -Path $metadata -SimpleMatch $installer.Name -Quiet)) {
-            throw "latest.yml does not reference the generated installer '$($installer.Name)'."
+
+          $metadataText = Get-Content $metadata -Raw
+          $urlMatch = [regex]::Match($metadataText, '(?m)^\s*-\s*url:\s*(.+?)\s*$')
+          if (-not $urlMatch.Success) {
+            throw "latest.yml does not contain an installer URL."
+          }
+          $assetName = $urlMatch.Groups[1].Value.Trim().Trim('"').Trim("'")
+          if ([IO.Path]::GetFileName($assetName) -ne $assetName) {
+            throw "latest.yml contains an invalid installer path '$assetName'."
           }
 
-          "Installer: $($installer.FullName)"
+          $publishedInstaller = Join-Path $installer.DirectoryName $assetName
+          $publishedBlockmap = "$publishedInstaller.blockmap"
+          if ($installer.FullName -ne $publishedInstaller) {
+            Move-Item -LiteralPath $installer.FullName -Destination $publishedInstaller
+            Move-Item -LiteralPath $blockmap -Destination $publishedBlockmap
+          }
+          if (-not (Test-Path $publishedInstaller -PathType Leaf) -or
+              -not (Test-Path $publishedBlockmap -PathType Leaf)) {
+            throw "Could not prepare installer assets using the filenames from latest.yml."
+          }
+
+          "Installer: $publishedInstaller"
           "Update metadata: $metadata"
-          "Blockmap: $blockmap"
+          "Blockmap: $publishedBlockmap"
 
       - name: Create GitHub Release with installer and update files
         shell: pwsh
         run: |
-          $installers = @(Get-ChildItem release -File -Filter '*Setup-*-x64.exe' | Where-Object { $_.Name -notmatch '__uninstaller' })
-          $installer = $installers[0]
-          $metadata = Join-Path $installer.DirectoryName 'latest.yml'
-          $blockmap = "$($installer.FullName).blockmap"
-          $assets = @($installer.FullName, $metadata, $blockmap)
+          $metadata = Join-Path 'release' 'latest.yml'
+          $metadataText = Get-Content $metadata -Raw
+          $urlMatch = [regex]::Match($metadataText, '(?m)^\s*-\s*url:\s*(.+?)\s*$')
+          $assetName = $urlMatch.Groups[1].Value.Trim().Trim('"').Trim("'")
+          $installer = Join-Path 'release' $assetName
+          $blockmap = "$installer.blockmap"
+          $assets = @((Resolve-Path $installer).Path, (Resolve-Path $metadata).Path, (Resolve-Path $blockmap).Path)
 
           gh release create "$env:GITHUB_REF_NAME" @assets `
             --repo "$env:GITHUB_REPOSITORY" `

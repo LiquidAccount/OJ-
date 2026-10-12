@@ -27,11 +27,11 @@ npm run desktop:build
 
 桌面安装版会在启动后自动检查 GitHub Releases，也可点击右上角“检查更新”。发现新版本后，软件会先询问再下载；下载完成后可立即重启安装，或在以后退出时安装。自动更新使用公开的 `LiquidAccount/OJ-` GitHub Releases；仓库必须保持公开，仓库中的源码及其他已提交内容会对所有人公开。1.0.0 和 1.0.1 安装版不含本次站点设置功能；安装 1.0.2 或更新版本后才可使用这些功能。
 
-发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.3：
+发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.4：
 
 ```powershell
-git tag v1.0.3
-git push origin v1.0.3
+git tag v1.0.4
+git push origin v1.0.4
 ```
 
 先把当前项目文件（包括 `.github/workflows/publish-release.yml`）上传到公开仓库的 `main` 分支，再给相同提交打版本标签。GitHub Actions 会自动构建 Windows NSIS 安装器，并在 Release 中一并上传 Setup 安装包、`latest.yml` 和 `.blockmap`；不需要个人访问令牌。工作流会验证标签版本与 `package.json` 一致。自动更新仅适用于本项目构建的 NSIS 安装版；portable 版不支持自动安装更新。更新仓库须保持公开，否则客户端无法匿名下载 Release。
