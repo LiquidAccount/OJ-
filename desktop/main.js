@@ -16,42 +16,70 @@ let autoUpdatesConfigured = false;
 let updateCheckTimer;
 let lastUpdateStatus = { state: "idle", message: "尚未检查更新。", version: "" };
 const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+const RELEASE_PAGE_URL = "https://github.com/LiquidAccount/OJ-/releases/latest";
+const UPDATE_LOG_LIMIT_BYTES = 256 * 1024;
+
+function updateLogPath() {
+  return path.join(app.getPath("userData"), "update.log");
+}
+
+function logUpdate(message) {
+  const line = `[${new Date().toISOString()}] ${message}\n`;
+  process.stdout.write(`[update] ${message}\n`);
+  try {
+    const file = updateLogPath();
+    if (fs.existsSync(file) && fs.statSync(file).size > UPDATE_LOG_LIMIT_BYTES) fs.rmSync(file, { force: true });
+    fs.appendFileSync(file, line, "utf8");
+  } catch (error) {
+    process.stderr.write(`[update] 日志写入失败：${error.message}\n`);
+  }
+}
+
+function liveWindow(preferred) {
+  if (preferred && !preferred.isDestroyed()) return preferred;
+  return BrowserWindow.getAllWindows().find((window) => !window.isDestroyed()) || null;
+}
 
 function sendUpdateStatus(window, status) {
   lastUpdateStatus = { ...lastUpdateStatus, ...status };
-  if (window && !window.isDestroyed()) window.webContents.send("oj:update-status", lastUpdateStatus);
+  logUpdate(`状态 ${lastUpdateStatus.state}${lastUpdateStatus.version ? ` v${lastUpdateStatus.version}` : ""}：${lastUpdateStatus.message}`);
+  const target = liveWindow(window);
+  if (target) target.webContents.send("oj:update-status", lastUpdateStatus);
 }
 
 function downloadPendingUpdate(window, version) {
-  updaterWindow = window;
-  sendUpdateStatus(window, { state: "downloading", message: "正在下载更新…", version });
+  updaterWindow = liveWindow(window) || window;
+  logUpdate(`开始下载更新${version ? ` v${version}` : ""}`);
+  sendUpdateStatus(updaterWindow, { state: "downloading", message: "正在下载更新…", version });
   return autoUpdater.downloadUpdate()
     .then(() => true)
     .catch((error) => {
-      console.error("Update download failed:", error);
-      sendUpdateStatus(window, { state: "error", message: `下载更新失败：${error.message}` });
+      logUpdate(`下载失败：${error.message}`);
+      sendUpdateStatus(updaterWindow, { state: "error", message: `下载更新失败：${error.message}` });
       return false;
     });
 }
 
 function installPendingUpdate() {
+  logUpdate("准备退出并安装更新");
   app.isQuitting = true;
   setImmediate(() => autoUpdater.quitAndInstall(false, true));
 }
 
 async function checkForUpdates(window) {
-  updaterWindow = window;
+  updaterWindow = liveWindow(window) || window;
   if (!app.isPackaged) {
-    sendUpdateStatus(window, { state: "unavailable", message: "开发模式不检查更新。" });
+    sendUpdateStatus(updaterWindow, { state: "unavailable", message: "开发模式不检查更新。" });
     return false;
   }
   if (updateCheckPromise) return updateCheckPromise;
-  sendUpdateStatus(window, { state: "checking", message: "正在检查更新…" });
+  logUpdate("开始检查更新");
+  sendUpdateStatus(updaterWindow, { state: "checking", message: "正在检查更新…" });
   updateCheckPromise = autoUpdater.checkForUpdates()
     .then(() => true)
     .catch((error) => {
-      console.error("Update check failed:", error);
-      sendUpdateStatus(window, { state: "error", message: `检查更新失败：${error.message}` });
+      logUpdate(`检查失败：${error.message}`);
+      sendUpdateStatus(updaterWindow, { state: "error", message: `检查更新失败：${error.message}` });
       return false;
     })
     .finally(() => { updateCheckPromise = null; });
@@ -60,26 +88,38 @@ async function checkForUpdates(window) {
 
 function setupAutoUpdates(window) {
   if (!app.isPackaged) return;
-  updaterWindow = window;
+  updaterWindow = liveWindow(window) || window;
   if (autoUpdatesConfigured) return;
   autoUpdatesConfigured = true;
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.allowDowngrade = false;
+  autoUpdater.logger = {
+    info: (message) => logUpdate(String(message)),
+    warn: (message) => logUpdate(`警告：${message}`),
+    error: (message) => logUpdate(`错误：${message}`),
+    debug: () => {}
+  };
 
   autoUpdater.on("checking-for-update", () => {
     sendUpdateStatus(updaterWindow, { state: "checking", message: "正在检查更新…" });
   });
-  autoUpdater.on("update-not-available", () => {
-    sendUpdateStatus(updaterWindow, { state: "current", message: "当前已是最新版本。" });
-  });  autoUpdater.on("update-available", async (info) => {
+  autoUpdater.on("update-not-available", (info) => {
+    sendUpdateStatus(updaterWindow, {
+      state: "current",
+      message: `当前已是最新版本${info?.version ? `（${info.version}）` : ""}。`,
+      version: info?.version || ""
+    });
+  });
+  autoUpdater.on("update-available", async (info) => {
     sendUpdateStatus(updaterWindow, {
       state: "available",
       message: `发现新版本 ${info.version}，可在顶部提示条中下载，也可以稍后退出软件时自动安装。`,
       version: info.version
     });
-    if (!updaterWindow || updaterWindow.isDestroyed() || updaterWindow.isFocused()) return;
-    const answer = await dialog.showMessageBox(updaterWindow, {
+    const target = liveWindow(updaterWindow);
+    if (!target || target.isFocused()) return;
+    const answer = await dialog.showMessageBox(target, {
       type: "info",
       title: "发现软件更新",
       message: `发现新版本 ${info.version}。`,
@@ -96,7 +136,8 @@ function setupAutoUpdates(window) {
     await downloadPendingUpdate(updaterWindow, info.version);
   });
   autoUpdater.on("download-progress", (progress) => {
-    updaterWindow?.setProgressBar(Math.max(0, Math.min(progress.percent, 100)) / 100);
+    const target = liveWindow(updaterWindow);
+    target?.setProgressBar(Math.max(0, Math.min(progress.percent, 100)) / 100);
     sendUpdateStatus(updaterWindow, {
       state: "downloading",
       message: `正在下载更新：${Math.round(progress.percent)}%（完成后可立即重启安装）`,
@@ -104,15 +145,16 @@ function setupAutoUpdates(window) {
     });
   });
   autoUpdater.on("update-downloaded", async (info) => {
-    updaterWindow?.setProgressBar(-1);
+    liveWindow(updaterWindow)?.setProgressBar(-1);
     sendUpdateStatus(updaterWindow, {
       state: "downloaded",
       message: `版本 ${info.version} 已下载完成。点击“立即重启安装”，或直接退出软件后自动安装。`,
       version: info.version,
       percent: 100
     });
-    if (!updaterWindow || updaterWindow.isDestroyed() || updaterWindow.isFocused()) return;
-    const answer = await dialog.showMessageBox(updaterWindow, {
+    const target = liveWindow(updaterWindow);
+    if (!target || target.isFocused()) return;
+    const answer = await dialog.showMessageBox(target, {
       type: "info",
       title: "更新已准备就绪",
       message: `版本 ${info.version} 已下载完成。`,
@@ -125,9 +167,9 @@ function setupAutoUpdates(window) {
     if (answer.response === 0) installPendingUpdate();
   });
   autoUpdater.on("error", (error) => {
-    updaterWindow?.setProgressBar(-1);
-    console.error("Auto-update error:", error);
-    sendUpdateStatus(updaterWindow, { state: "error", message: `自动更新失败：${error.message}` });
+    liveWindow(updaterWindow)?.setProgressBar(-1);
+    logUpdate(`自动更新错误：${error?.message || error}`);
+    sendUpdateStatus(updaterWindow, { state: "error", message: `自动更新失败：${error?.message || error}` });
   });
   updateCheckTimer = setInterval(() => {
     if (updaterWindow && !updaterWindow.isDestroyed() && !app.isQuitting) {
@@ -452,6 +494,8 @@ async function createWindow() {
   ipcMain.handle("oj:check-for-updates", () => checkForUpdates(window));
   ipcMain.handle("oj:update-state", () => lastUpdateStatus);
   ipcMain.handle("oj:download-update", () => downloadPendingUpdate(window, lastUpdateStatus.version));
+  ipcMain.handle("oj:open-download-page", () => shell.openExternal(RELEASE_PAGE_URL));
+  ipcMain.handle("oj:update-log-path", () => updateLogPath());
   ipcMain.handle("oj:install-update", () => {
     if (lastUpdateStatus.state !== "downloaded") return false;
     installPendingUpdate();

@@ -1195,6 +1195,9 @@ function renderUpdateBanner(status) {
   if (state === "available" || state === "deferred") addAction("下载更新", () => window.ojDesktop.downloadUpdate(), true);
   if (state === "downloaded") addAction("立即重启安装", () => window.ojDesktop.installUpdate(), true);
   if (state === "error" || state === "current") addAction("重新检查", () => window.ojDesktop.checkForUpdates(), false);
+  if (state === "available" || state === "deferred" || state === "error") {
+    addAction("手动下载安装包", () => window.ojDesktop.openDownloadPage(), false);
+  }
 }
 
 if (window.ojDesktop) {

@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld("ojDesktop", {
   getUpdateState: () => ipcRenderer.invoke("oj:update-state"),
   downloadUpdate: () => ipcRenderer.invoke("oj:download-update"),
   installUpdate: () => ipcRenderer.invoke("oj:install-update"),
+  openDownloadPage: () => ipcRenderer.invoke("oj:open-download-page"),
   onUpdateStatus: (callback) => {
     const listener = (_event, status) => callback(status);
     ipcRenderer.on("oj:update-status", listener);
