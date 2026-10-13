@@ -2261,5 +2261,2660 @@
       }
     ],
     "difficultyCoefficient": 100
+  },
+  {
+    "id": "LL1201",
+    "title": "气温换算",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "标准输入输出",
+      "浮点运算",
+      "格式化输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "气象站每天记录摄氏温度，需要换算成华氏温度后发给合作机构。华氏温度换算公式为 F = C × 9 / 5 + 32。请读入一个摄氏温度并输出对应的华氏温度。",
+    "input": "一行一个整数 C，表示摄氏温度，-100 ≤ C ≤ 100。",
+    "output": "一行一个数，表示对应的华氏温度，保留一位小数。",
+    "examples": [
+      {
+        "input": "0\n",
+        "output": "32.0\n"
+      },
+      {
+        "input": "37\n",
+        "output": "98.6\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "0\n",
+        "output": "32.0\n"
+      },
+      {
+        "input": "37\n",
+        "output": "98.6\n"
+      },
+      {
+        "input": "100\n",
+        "output": "212.0\n"
+      },
+      {
+        "input": "-40\n",
+        "output": "-40.0\n"
+      },
+      {
+        "input": "25\n",
+        "output": "77.0\n"
+      },
+      {
+        "input": "-100\n",
+        "output": "-148.0\n"
+      }
+    ],
+    "difficultyCoefficient": 2
+  },
+  {
+    "id": "LL1202",
+    "title": "快递运费",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "多分支判断",
+      "向上取整",
+      "整数运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "快递公司按重量计费：首重 1 公斤内收 10 元；超过 1 公斤的部分每公斤加收 5 元，不足 1 公斤按 1 公斤计算。请根据包裹重量计算运费。",
+    "input": "一行一个数 w，表示包裹重量（公斤），0 < w ≤ 1000，最多一位小数。",
+    "output": "一行一个整数，表示运费（元）。",
+    "examples": [
+      {
+        "input": "0.5\n",
+        "output": "10\n"
+      },
+      {
+        "input": "2.5\n",
+        "output": "20\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "0.5\n",
+        "output": "10\n"
+      },
+      {
+        "input": "2.5\n",
+        "output": "20\n"
+      },
+      {
+        "input": "1\n",
+        "output": "10\n"
+      },
+      {
+        "input": "1.1\n",
+        "output": "15\n"
+      },
+      {
+        "input": "2\n",
+        "output": "15\n"
+      },
+      {
+        "input": "10\n",
+        "output": "55\n"
+      },
+      {
+        "input": "100\n",
+        "output": "505\n"
+      }
+    ],
+    "difficultyCoefficient": 3
+  },
+  {
+    "id": "LL1203",
+    "title": "阶梯电费",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "多分支判断",
+      "分段计算",
+      "百分数"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "居民用电实行阶梯电价：月用电量不超过 180 千瓦时的部分每千瓦时 0.50 元；181 到 300 千瓦时的部分每千瓦时 0.55 元；超过 300 千瓦时的部分每千瓦时 0.80 元。请计算一个月的电费。",
+    "input": "一行一个整数 k，表示月用电量（千瓦时），0 ≤ k ≤ 10000。",
+    "output": "一行一个数，表示电费（元），保留两位小数。",
+    "examples": [
+      {
+        "input": "100\n",
+        "output": "50.00\n"
+      },
+      {
+        "input": "250\n",
+        "output": "128.50\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "100\n",
+        "output": "50.00\n"
+      },
+      {
+        "input": "250\n",
+        "output": "128.50\n"
+      },
+      {
+        "input": "0\n",
+        "output": "0.00\n"
+      },
+      {
+        "input": "180\n",
+        "output": "90.00\n"
+      },
+      {
+        "input": "181\n",
+        "output": "90.55\n"
+      },
+      {
+        "input": "300\n",
+        "output": "156.00\n"
+      },
+      {
+        "input": "301\n",
+        "output": "156.80\n"
+      },
+      {
+        "input": "400\n",
+        "output": "236.00\n"
+      },
+      {
+        "input": "10000\n",
+        "output": "7916.00\n"
+      }
+    ],
+    "difficultyCoefficient": 4
+  },
+  {
+    "id": "LL1204",
+    "title": "停车计费",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "条件判断",
+      "向上取整",
+      "整数运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "商场停车场规定：停车 30 分钟以内免费；超过 30 分钟后，每 15 分钟收费 2 元，不足 15 分钟也按 15 分钟计算。请根据停车时长计算停车费。",
+    "input": "一行一个整数 t，表示停车时长（分钟），1 ≤ t ≤ 1440。",
+    "output": "一行一个整数，表示停车费（元）。",
+    "examples": [
+      {
+        "input": "20\n",
+        "output": "0\n"
+      },
+      {
+        "input": "46\n",
+        "output": "4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "20\n",
+        "output": "0\n"
+      },
+      {
+        "input": "46\n",
+        "output": "4\n"
+      },
+      {
+        "input": "1\n",
+        "output": "0\n"
+      },
+      {
+        "input": "30\n",
+        "output": "0\n"
+      },
+      {
+        "input": "31\n",
+        "output": "2\n"
+      },
+      {
+        "input": "45\n",
+        "output": "2\n"
+      },
+      {
+        "input": "60\n",
+        "output": "4\n"
+      },
+      {
+        "input": "1440\n",
+        "output": "188\n"
+      }
+    ],
+    "difficultyCoefficient": 4
+  },
+  {
+    "id": "LL1205",
+    "title": "成绩单等级",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "平均值",
+      "多分支判断",
+      "格式化输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "学校要把三门课的总评成绩换算成平均分并给出等级：平均分不低于 90 分为 A，80 到 89 分为 B，70 到 79 分为 C，60 到 69 分为 D，低于 60 分为 E。等级按保留两位小数后的平均分判定。",
+    "input": "一行三个整数，表示三门课的成绩，每个成绩在 0 到 100 之间。",
+    "output": "第一行输出平均分，保留两位小数；第二行输出等级（A、B、C、D 或 E 中的一个）。",
+    "examples": [
+      {
+        "input": "85 90 77\n",
+        "output": "84.00\nB\n"
+      },
+      {
+        "input": "60 60 60\n",
+        "output": "60.00\nD\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "85 90 77\n",
+        "output": "84.00\nB\n"
+      },
+      {
+        "input": "60 60 60\n",
+        "output": "60.00\nD\n"
+      },
+      {
+        "input": "90 90 90\n",
+        "output": "90.00\nA\n"
+      },
+      {
+        "input": "0 0 0\n",
+        "output": "0.00\nE\n"
+      },
+      {
+        "input": "59 60 60\n",
+        "output": "59.67\nE\n"
+      },
+      {
+        "input": "100 100 100\n",
+        "output": "100.00\nA\n"
+      },
+      {
+        "input": "89 90 89\n",
+        "output": "89.33\nB\n"
+      }
+    ],
+    "difficultyCoefficient": 5
+  },
+  {
+    "id": "LL1206",
+    "title": "数位求和",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "整数取模",
+      "整数除法",
+      "数位分解"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "超市收银机要把商品编号的三位数字相加做校验。给定一个三位正整数，请输出它各位数字之和。",
+    "input": "一行一个三位正整数 n，100 ≤ n ≤ 999。",
+    "output": "一行一个整数，表示各位数字之和。",
+    "examples": [
+      {
+        "input": "123\n",
+        "output": "6\n"
+      },
+      {
+        "input": "900\n",
+        "output": "9\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "123\n",
+        "output": "6\n"
+      },
+      {
+        "input": "900\n",
+        "output": "9\n"
+      },
+      {
+        "input": "100\n",
+        "output": "1\n"
+      },
+      {
+        "input": "999\n",
+        "output": "27\n"
+      },
+      {
+        "input": "500\n",
+        "output": "5\n"
+      },
+      {
+        "input": "707\n",
+        "output": "14\n"
+      }
+    ],
+    "difficultyCoefficient": 3
+  },
+  {
+    "id": "LL1207",
+    "title": "时长换算",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "整数除法",
+      "整数取模"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "视频网站要把总时长按「多少小时零几分钟」的方式展示。给定总分钟数，请换算成小时和分钟。",
+    "input": "一行一个整数 m，表示总分钟数，0 ≤ m ≤ 100000。",
+    "output": "一行两个整数，用空格分隔，依次是小时数和剩余分钟数。",
+    "examples": [
+      {
+        "input": "125\n",
+        "output": "2 5\n"
+      },
+      {
+        "input": "59\n",
+        "output": "0 59\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "125\n",
+        "output": "2 5\n"
+      },
+      {
+        "input": "59\n",
+        "output": "0 59\n"
+      },
+      {
+        "input": "0\n",
+        "output": "0 0\n"
+      },
+      {
+        "input": "60\n",
+        "output": "1 0\n"
+      },
+      {
+        "input": "1440\n",
+        "output": "24 0\n"
+      },
+      {
+        "input": "100000\n",
+        "output": "1666 40\n"
+      }
+    ],
+    "difficultyCoefficient": 3
+  },
+  {
+    "id": "LL1208",
+    "title": "时间格式化",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "整数除法",
+      "整数取模",
+      "补零输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "监控系统把累计运行秒数显示成 HH:MM:SS 的形式。给定秒数，请按该格式输出，时、分、秒不足两位时前面补 0。",
+    "input": "一行一个整数 t，表示秒数，0 ≤ t ≤ 359999。",
+    "output": "一行一个字符串，格式为 HH:MM:SS，例如 01:02:05。",
+    "examples": [
+      {
+        "input": "3725\n",
+        "output": "01:02:05\n"
+      },
+      {
+        "input": "59\n",
+        "output": "00:00:59\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3725\n",
+        "output": "01:02:05\n"
+      },
+      {
+        "input": "59\n",
+        "output": "00:00:59\n"
+      },
+      {
+        "input": "0\n",
+        "output": "00:00:00\n"
+      },
+      {
+        "input": "60\n",
+        "output": "00:01:00\n"
+      },
+      {
+        "input": "3599\n",
+        "output": "00:59:59\n"
+      },
+      {
+        "input": "3600\n",
+        "output": "01:00:00\n"
+      },
+      {
+        "input": "359999\n",
+        "output": "99:59:59\n"
+      }
+    ],
+    "difficultyCoefficient": 5
+  },
+  {
+    "id": "LL1209",
+    "title": "闰年判断",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "条件判断",
+      "逻辑运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "日历程序需要判断某一年是不是闰年。闰年的规则是：能被 4 整除但不能被 100 整除，或者能被 400 整除。",
+    "input": "一行一个整数 y，表示年份，1 ≤ y ≤ 9999。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "2024\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1900\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2024\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1900\n",
+        "output": "no\n"
+      },
+      {
+        "input": "1\n",
+        "output": "no\n"
+      },
+      {
+        "input": "4\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "100\n",
+        "output": "no\n"
+      },
+      {
+        "input": "400\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "2000\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "2023\n",
+        "output": "no\n"
+      },
+      {
+        "input": "2100\n",
+        "output": "no\n"
+      }
+    ],
+    "difficultyCoefficient": 6
+  },
+  {
+    "id": "LL1210",
+    "title": "最大公约数",
+    "difficulty": "入门",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "循环",
+      "辗转相除法"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "车间要把两根钢管切成同样长且尽可能长的短管，不能有剩余。这等价于求两根钢管长度的最大公约数。",
+    "input": "一行两个整数 a、b，1 ≤ a, b ≤ 1000000000。",
+    "output": "一行一个整数，表示 a 和 b 的最大公约数。",
+    "examples": [
+      {
+        "input": "12 18\n",
+        "output": "6\n"
+      },
+      {
+        "input": "100 75\n",
+        "output": "25\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "12 18\n",
+        "output": "6\n"
+      },
+      {
+        "input": "100 75\n",
+        "output": "25\n"
+      },
+      {
+        "input": "1 1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "1000000000 999999999\n",
+        "output": "1\n"
+      },
+      {
+        "input": "36 24\n",
+        "output": "12\n"
+      },
+      {
+        "input": "17 5\n",
+        "output": "1\n"
+      }
+    ],
+    "difficultyCoefficient": 6
+  },
+  {
+    "id": "LL1211",
+    "title": "水仙花数判断",
+    "difficulty": "入门",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "数位分解",
+      "条件判断",
+      "幂运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "「水仙花数」是指各位数字的立方和等于它本身的三位数，例如 153 = 1³ + 5³ + 3³。请判断给定的三位数是否为水仙花数。",
+    "input": "一行一个三位正整数 n，100 ≤ n ≤ 999。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "153\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "100\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "153\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "100\n",
+        "output": "no\n"
+      },
+      {
+        "input": "370\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "371\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "407\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "999\n",
+        "output": "no\n"
+      },
+      {
+        "input": "500\n",
+        "output": "no\n"
+      }
+    ],
+    "difficultyCoefficient": 6
+  },
+  {
+    "id": "LL1212",
+    "title": "打折价格",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "浮点运算",
+      "百分比",
+      "格式化输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "网店促销时按百分比折扣结算。给定商品原价和折扣百分比，请算出应付金额。例如折扣 85 表示按原价的 85% 出售。",
+    "input": "一行两个数 p 和 d，用空格分隔。p 是原价（元，最多两位小数，0 < p ≤ 100000），d 是折扣百分比（整数，1 ≤ d ≤ 100）。数据保证应付金额恰好是两位小数。",
+    "output": "一行一个数，表示应付金额（元），保留两位小数。",
+    "examples": [
+      {
+        "input": "100.00 85\n",
+        "output": "85.00\n"
+      },
+      {
+        "input": "19.90 90\n",
+        "output": "17.91\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "100.00 85\n",
+        "output": "85.00\n"
+      },
+      {
+        "input": "19.90 90\n",
+        "output": "17.91\n"
+      },
+      {
+        "input": "250.00 88\n",
+        "output": "220.00\n"
+      },
+      {
+        "input": "9.99 100\n",
+        "output": "9.99\n"
+      },
+      {
+        "input": "50.00 75\n",
+        "output": "37.50\n"
+      },
+      {
+        "input": "1000.00 60\n",
+        "output": "600.00\n"
+      }
+    ],
+    "difficultyCoefficient": 7
+  },
+  {
+    "id": "LL1213",
+    "title": "苹果装箱",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "整数除法",
+      "整数取模"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "果园采摘了若干个苹果，要按固定数量装箱。给定苹果总数和每箱容量，请算出能装满多少箱、还剩多少个。",
+    "input": "一行两个整数 a、b，1 ≤ b ≤ a ≤ 1000000000。a 是苹果总数，b 是每箱容量。",
+    "output": "一行两个整数，用空格分隔，依次是装满的箱数和剩余的苹果数。",
+    "examples": [
+      {
+        "input": "100 30\n",
+        "output": "3 10\n"
+      },
+      {
+        "input": "7 7\n",
+        "output": "1 0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "100 30\n",
+        "output": "3 10\n"
+      },
+      {
+        "input": "7 7\n",
+        "output": "1 0\n"
+      },
+      {
+        "input": "1 1\n",
+        "output": "1 0\n"
+      },
+      {
+        "input": "1000000000 3\n",
+        "output": "333333333 1\n"
+      },
+      {
+        "input": "50 50\n",
+        "output": "1 0\n"
+      }
+    ],
+    "difficultyCoefficient": 3
+  },
+  {
+    "id": "LL1214",
+    "title": "圆桌布",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "浮点运算",
+      "圆面积",
+      "格式化输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "裁缝要做一块圆形桌布，需要知道桌布的面积和周长。取圆周率 π = 3.14，半径由输入给出。",
+    "input": "一行一个整数 r，表示半径（米），1 ≤ r ≤ 100。",
+    "output": "第一行输出面积（平方米），第二行输出周长（米），均保留两位小数。",
+    "examples": [
+      {
+        "input": "3\n",
+        "output": "28.26\n18.84\n"
+      },
+      {
+        "input": "10\n",
+        "output": "314.00\n62.80\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n",
+        "output": "28.26\n18.84\n"
+      },
+      {
+        "input": "10\n",
+        "output": "314.00\n62.80\n"
+      },
+      {
+        "input": "1\n",
+        "output": "3.14\n6.28\n"
+      },
+      {
+        "input": "7\n",
+        "output": "153.86\n43.96\n"
+      },
+      {
+        "input": "100\n",
+        "output": "31400.00\n628.00\n"
+      }
+    ],
+    "difficultyCoefficient": 8
+  },
+  {
+    "id": "LL1215",
+    "title": "三角形木条",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "条件判断",
+      "逻辑运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "手工课上用三根木条拼三角形。若任意两根长度之和都大于第三根，就能拼成三角形。请判断给定的三根木条能否拼成三角形。",
+    "input": "一行三个整数 a、b、c，1 ≤ a, b, c ≤ 10000。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "3 4 5\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1 2 3\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 4 5\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1 2 3\n",
+        "output": "no\n"
+      },
+      {
+        "input": "1 1 1\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "5 5 9\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1 2 2\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "10000 10000 10000\n",
+        "output": "yes\n"
+      }
+    ],
+    "difficultyCoefficient": 9
+  },
+  {
+    "id": "LL1216",
+    "title": "鸡兔同笼",
+    "difficulty": "入门",
+    "category": "分支结构",
+    "knowledgePoints": [
+      "方程求解",
+      "整除判断",
+      "多分支判断"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "农户养的鸡和兔子关在同一个笼子里。已知头的总数和脚的总数，鸡有 2 只脚，兔子有 4 只脚，请算出鸡和兔子各有多少只。若数据无解，输出 No answer。",
+    "input": "一行两个整数 h、f，0 ≤ h ≤ 1000，0 ≤ f ≤ 4000。h 是头的总数，f 是脚的总数。",
+    "output": "一行两个整数，用空格分隔，依次是鸡的只数和兔子的只数；无解时输出 No answer。",
+    "examples": [
+      {
+        "input": "35 94\n",
+        "output": "23 12\n"
+      },
+      {
+        "input": "10 30\n",
+        "output": "5 5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "35 94\n",
+        "output": "23 12\n"
+      },
+      {
+        "input": "10 30\n",
+        "output": "5 5\n"
+      },
+      {
+        "input": "5 10\n",
+        "output": "5 0\n"
+      },
+      {
+        "input": "0 0\n",
+        "output": "0 0\n"
+      },
+      {
+        "input": "2 3\n",
+        "output": "No answer\n"
+      },
+      {
+        "input": "1 4\n",
+        "output": "0 1\n"
+      },
+      {
+        "input": "100 300\n",
+        "output": "50 50\n"
+      }
+    ],
+    "difficultyCoefficient": 9
+  },
+  {
+    "id": "LL1217",
+    "title": "累计阅读量",
+    "difficulty": "入门",
+    "category": "循环与累加",
+    "knowledgePoints": [
+      "循环",
+      "累加求和"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "学习网站统计从第 1 天到第 n 天每天至少阅读 1 篇文章的总次数：第 1 天 1 次，第 2 天 2 次，依此类推。请计算累计阅读次数。",
+    "input": "一行一个整数 n，1 ≤ n ≤ 60000。",
+    "output": "一行一个整数，表示累计阅读次数。",
+    "examples": [
+      {
+        "input": "10\n",
+        "output": "55\n"
+      },
+      {
+        "input": "100\n",
+        "output": "5050\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "10\n",
+        "output": "55\n"
+      },
+      {
+        "input": "100\n",
+        "output": "5050\n"
+      },
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "2\n",
+        "output": "3\n"
+      },
+      {
+        "input": "60000\n",
+        "output": "1800030000\n"
+      }
+    ],
+    "difficultyCoefficient": 10
+  },
+  {
+    "id": "LL1218",
+    "title": "排队方案数",
+    "difficulty": "入门",
+    "category": "循环与累加",
+    "knowledgePoints": [
+      "循环",
+      "阶乘"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "摄影社要给 n 位社员排成一队合影，问一共有多少种不同的排队方案。n 位社员全排列的方案数是 n!，其中 0! = 1。",
+    "input": "一行一个整数 n，0 ≤ n ≤ 12。",
+    "output": "一行一个整数，表示排队方案数。",
+    "examples": [
+      {
+        "input": "3\n",
+        "output": "6\n"
+      },
+      {
+        "input": "0\n",
+        "output": "1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n",
+        "output": "6\n"
+      },
+      {
+        "input": "0\n",
+        "output": "1\n"
+      },
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "2\n",
+        "output": "2\n"
+      },
+      {
+        "input": "5\n",
+        "output": "120\n"
+      },
+      {
+        "input": "12\n",
+        "output": "479001600\n"
+      }
+    ],
+    "difficultyCoefficient": 10
+  },
+  {
+    "id": "LL1219",
+    "title": "正负数统计",
+    "difficulty": "入门",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "循环",
+      "条件判断",
+      "计数"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "仓库盘点时把每笔出入库记录登记为整数，正数表示入库，负数表示出库，0 表示未变动。请统计三类记录的笔数。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，每个整数的绝对值不超过 1000000，相邻两个数用空格分隔。",
+    "output": "一行三个整数，用空格分隔，依次是正数、负数、零的个数。",
+    "examples": [
+      {
+        "input": "5\n3 -2 0 7 -1\n",
+        "output": "2 2 1\n"
+      },
+      {
+        "input": "4\n0 0 0 0\n",
+        "output": "0 0 4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n3 -2 0 7 -1\n",
+        "output": "2 2 1\n"
+      },
+      {
+        "input": "4\n0 0 0 0\n",
+        "output": "0 0 4\n"
+      },
+      {
+        "input": "1\n0\n",
+        "output": "0 0 1\n"
+      },
+      {
+        "input": "1\n-5\n",
+        "output": "0 1 0\n"
+      },
+      {
+        "input": "6\n1 2 3 4 5 6\n",
+        "output": "6 0 0\n"
+      },
+      {
+        "input": "6\n-1 -2 -3 -4 -5 -6\n",
+        "output": "0 6 0\n"
+      }
+    ],
+    "difficultyCoefficient": 11
+  },
+  {
+    "id": "LL1220",
+    "title": "投篮命中率",
+    "difficulty": "入门",
+    "category": "基础语法",
+    "knowledgePoints": [
+      "百分比",
+      "浮点运算",
+      "格式化输出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "篮球训练记录每天出手次数和命中次数，需要计算命中率用于训练报表。",
+    "input": "一行两个整数 made 和 attempts，0 ≤ made ≤ attempts ≤ 10000，attempts 大于 0。made 是命中次数，attempts 是出手次数。",
+    "output": "一行一个数，表示命中率，保留一位小数并在末尾加上百分号，例如 68.0%。",
+    "examples": [
+      {
+        "input": "17 25\n",
+        "output": "68.0%\n"
+      },
+      {
+        "input": "0 10\n",
+        "output": "0.0%\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "17 25\n",
+        "output": "68.0%\n"
+      },
+      {
+        "input": "0 10\n",
+        "output": "0.0%\n"
+      },
+      {
+        "input": "10 10\n",
+        "output": "100.0%\n"
+      },
+      {
+        "input": "1 3\n",
+        "output": "33.3%\n"
+      },
+      {
+        "input": "1 4\n",
+        "output": "25.0%\n"
+      },
+      {
+        "input": "7 8\n",
+        "output": "87.5%\n"
+      },
+      {
+        "input": "9999 10000\n",
+        "output": "100.0%\n"
+      }
+    ],
+    "difficultyCoefficient": 11
+  },
+  {
+    "id": "LL1221",
+    "title": "质数判断",
+    "difficulty": "基础",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "循环",
+      "试除法",
+      "时间复杂度"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "密码系统需要用大质数做密钥。质数是只能被 1 和自身整除且大于 1 的整数。请判断给定的整数是否为质数。",
+    "input": "一行一个整数 n，2 ≤ n ≤ 1000000000。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "17\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "100\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "17\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "100\n",
+        "output": "no\n"
+      },
+      {
+        "input": "2\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "3\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "4\n",
+        "output": "no\n"
+      },
+      {
+        "input": "99\n",
+        "output": "no\n"
+      },
+      {
+        "input": "999983\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1000000000\n",
+        "output": "no\n"
+      },
+      {
+        "input": "999999937\n",
+        "output": "yes\n"
+      }
+    ],
+    "difficultyCoefficient": 14
+  },
+  {
+    "id": "LL1222",
+    "title": "区间内的质数个数",
+    "difficulty": "基础",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "循环",
+      "质数筛",
+      "区间统计"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "数学实验要统计某个整数区间内一共有多少个质数，用于观察质数的分布密度。",
+    "input": "一行两个整数 L 和 R，2 ≤ L ≤ R ≤ 100000。",
+    "output": "一行一个整数，表示区间内质数的个数。",
+    "examples": [
+      {
+        "input": "2 10\n",
+        "output": "4\n"
+      },
+      {
+        "input": "100 120\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2 10\n",
+        "output": "4\n"
+      },
+      {
+        "input": "100 120\n",
+        "output": "5\n"
+      },
+      {
+        "input": "2 2\n",
+        "output": "1\n"
+      },
+      {
+        "input": "4 4\n",
+        "output": "0\n"
+      },
+      {
+        "input": "2 100000\n",
+        "output": "9592\n"
+      },
+      {
+        "input": "99990 100000\n",
+        "output": "1\n"
+      }
+    ],
+    "difficultyCoefficient": 15
+  },
+  {
+    "id": "LL1223",
+    "title": "钢管分段",
+    "difficulty": "基础",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "辗转相除法",
+      "最小公倍数",
+      "整数溢出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "工厂要把两根钢管分别切成等长的小段且都不剩余，同时希望小段尽量长；另一个车间要把若干短段拼成两根钢管长度的公倍数。请同时求出最大公约数与最小公倍数。",
+    "input": "一行两个整数 a、b，1 ≤ a, b ≤ 1000000。",
+    "output": "一行两个整数，用空格分隔，依次是最大公约数和最小公倍数。",
+    "examples": [
+      {
+        "input": "12 18\n",
+        "output": "6 36\n"
+      },
+      {
+        "input": "7 5\n",
+        "output": "1 35\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "12 18\n",
+        "output": "6 36\n"
+      },
+      {
+        "input": "7 5\n",
+        "output": "1 35\n"
+      },
+      {
+        "input": "1 1\n",
+        "output": "1 1\n"
+      },
+      {
+        "input": "1000000 999999\n",
+        "output": "1 999999000000\n"
+      },
+      {
+        "input": "1000000 1000000\n",
+        "output": "1000000 1000000\n"
+      },
+      {
+        "input": "4 6\n",
+        "output": "2 12\n"
+      }
+    ],
+    "difficultyCoefficient": 15
+  },
+  {
+    "id": "LL1224",
+    "title": "体温记录最值",
+    "difficulty": "基础",
+    "category": "数组与遍历",
+    "knowledgePoints": [
+      "数组遍历",
+      "最值"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "病房每天记录多位病人的体温，需要快速找出其中的最高温和最低温。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，每个整数表示以 0.1℃ 为单位的体温读数，绝对值不超过 1000000，相邻两个数用空格分隔。",
+    "output": "一行两个整数，用空格分隔，依次是最大值和最小值。",
+    "examples": [
+      {
+        "input": "5\n36 -1 40 20 0\n",
+        "output": "40 -1\n"
+      },
+      {
+        "input": "1\n25\n",
+        "output": "25 25\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n36 -1 40 20 0\n",
+        "output": "40 -1\n"
+      },
+      {
+        "input": "1\n25\n",
+        "output": "25 25\n"
+      },
+      {
+        "input": "3\n5 5 5\n",
+        "output": "5 5\n"
+      },
+      {
+        "input": "4\n-1 -2 -3 -4\n",
+        "output": "-1 -4\n"
+      },
+      {
+        "input": "6\n1000000 -1000000 0 5 -5 7\n",
+        "output": "1000000 -1000000\n"
+      }
+    ],
+    "difficultyCoefficient": 16
+  },
+  {
+    "id": "LL1225",
+    "title": "留言倒序显示",
+    "difficulty": "基础",
+    "category": "数组与遍历",
+    "knowledgePoints": [
+      "数组遍历",
+      "下标运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "聊天软件把最新留言显示在最前面，因此需要把按时间顺序记录的留言编号倒序输出。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，表示留言编号，绝对值不超过 1000000000，相邻两个数用空格分隔。",
+    "output": "一行 n 个整数，用空格分隔，表示倒序后的留言编号。",
+    "examples": [
+      {
+        "input": "5\n1 2 3 4 5\n",
+        "output": "5 4 3 2 1\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n1 2 3 4 5\n",
+        "output": "5 4 3 2 1\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "7\n"
+      },
+      {
+        "input": "2\n-1 2\n",
+        "output": "2 -1\n"
+      },
+      {
+        "input": "4\n9 9 1 0\n",
+        "output": "0 1 9 9\n"
+      },
+      {
+        "input": "6\n1000000000 -1000000000 3 -3 0 5\n",
+        "output": "5 0 -3 3 -1000000000 1000000000\n"
+      }
+    ],
+    "difficultyCoefficient": 17
+  },
+  {
+    "id": "LL1226",
+    "title": "去重后的会员编号",
+    "difficulty": "基础",
+    "category": "数组与遍历",
+    "knowledgePoints": [
+      "数组去重",
+      "排序"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "工会整理会员名单时发现有人重复登记，需要输出去重后从小到大排列的会员编号。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，表示会员编号，1 ≤ 编号 ≤ 1000000000，相邻两个数用空格分隔。",
+    "output": "一行若干个整数，用空格分隔，表示去重并升序排列后的会员编号。",
+    "examples": [
+      {
+        "input": "5\n3 1 3 2 1\n",
+        "output": "1 2 3\n"
+      },
+      {
+        "input": "3\n7 7 7\n",
+        "output": "7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n3 1 3 2 1\n",
+        "output": "1 2 3\n"
+      },
+      {
+        "input": "3\n7 7 7\n",
+        "output": "7\n"
+      },
+      {
+        "input": "1\n5\n",
+        "output": "5\n"
+      },
+      {
+        "input": "6\n1000000000 1 1 2 2 3\n",
+        "output": "1 2 3 1000000000\n"
+      },
+      {
+        "input": "4\n-1 0 -1 5\n",
+        "output": "-1 0 5\n"
+      }
+    ],
+    "difficultyCoefficient": 18
+  },
+  {
+    "id": "LL1227",
+    "title": "分数段统计",
+    "difficulty": "基础",
+    "category": "数组与累加",
+    "knowledgePoints": [
+      "数组统计",
+      "多分支判断"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "期末考试后，教务处需要按优秀、良好、及格、不及格四个分数段统计人数，便于分析教学效果。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，每个成绩在 0 到 100 之间，相邻两个数用空格分隔。",
+    "output": "一行四个整数，用空格分隔，依次是优秀（90 分及以上）、良好（80 到 89 分）、及格（60 到 79 分）、不及格（低于 60 分）的人数。",
+    "examples": [
+      {
+        "input": "5\n90 80 60 59 100\n",
+        "output": "2 1 1 1\n"
+      },
+      {
+        "input": "1\n0\n",
+        "output": "0 0 0 1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n90 80 60 59 100\n",
+        "output": "2 1 1 1\n"
+      },
+      {
+        "input": "1\n0\n",
+        "output": "0 0 0 1\n"
+      },
+      {
+        "input": "1\n100\n",
+        "output": "1 0 0 0\n"
+      },
+      {
+        "input": "6\n89 79 59 90 80 60\n",
+        "output": "1 2 2 1\n"
+      },
+      {
+        "input": "4\n95 85 65 55\n",
+        "output": "1 1 1 1\n"
+      }
+    ],
+    "difficultyCoefficient": 18
+  },
+  {
+    "id": "LL1228",
+    "title": "字符类型统计",
+    "difficulty": "基础",
+    "category": "字符串与统计",
+    "knowledgePoints": [
+      "字符串遍历",
+      "字符判断"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "文本分析工具需要统计一段文字中英文字母、数字和其他字符各有多少个，用于评估数据质量。",
+    "input": "一行字符串，长度在 1 到 1000 之间，可能包含空格和可见 ASCII 字符。",
+    "output": "一行三个整数，用空格分隔，依次是英文字母、数字、其他字符的个数。",
+    "examples": [
+      {
+        "input": "abc123!@#\n",
+        "output": "3 3 3\n"
+      },
+      {
+        "input": "Hello World 2024\n",
+        "output": "10 4 2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "abc123!@#\n",
+        "output": "3 3 3\n"
+      },
+      {
+        "input": "Hello World 2024\n",
+        "output": "10 4 2\n"
+      },
+      {
+        "input": "a\n",
+        "output": "1 0 0\n"
+      },
+      {
+        "input": "1\n",
+        "output": "0 1 0\n"
+      },
+      {
+        "input": "!\n",
+        "output": "0 0 1\n"
+      },
+      {
+        "input": "   \n",
+        "output": "0 0 3\n"
+      }
+    ],
+    "difficultyCoefficient": 19
+  },
+  {
+    "id": "LL1229",
+    "title": "回文串判断",
+    "difficulty": "基础",
+    "category": "字符串与模拟",
+    "knowledgePoints": [
+      "字符串遍历",
+      "双指针"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "游戏里把正着读和反着读都一样的字符串称为回文串，例如 level。请判断给定的字符串是否为回文串。",
+    "input": "一行字符串，长度在 1 到 1000 之间，只包含小写英文字母和数字。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "level\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "abc\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "level\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "abc\n",
+        "output": "no\n"
+      },
+      {
+        "input": "a\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "ab\n",
+        "output": "no\n"
+      },
+      {
+        "input": "aa\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "aba\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "12321\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "1231\n",
+        "output": "no\n"
+      }
+    ],
+    "difficultyCoefficient": 20
+  },
+  {
+    "id": "LL1230",
+    "title": "单词计数",
+    "difficulty": "基础",
+    "category": "字符串与模拟",
+    "knowledgePoints": [
+      "字符串处理",
+      "分词"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "翻译服务按单词数计费，需要统计一段英文句子中包含多少个单词。单词之间可能有一个或多个空格，句子首尾也可能有空格。",
+    "input": "一行英文句子，长度不超过 1000，只包含英文字母和空格。",
+    "output": "一行一个整数，表示单词个数。",
+    "examples": [
+      {
+        "input": "hello world\n",
+        "output": "2\n"
+      },
+      {
+        "input": "  data   science  \n",
+        "output": "2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "hello world\n",
+        "output": "2\n"
+      },
+      {
+        "input": "  data   science  \n",
+        "output": "2\n"
+      },
+      {
+        "input": "a\n",
+        "output": "1\n"
+      },
+      {
+        "input": "   \n",
+        "output": "0\n"
+      },
+      {
+        "input": "one two three four five\n",
+        "output": "5\n"
+      },
+      {
+        "input": "c  c\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 20
+  },
+  {
+    "id": "LL1231",
+    "title": "转大写输出",
+    "difficulty": "基础",
+    "category": "字符串与模拟",
+    "knowledgePoints": [
+      "字符串遍历",
+      "字符转换"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "老式终端只支持大写字母，需要把输入的小写英文句子转换为大写后输出。",
+    "input": "一行字符串，长度在 1 到 1000 之间，只包含小写英文字母。",
+    "output": "一行字符串，表示转换为大写后的结果。",
+    "examples": [
+      {
+        "input": "hello\n",
+        "output": "HELLO\n"
+      },
+      {
+        "input": "abcxyz\n",
+        "output": "ABCXYZ\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "hello\n",
+        "output": "HELLO\n"
+      },
+      {
+        "input": "abcxyz\n",
+        "output": "ABCXYZ\n"
+      },
+      {
+        "input": "a\n",
+        "output": "A\n"
+      },
+      {
+        "input": "zzz\n",
+        "output": "ZZZ\n"
+      },
+      {
+        "input": "programming\n",
+        "output": "PROGRAMMING\n"
+      }
+    ],
+    "difficultyCoefficient": 21
+  },
+  {
+    "id": "LL1232",
+    "title": "兔子繁殖问题",
+    "difficulty": "基础",
+    "category": "循环与累加",
+    "knowledgePoints": [
+      "递推",
+      "循环",
+      "整数溢出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "兔子从出生后第 3 个月开始每月生一对小兔，且兔子不会死亡。第 1 个月有 1 对，第 2 个月有 1 对，之后每个月的对数等于前两个月之和。请计算第 n 个月有多少对兔子。",
+    "input": "一行一个整数 n，1 ≤ n ≤ 60。",
+    "output": "一行一个整数，表示第 n 个月的兔子对数。",
+    "examples": [
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "10\n",
+        "output": "55\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "10\n",
+        "output": "55\n"
+      },
+      {
+        "input": "2\n",
+        "output": "1\n"
+      },
+      {
+        "input": "3\n",
+        "output": "2\n"
+      },
+      {
+        "input": "4\n",
+        "output": "3\n"
+      },
+      {
+        "input": "60\n",
+        "output": "1548008755920\n"
+      }
+    ],
+    "difficultyCoefficient": 21
+  },
+  {
+    "id": "LL1233",
+    "title": "十进制转二进制",
+    "difficulty": "基础",
+    "category": "循环与计数",
+    "knowledgePoints": [
+      "进制转换",
+      "整数取模"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "单片机的调试界面需要用二进制显示开关状态，需要把十进制整数转换成不含前导零的二进制字符串。",
+    "input": "一行一个整数 n，1 ≤ n ≤ 1000000。",
+    "output": "一行一个由 0 和 1 组成的字符串，表示 n 的二进制形式。",
+    "examples": [
+      {
+        "input": "5\n",
+        "output": "101\n"
+      },
+      {
+        "input": "1\n",
+        "output": "1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n",
+        "output": "101\n"
+      },
+      {
+        "input": "1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "2\n",
+        "output": "10\n"
+      },
+      {
+        "input": "8\n",
+        "output": "1000\n"
+      },
+      {
+        "input": "1000000\n",
+        "output": "11110100001001000000\n"
+      },
+      {
+        "input": "262144\n",
+        "output": "1000000000000000000\n"
+      }
+    ],
+    "difficultyCoefficient": 22
+  },
+  {
+    "id": "LL1234",
+    "title": "矩阵转置",
+    "difficulty": "基础",
+    "category": "数组与模拟",
+    "knowledgePoints": [
+      "二维数组",
+      "下标运算"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "图像处理程序需要把按行存储的像素矩阵转置，便于做列方向的统计。请完成矩阵转置并输出结果。",
+    "input": "第一行两个整数 m 和 n，1 ≤ m, n ≤ 10。接下来 m 行，每行 n 个整数，表示矩阵元素，绝对值不超过 1000000，相邻两个数用空格分隔。",
+    "output": "输出 n 行，每行 m 个整数，用空格分隔，表示转置后的矩阵。",
+    "examples": [
+      {
+        "input": "2 3\n1 2 3\n4 5 6\n",
+        "output": "1 4\n2 5\n3 6\n"
+      },
+      {
+        "input": "1 1\n7\n",
+        "output": "7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2 3\n1 2 3\n4 5 6\n",
+        "output": "1 4\n2 5\n3 6\n"
+      },
+      {
+        "input": "1 1\n7\n",
+        "output": "7\n"
+      },
+      {
+        "input": "3 1\n1\n2\n3\n",
+        "output": "1 2 3\n"
+      },
+      {
+        "input": "2 2\n1 2\n3 4\n",
+        "output": "1 3\n2 4\n"
+      },
+      {
+        "input": "1 3\n-1 -2 -3\n",
+        "output": "-1\n-2\n-3\n"
+      }
+    ],
+    "difficultyCoefficient": 22
+  },
+  {
+    "id": "LL1235",
+    "title": "对角线之和",
+    "difficulty": "基础",
+    "category": "数组与累加",
+    "knowledgePoints": [
+      "二维数组",
+      "循环遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "棋盘游戏中要统计主对角线上棋子的权重之和，主对角线指从左上角到右下角的格子。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 20。接下来 n 行，每行 n 个整数，表示方格权重，绝对值不超过 1000000，相邻两个数用空格分隔。",
+    "output": "一行一个整数，表示主对角线元素之和。",
+    "examples": [
+      {
+        "input": "2\n1 2\n3 4\n",
+        "output": "5\n"
+      },
+      {
+        "input": "1\n5\n",
+        "output": "5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "2\n1 2\n3 4\n",
+        "output": "5\n"
+      },
+      {
+        "input": "1\n5\n",
+        "output": "5\n"
+      },
+      {
+        "input": "3\n1 0 0\n0 2 0\n0 0 3\n",
+        "output": "6\n"
+      },
+      {
+        "input": "2\n-1 -2\n-3 -4\n",
+        "output": "-5\n"
+      },
+      {
+        "input": "3\n1000000 -1000000 1\n2 3 4\n5 6 7\n",
+        "output": "1000010\n"
+      }
+    ],
+    "difficultyCoefficient": 23
+  },
+  {
+    "id": "LL1236",
+    "title": "成绩排序",
+    "difficulty": "基础",
+    "category": "排序与区间",
+    "knowledgePoints": [
+      "排序",
+      "数组遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "老师要把全班成绩按从低到高排列后公布，方便学生对号查看。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。第二行 n 个整数，表示成绩，绝对值不超过 1000000000，相邻两个数用空格分隔。",
+    "output": "一行 n 个整数，用空格分隔，表示升序排列后的成绩。",
+    "examples": [
+      {
+        "input": "5\n3 1 4 1 5\n",
+        "output": "1 1 3 4 5\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n3 1 4 1 5\n",
+        "output": "1 1 3 4 5\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "7\n"
+      },
+      {
+        "input": "3\n5 5 5\n",
+        "output": "5 5 5\n"
+      },
+      {
+        "input": "4\n-1 -2 -3 -4\n",
+        "output": "-4 -3 -2 -1\n"
+      },
+      {
+        "input": "6\n1000000000 -1000000000 5 0 -5 7\n",
+        "output": "-1000000000 -5 0 5 7 1000000000\n"
+      }
+    ],
+    "difficultyCoefficient": 24
+  },
+  {
+    "id": "LL1237",
+    "title": "成绩名次查询",
+    "difficulty": "基础",
+    "category": "排序与区间",
+    "knowledgePoints": [
+      "二分查找",
+      "有序数组"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "成绩表已按分数严格递增排列，老师想快速查到某个分数排在第几位，若表中没有该分数则返回 -1。",
+    "input": "第一行一个整数 n 和目标分数 k，1 ≤ n ≤ 1000，0 ≤ k ≤ 1000000000。第二行 n 个严格递增的整数，绝对值不超过 1000000000，相邻两个数用空格分隔。",
+    "output": "一行一个整数，表示目标分数在数组中的下标（从 0 开始）；若不存在输出 -1。",
+    "examples": [
+      {
+        "input": "5 30\n10 20 30 40 50\n",
+        "output": "2\n"
+      },
+      {
+        "input": "5 35\n10 20 30 40 50\n",
+        "output": "-1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 30\n10 20 30 40 50\n",
+        "output": "2\n"
+      },
+      {
+        "input": "5 35\n10 20 30 40 50\n",
+        "output": "-1\n"
+      },
+      {
+        "input": "5 10\n10 20 30 40 50\n",
+        "output": "0\n"
+      },
+      {
+        "input": "5 50\n10 20 30 40 50\n",
+        "output": "4\n"
+      },
+      {
+        "input": "1 7\n7\n",
+        "output": "0\n"
+      },
+      {
+        "input": "3 -5\n-5 -3 -1\n",
+        "output": "0\n"
+      }
+    ],
+    "difficultyCoefficient": 24
+  },
+  {
+    "id": "LL1238",
+    "title": "首个唯一字符",
+    "difficulty": "基础",
+    "category": "字符串与哈希",
+    "knowledgePoints": [
+      "哈希表",
+      "字符串遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "加密算法需要从一段编码中找出第一个只出现一次的字符，作为校验位。若不存在这样的字符，输出 no。",
+    "input": "一行字符串，长度在 1 到 1000 之间，只包含小写英文字母。",
+    "output": "一行一个字符，表示第一个只出现一次的字符；若不存在输出 no。",
+    "examples": [
+      {
+        "input": "aabbc\n",
+        "output": "c\n"
+      },
+      {
+        "input": "aabb\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "aabbc\n",
+        "output": "c\n"
+      },
+      {
+        "input": "aabb\n",
+        "output": "no\n"
+      },
+      {
+        "input": "a\n",
+        "output": "a\n"
+      },
+      {
+        "input": "aa\n",
+        "output": "no\n"
+      },
+      {
+        "input": "leetcode\n",
+        "output": "l\n"
+      },
+      {
+        "input": "zzzzz\n",
+        "output": "no\n"
+      },
+      {
+        "input": "abacabad\n",
+        "output": "c\n"
+      }
+    ],
+    "difficultyCoefficient": 25
+  },
+  {
+    "id": "LL1239",
+    "title": "库存区间求和",
+    "difficulty": "进阶",
+    "category": "前缀和与哈希",
+    "knowledgePoints": [
+      "前缀和",
+      "区间查询",
+      "整数溢出"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "仓储系统按天记录进出库数量，管理员经常要查询某段日期内的净变化总量。数据量较大且查询很多，需要高效回答每次区间询问。",
+    "input": "第一行两个整数 n 和 q，1 ≤ n, q ≤ 100000。第二行 n 个整数，每个数的绝对值不超过 1000000000，相邻两个数用空格分隔。接下来 q 行，每行两个整数 l 和 r，1 ≤ l ≤ r ≤ n，表示一次询问。",
+    "output": "输出 q 行，每行一个整数，表示对应区间的元素之和。",
+    "examples": [
+      {
+        "input": "5 2\n1 2 3 4 5\n1 3\n2 5\n",
+        "output": "6\n14\n"
+      },
+      {
+        "input": "1 1\n-7\n1 1\n",
+        "output": "-7\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 2\n1 2 3 4 5\n1 3\n2 5\n",
+        "output": "6\n14\n"
+      },
+      {
+        "input": "1 1\n-7\n1 1\n",
+        "output": "-7\n"
+      },
+      {
+        "input": "3 3\n1000000000 1000000000 1000000000\n1 3\n1 1\n2 2\n",
+        "output": "3000000000\n1000000000\n1000000000\n"
+      },
+      {
+        "input": "4 2\n-1 -2 -3 -4\n1 4\n2 3\n",
+        "output": "-10\n-5\n"
+      },
+      {
+        "input": "6 3\n0 0 0 0 0 0\n1 6\n3 3\n2 4\n",
+        "output": "0\n0\n0\n"
+      }
+    ],
+    "difficultyCoefficient": 28
+  },
+  {
+    "id": "LL1240",
+    "title": "最大连续收益",
+    "difficulty": "进阶",
+    "category": "动态规划",
+    "knowledgePoints": [
+      "动态规划",
+      "贪心",
+      "最大子段和"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "投资顾问分析一只基金每天的涨跌额，想找出连续若干天里累计收益最大的一段，用来评估这只基金的最好表现。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 100000。第二行 n 个整数，每个数的绝对值不超过 10000，表示每天的涨跌额，相邻两个数用空格分隔。",
+    "output": "一行一个整数，表示最大的一段连续累计收益。",
+    "examples": [
+      {
+        "input": "8\n-2 1 -3 4 -1 2 1 -5\n",
+        "output": "6\n"
+      },
+      {
+        "input": "3\n-1 -2 -3\n",
+        "output": "-1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "8\n-2 1 -3 4 -1 2 1 -5\n",
+        "output": "6\n"
+      },
+      {
+        "input": "3\n-1 -2 -3\n",
+        "output": "-1\n"
+      },
+      {
+        "input": "1\n5\n",
+        "output": "5\n"
+      },
+      {
+        "input": "1\n-5\n",
+        "output": "-5\n"
+      },
+      {
+        "input": "5\n1 2 3 4 5\n",
+        "output": "15\n"
+      },
+      {
+        "input": "4\n-1 2 -1 2\n",
+        "output": "3\n"
+      }
+    ],
+    "difficultyCoefficient": 30
+  },
+  {
+    "id": "LL1241",
+    "title": "配对账单",
+    "difficulty": "进阶",
+    "category": "哈希与链表",
+    "knowledgePoints": [
+      "哈希表",
+      "数组遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "财务对账时把每笔账单金额排成一行，需要找出其中两笔金额之和恰好等于目标总额的账单位置。数据保证恰好存在唯一一对，且前一笔在前。",
+    "input": "第一行两个整数 n 和 t，2 ≤ n ≤ 100000，-2000000000 ≤ t ≤ 2000000000。第二行 n 个整数，每个数的绝对值不超过 1000000000，相邻两个数用空格分隔。",
+    "output": "一行两个整数，用空格分隔，依次是两笔账单的位置（从 1 开始计数），并保证前一个位置小于后一个位置。",
+    "examples": [
+      {
+        "input": "4 9\n2 7 11 15\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "3 0\n-3 4 3\n",
+        "output": "1 3\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "4 9\n2 7 11 15\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "3 0\n-3 4 3\n",
+        "output": "1 3\n"
+      },
+      {
+        "input": "2 3\n1 2\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "5 -1\n-1 0 1 2 3\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "2 -2000\n-1000 -1000\n",
+        "output": "1 2\n"
+      }
+    ],
+    "difficultyCoefficient": 32
+  },
+  {
+    "id": "LL1242",
+    "title": "排队逆序对",
+    "difficulty": "进阶",
+    "category": "排序与区间",
+    "knowledgePoints": [
+      "逆序对",
+      "枚举统计"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "老师想衡量队伍的混乱程度：如果队伍中前面的人比后面的人高，就称为一对逆序。请统计队伍中共有多少对逆序。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 2000。第二行 n 个整数，表示身高，绝对值不超过 1000000000，相邻两个数用空格分隔。",
+    "output": "一行一个整数，表示逆序对的个数。",
+    "examples": [
+      {
+        "input": "5\n5 4 3 2 1\n",
+        "output": "10\n"
+      },
+      {
+        "input": "4\n1 2 3 4\n",
+        "output": "0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n5 4 3 2 1\n",
+        "output": "10\n"
+      },
+      {
+        "input": "4\n1 2 3 4\n",
+        "output": "0\n"
+      },
+      {
+        "input": "1\n5\n",
+        "output": "0\n"
+      },
+      {
+        "input": "4\n1 1 1 1\n",
+        "output": "0\n"
+      },
+      {
+        "input": "6\n3 1 2 6 4 5\n",
+        "output": "4\n"
+      },
+      {
+        "input": "3\n2 3 1\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 33
+  },
+  {
+    "id": "LL1243",
+    "title": "括号匹配检查",
+    "difficulty": "进阶",
+    "category": "栈与解析",
+    "knowledgePoints": [
+      "栈",
+      "字符串遍历"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "代码编辑器要实时检查括号是否正确配对。只有 ()、[]、{} 三种括号，且必须按正确的嵌套顺序闭合。",
+    "input": "一行字符串，长度在 1 到 100000 之间，只包含 ( ) [ ] { } 六种字符。",
+    "output": "一行 yes 或 no。",
+    "examples": [
+      {
+        "input": "([]{})\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "([)]\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "([]{})\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "([)]\n",
+        "output": "no\n"
+      },
+      {
+        "input": "()\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "(\n",
+        "output": "no\n"
+      },
+      {
+        "input": ")\n",
+        "output": "no\n"
+      },
+      {
+        "input": "{[()]}\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "((()))\n",
+        "output": "yes\n"
+      },
+      {
+        "input": "()[]{}\n",
+        "output": "yes\n"
+      }
+    ],
+    "difficultyCoefficient": 35
+  },
+  {
+    "id": "LL1244",
+    "title": "最长不重复片段",
+    "difficulty": "进阶",
+    "category": "字符串与哈希",
+    "knowledgePoints": [
+      "滑动窗口",
+      "哈希表",
+      "双指针"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "数据压缩前要找出序列中最长的一段不含重复字符的连续片段，用来评估数据冗余程度。",
+    "input": "一行字符串，长度在 1 到 100000 之间，只包含小写英文字母。",
+    "output": "一行一个整数，表示最长的不含重复字符的连续片段长度。",
+    "examples": [
+      {
+        "input": "abcabcbb\n",
+        "output": "3\n"
+      },
+      {
+        "input": "bbbbb\n",
+        "output": "1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "abcabcbb\n",
+        "output": "3\n"
+      },
+      {
+        "input": "bbbbb\n",
+        "output": "1\n"
+      },
+      {
+        "input": "a\n",
+        "output": "1\n"
+      },
+      {
+        "input": "pwwkew\n",
+        "output": "3\n"
+      },
+      {
+        "input": "abcdefg\n",
+        "output": "7\n"
+      },
+      {
+        "input": "abba\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 36
+  },
+  {
+    "id": "LL1245",
+    "title": "合并排名表",
+    "difficulty": "进阶",
+    "category": "排序与区间",
+    "knowledgePoints": [
+      "双指针",
+      "有序数组合并"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "两个班级的成绩已经分别按升序排好，现在要把两张排名表合并成一张仍然升序的总表。",
+    "input": "第一行两个整数 n 和 m，1 ≤ n, m ≤ 100000。第二行 n 个严格递增的整数，绝对值不超过 1000000000。第三行 m 个严格递增的整数，绝对值不超过 1000000000。同一行的数用空格分隔。",
+    "output": "一行 n + m 个整数，用空格分隔，表示合并后仍然升序的序列。",
+    "examples": [
+      {
+        "input": "3 2\n1 3 5\n2 4\n",
+        "output": "1 2 3 4 5\n"
+      },
+      {
+        "input": "1 1\n-5\n5\n",
+        "output": "-5 5\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 2\n1 3 5\n2 4\n",
+        "output": "1 2 3 4 5\n"
+      },
+      {
+        "input": "1 1\n-5\n5\n",
+        "output": "-5 5\n"
+      },
+      {
+        "input": "1 1\n1 2\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "2 2\n1 2\n3 4\n",
+        "output": "1 2 3 4\n"
+      },
+      {
+        "input": "3 3\n-3 -2 -1\n-6 -5 -4\n",
+        "output": "-6 -5 -4 -3 -2 -1\n"
+      },
+      {
+        "input": "2 1\n0 10\n5\n",
+        "output": "0 5 10\n"
+      }
+    ],
+    "difficultyCoefficient": 38
+  },
+  {
+    "id": "LL1246",
+    "title": "最多可参加活动",
+    "difficulty": "进阶",
+    "category": "贪心与堆",
+    "knowledgePoints": [
+      "贪心",
+      "区间调度",
+      "排序"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "社团招新周里有很多场宣讲会，每场都有开始和结束时间。同一时间只能参加一场，且上一场结束时可以立刻参加下一场。请算出最多能参加多少场。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 100000。接下来 n 行，每行两个整数 s 和 e，0 ≤ s < e ≤ 1000000000，表示一场活动的开始与结束时间。",
+    "output": "一行一个整数，表示最多能参加的活动数量。",
+    "examples": [
+      {
+        "input": "3\n1 3\n2 4\n3 5\n",
+        "output": "2\n"
+      },
+      {
+        "input": "4\n1 2\n2 3\n3 4\n4 5\n",
+        "output": "4\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\n1 3\n2 4\n3 5\n",
+        "output": "2\n"
+      },
+      {
+        "input": "4\n1 2\n2 3\n3 4\n4 5\n",
+        "output": "4\n"
+      },
+      {
+        "input": "1\n0 1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "3\n1 10\n2 3\n4 5\n",
+        "output": "2\n"
+      },
+      {
+        "input": "2\n5 6\n1 2\n",
+        "output": "2\n"
+      }
+    ],
+    "difficultyCoefficient": 40
+  },
+  {
+    "id": "LL1247",
+    "title": "货车装载",
+    "difficulty": "进阶",
+    "category": "动态规划",
+    "knowledgePoints": [
+      "01 背包",
+      "动态规划"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "货车载重有限，仓库里每件货物都有自己的重量和价值，每件货物最多装一件。请选择总重量不超过载重的货物，使总价值最大。",
+    "input": "第一行两个整数 n 和 W，1 ≤ n ≤ 100，1 ≤ W ≤ 1000。接下来 n 行，每行两个整数 w 和 v，1 ≤ w, v ≤ 1000，分别表示一件货物的重量和价值。",
+    "output": "一行一个整数，表示能装载的最大总价值。",
+    "examples": [
+      {
+        "input": "3 5\n2 3\n3 4\n4 5\n",
+        "output": "7\n"
+      },
+      {
+        "input": "1 1\n2 100\n",
+        "output": "0\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3 5\n2 3\n3 4\n4 5\n",
+        "output": "7\n"
+      },
+      {
+        "input": "1 1\n2 100\n",
+        "output": "0\n"
+      },
+      {
+        "input": "1 1000\n1000 1000\n",
+        "output": "1000\n"
+      },
+      {
+        "input": "2 3\n1 2\n1 3\n",
+        "output": "5\n"
+      },
+      {
+        "input": "4 6\n1 1\n2 2\n3 3\n4 4\n",
+        "output": "6\n"
+      }
+    ],
+    "difficultyCoefficient": 42
+  },
+  {
+    "id": "LL1248",
+    "title": "共同前缀",
+    "difficulty": "进阶",
+    "category": "字符串匹配",
+    "knowledgePoints": [
+      "字符串遍历",
+      "公共前缀"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "文件管理系统要为一组文件名生成最短的唯一标识，需要先找出它们的共同前缀。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 1000。接下来 n 行，每行一个字符串，长度在 1 到 100 之间，只包含小写英文字母。",
+    "output": "一行字符串，表示所有字符串的最长公共前缀；若没有公共前缀输出 no。",
+    "examples": [
+      {
+        "input": "3\nflower\nflow\nflight\n",
+        "output": "fl\n"
+      },
+      {
+        "input": "2\ncat\ndog\n",
+        "output": "no\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "3\nflower\nflow\nflight\n",
+        "output": "fl\n"
+      },
+      {
+        "input": "2\ncat\ndog\n",
+        "output": "no\n"
+      },
+      {
+        "input": "1\nabc\n",
+        "output": "abc\n"
+      },
+      {
+        "input": "2\na\na\n",
+        "output": "a\n"
+      },
+      {
+        "input": "3\nabc\nabc\nabc\n",
+        "output": "abc\n"
+      },
+      {
+        "input": "2\nab\nabcd\n",
+        "output": "ab\n"
+      }
+    ],
+    "difficultyCoefficient": 43
+  },
+  {
+    "id": "LL1249",
+    "title": "约瑟夫环",
+    "difficulty": "进阶",
+    "category": "动态规划",
+    "knowledgePoints": [
+      "递推",
+      "约瑟夫环",
+      "数学推导"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "同学们围成一圈报数，从 1 开始数，数到 k 的人离场，然后下一个人重新从 1 数起。请算出最后留下的人的编号。",
+    "input": "一行两个整数 n 和 k，1 ≤ n ≤ 100000，1 ≤ k ≤ 1000000000。人数与报数上限。",
+    "output": "一行一个整数，表示最后留下的人的编号（从 1 开始计数）。",
+    "examples": [
+      {
+        "input": "5 2\n",
+        "output": "3\n"
+      },
+      {
+        "input": "1 1000000000\n",
+        "output": "1\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5 2\n",
+        "output": "3\n"
+      },
+      {
+        "input": "1 1000000000\n",
+        "output": "1\n"
+      },
+      {
+        "input": "1 1\n",
+        "output": "1\n"
+      },
+      {
+        "input": "5 3\n",
+        "output": "4\n"
+      },
+      {
+        "input": "10 7\n",
+        "output": "9\n"
+      },
+      {
+        "input": "100000 1000000000\n",
+        "output": "79266\n"
+      },
+      {
+        "input": "2 2\n",
+        "output": "1\n"
+      }
+    ],
+    "difficultyCoefficient": 45
+  },
+  {
+    "id": "LL1250",
+    "title": "众数统计",
+    "difficulty": "进阶",
+    "category": "哈希与链表",
+    "knowledgePoints": [
+      "哈希表",
+      "计数统计",
+      "最值"
+    ],
+    "accepted": 0,
+    "attempts": 0,
+    "description": "投票统计系统要找出得票最多的选项。若多个选项票数并列，输出编号较小的那个。",
+    "input": "第一行一个整数 n，1 ≤ n ≤ 100000。第二行 n 个整数，每个数的绝对值不超过 1000000000，表示投票选项编号，相邻两个数用空格分隔。",
+    "output": "一行两个整数，用空格分隔，依次是得票最多的选项编号和它的票数。",
+    "examples": [
+      {
+        "input": "5\n1 2 2 3 2\n",
+        "output": "2 3\n"
+      },
+      {
+        "input": "4\n5 5 1 1\n",
+        "output": "1 2\n"
+      }
+    ],
+    "tests": [
+      {
+        "input": "5\n1 2 2 3 2\n",
+        "output": "2 3\n"
+      },
+      {
+        "input": "4\n5 5 1 1\n",
+        "output": "1 2\n"
+      },
+      {
+        "input": "1\n7\n",
+        "output": "7 1\n"
+      },
+      {
+        "input": "6\n-1 -1 2 2 2 3\n",
+        "output": "2 3\n"
+      },
+      {
+        "input": "3\n0 0 0\n",
+        "output": "0 3\n"
+      },
+      {
+        "input": "7\n9 8 9 8 7 7 7\n",
+        "output": "7 3\n"
+      }
+    ],
+    "difficultyCoefficient": 48
   }
 ]
