@@ -170,15 +170,38 @@ function renderHome() {
     <section class="bottom-banner"><div><span class="banner-icon">✳</span><div><strong>今天想练点什么？</strong><p>挑选一个主题，开启专注训练时间。</p></div></div><button class="button button-quiet" data-page="training">探索训练计划 <span>→</span></button></section>`;
 }
 
+function animeSourceName(anime) {
+  if (anime.sourceName) return anime.sourceName;
+  if (typeof anime.sourceUrl === "string") {
+    if (anime.sourceUrl.includes("douban.com")) return "豆瓣电影";
+    if (anime.sourceUrl.includes("anilist.co")) return "AniList";
+  }
+  return "动漫资料库";
+}
+
+function animePosterSrc(anime) {
+  return `/api/anime/poster?url=${encodeURIComponent(anime.imageUrl)}`;
+}
+
 function renderAnimeRecommendation() {
   const anime = state.siteSettings.anime;
   if (!anime) {
     return `<section class="panel anime-recommendation"><div class="section-heading"><div><p class="eyebrow">ANIME PICK</p><h2>本周日漫推荐</h2></div><span class="note-spark">✦</span></div><p class="anime-empty">管理员还没有设置动漫推荐，敬请期待。</p></section>`;
   }
+  const sourceName = animeSourceName(anime);
+  const poster = anime.imageUrl
+    ? `<a class="anime-poster-link" href="${escapeHtml(anime.sourceUrl || anime.imageUrl)}" target="_blank" rel="noopener noreferrer" aria-label="在 ${escapeHtml(sourceName)} 查看 ${escapeHtml(anime.title)}"><img class="anime-poster" src="${escapeHtml(animePosterSrc(anime))}" alt="${escapeHtml(anime.title)} 海报" loading="lazy" referrerpolicy="no-referrer"></a>`
+    : `<div class="anime-poster anime-poster-placeholder"><span>✦</span><small>海报暂不可用</small></div>`;
+  const sourceLink = anime.sourceUrl
+    ? `<a href="${escapeHtml(anime.sourceUrl)}" target="_blank" rel="noopener noreferrer">海报与作品资料：${escapeHtml(sourceName)} →</a>`
+    : "";
+  const attribution = anime.imageUrl
+    ? `海报与作品资料来自 ${escapeHtml(sourceName)}，由本机服务转发以规避防盗链。推荐文章由 DeepSeek AI 生成。`
+    : "本次未能获取作品海报与资料。推荐文章由 DeepSeek AI 生成。";
   return `<section class="panel anime-recommendation"><div class="section-heading"><div><p class="eyebrow">ANIME PICK · AI RECOMMENDATION</p><h2>${escapeHtml(anime.requestedTitle || anime.title)}</h2></div><span class="pill pill-muted">日漫推荐</span></div>
-    <div class="anime-recommendation-body"><a class="anime-poster-link" href="${escapeHtml(anime.sourceUrl)}" target="_blank" rel="noopener noreferrer" aria-label="在动漫资料库查看 ${escapeHtml(anime.title)}"><img class="anime-poster" src="${escapeHtml(anime.imageUrl)}" alt="${escapeHtml(anime.title)} 海报" loading="lazy" referrerpolicy="no-referrer"></a>
-      <div class="anime-article"><p class="anime-original-title">${escapeHtml(anime.title)}</p><p>${escapeHtml(anime.article).split("\n").join("<br>")}</p><a href="${escapeHtml(anime.sourceUrl)}" target="_blank" rel="noopener noreferrer">海报与作品资料：MyAnimeList / Jikan →</a></div></div>
-    <p class="anime-attribution">海报由 Jikan API 检索并链接至 MyAnimeList 作品资料。推荐文章由 DeepSeek AI 生成。</p></section>`;
+    <div class="anime-recommendation-body">${poster}
+      <div class="anime-article"><p class="anime-original-title">${escapeHtml(anime.title)}</p><p>${escapeHtml(anime.article).split("\n").join("<br>")}</p>${sourceLink}</div></div>
+    <p class="anime-attribution">${attribution}</p></section>`;
 }
 
 function problemRow(problem, solved = solvedProblemIds()) {
@@ -390,7 +413,8 @@ function renderAdmin() {
     <section class="panel contest-form"><div class="section-heading"><div><p class="eyebrow">ANIME PICK</p><h2>主页日漫推荐</h2></div><span class="pill pill-muted">${state.siteSettings.deepseekConfigured ? "DeepSeek 已配置" : "需要 DeepSeek Key"}</span></div>
       <form id="anime-recommendation-form"><label class="auth-field">动漫名称<input name="title" required maxlength="120" value="${escapeHtml(state.siteSettings.anime?.requestedTitle || "")}" placeholder="输入日漫名称"></label>
         <label class="auth-field">DeepSeek API Key<input name="apiKey" type="password" autocomplete="new-password" maxlength="500" placeholder="${state.siteSettings.deepseekConfigured ? "已配置；留空则继续使用现有密钥" : "粘贴你的 DeepSeek API Key"}"></label>
-        <p class="auth-help">保存后会从 Jikan / MyAnimeList 检索海报，并调用 DeepSeek 生成原创中文推荐文。API Key 只在服务端加密保存，不会返回给访客；请自行确认 DeepSeek 账户的额度/费用政策。</p>
+        <p class="auth-help">保存后会先在国内可直连的豆瓣电影检索作品、海报与资料（必要时用萌娘百科补充简介），再调用 DeepSeek 生成原创中文推荐文。API Key 只在服务端加密保存，不会返回给访客；请自行确认 DeepSeek 账户的额度/费用政策。</p>
+        ${state.siteSettings.anime?.metadataNotice ? `<p class="auth-help">${escapeHtml(state.siteSettings.anime.metadataNotice)}</p>` : ""}
         <p class="form-feedback" id="anime-recommendation-feedback" role="status"></p><button class="button button-primary" type="submit">检索海报并生成推荐</button>
       </form>
     </section>

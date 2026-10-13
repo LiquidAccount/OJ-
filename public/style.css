@@ -140,6 +140,9 @@ h1,h2,h3,p { overflow-wrap: anywhere; }
 .anime-recommendation-body { display: grid; grid-template-columns: 160px minmax(0,1fr); gap: 20px; margin-top: 16px; }
 .anime-poster-link { display: block; width: 160px; overflow: hidden; border: 1px solid #34414b; border-radius: 8px; background: #111a22; }
 .anime-poster { display: block; width: 100%; aspect-ratio: 2/3; object-fit: cover; }
+.anime-poster-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; width: 160px; aspect-ratio: 2/3; border: 1px dashed #34414b; border-radius: 8px; background: #111a22; color: #62717b; }
+.anime-poster-placeholder span { font-size: 20px; }
+.anime-poster-placeholder small { font-size: 9px; }
 .anime-article { color: #c3cdd1; font-size: 11px; line-height: 1.9; }
 .anime-article p { margin: 0 0 12px; }
 .anime-article .anime-original-title { color: var(--accent); font-size: 12px; font-weight: 700; }
@@ -392,6 +395,7 @@ h1,h2,h3,p { overflow-wrap: anywhere; }
   .side-panel { min-height: 190px; }
   .anime-recommendation-body { grid-template-columns: 115px minmax(0,1fr); gap: 13px; }
   .anime-poster-link { width: 115px; }
+  .anime-poster-placeholder { width: 115px; }
   .bottom-banner { align-items: flex-start; flex-direction: column; }
   .bottom-banner .button { align-self: flex-end; }
   .table-head { display: none; }

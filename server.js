@@ -412,33 +412,308 @@ function decryptDeepseekApiKey(encrypted) {
   ]).toString("utf8");
 }
 
-async function findAnime(title) {
-  const url = new URL("https://api.jikan.moe/v4/anime");
-  url.searchParams.set("q", title);
-  url.searchParams.set("limit", "1");
-  url.searchParams.set("sfw", "true");
-  const response = await fetch(url, { signal: AbortSignal.timeout(15_000) });
-  if (!response.ok) throw new Error(`动漫资料库暂不可用（HTTP ${response.status}）。`);
-  const result = await response.json();
-  const item = result.data?.[0];
-  if (!item) throw new Error("动漫资料库没有找到这部作品，请检查作品名称后重试。");
-  const imageUrl = item.images?.webp?.large_image_url || item.images?.jpg?.large_image_url;
-  const poster = typeof imageUrl === "string" ? new URL(imageUrl) : null;
-  const source = typeof item.url === "string" ? new URL(item.url) : null;
-  if (
-    !poster || poster.protocol !== "https:" || poster.hostname !== "cdn.myanimelist.net" ||
-    !source || source.protocol !== "https:" || source.hostname !== "myanimelist.net"
-  ) throw new Error("资料库没有返回可用的 MyAnimeList 海报链接。");
+const NETWORK_ERROR_REASONS = {
+  UND_ERR_CONNECT_TIMEOUT: "连接超时",
+  UND_ERR_SOCKET: "连接中断",
+  ETIMEDOUT: "连接超时",
+  ENOTFOUND: "域名解析失败",
+  EAI_AGAIN: "域名解析失败",
+  ECONNREFUSED: "连接被拒绝",
+  ECONNRESET: "连接被重置",
+  CERT_HAS_EXPIRED: "TLS 证书已过期",
+  UNABLE_TO_VERIFY_LEAF_SIGNATURE: "TLS 证书校验失败",
+  DEPTH_ZERO_SELF_SIGNED_CERT: "TLS 证书校验失败",
+  SELF_SIGNED_CERT_IN_CHAIN: "TLS 证书校验失败"
+};
+
+function describeNetworkError(error) {
+  const details = `${error?.cause?.message || ""} ${error?.message || ""}`;
+  const code = error?.cause?.code || error?.code;
+  if (NETWORK_ERROR_REASONS[code]) return NETWORK_ERROR_REASONS[code];
+  if (error?.name === "TimeoutError" || /timed out/i.test(details)) return "连接超时";
+  if (/certificate/i.test(details)) return "TLS 证书校验失败";
+  if (/fetch failed|socket hang up/i.test(details)) return "无法建立连接";
+  return "";
+}
+
+function networkErrorMessage(error, service) {
+  const reason = describeNetworkError(error);
+  return reason ? `${service}连接失败（${reason}）。请检查网络、VPN 或代理设置后重试。` : "";
+}
+
+function stripHtml(value) {
+  return typeof value === "string" ? value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim() : "";
+}
+
+async function fetchWithRetry(url, options, attempts = 2) {
+  const { timeoutMs, ...init } = options;
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+    } catch (error) {
+      lastError = error;
+      if (!describeNetworkError(error) || attempt === attempts) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 700 * attempt));
+    }
+  }
+  throw lastError;
+}
+
+const BROWSER_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+const DOUBAN_COOKIE = `bid=${crypto.randomBytes(8).toString("hex").slice(0, 11)}`;
+const DOUBAN_CACHE_TTL_MS = 30 * 60 * 1000;
+const DOUBAN_CACHE_LIMIT = 50;
+const doubanAnimeCache = new Map();
+const DOUBAN_API_HEADERS = {
+  "User-Agent": BROWSER_USER_AGENT,
+  "Accept-Language": "zh-CN,zh;q=0.9",
+  Referer: "https://movie.douban.com/",
+  Cookie: DOUBAN_COOKIE
+};
+
+function doubanPosterUrl(value) {
+  if (typeof value !== "string") return null;
+  try {
+    const poster = new URL(value);
+    if (poster.protocol !== "https:" || !/(^|\.)doubanio\.com$/.test(poster.hostname)) return null;
+    return poster.href;
+  } catch {
+    return null;
+  }
+}
+
+function doubanSubjectId(value) {
+  if (typeof value !== "string") return "";
+  const match = value.match(/\/subject\/(\d+)/);
+  return match ? match[1] : "";
+}
+
+function doubanSubjectUrl(value) {
+  if (typeof value !== "string") return null;
+  try {
+    const source = new URL(value);
+    if (source.protocol !== "https:" || source.hostname !== "movie.douban.com" || !/^\/subject\/\d+\/?$/.test(source.pathname)) return null;
+    return source.href;
+  } catch {
+    return null;
+  }
+}
+
+function doubanRankKey(item, cardFacts) {
+  const facts = cardFacts || "";
+  const looksAnime = /动画/.test(facts) || /[\u3040-\u30ff]/.test(item.sub_title || "");
+  const unreleased = /尚未上映|敬请期待/.test(facts);
   return {
-    title: item.title_english || item.title || title,
-    sourceUrl: source.href,
-    imageUrl: poster.href,
-    synopsis: typeof item.synopsis === "string" ? item.synopsis.slice(0, 2500) : ""
+    group: looksAnime && !unreleased ? 0 : 1,
+    id: Number.parseInt(doubanSubjectId(item.url), 10) || Number.MAX_SAFE_INTEGER
   };
 }
 
+async function fetchDoubanFacts(title) {
+  const url = new URL("https://www.douban.com/j/search_suggest");
+  url.searchParams.set("q", title);
+  try {
+    const response = await fetchWithRetry(url.href, {
+      headers: { ...DOUBAN_API_HEADERS, Referer: "https://www.douban.com/" },
+      timeoutMs: 10_000
+    });
+    if (!response.ok) return new Map();
+    const payload = await response.json();
+    const cards = Array.isArray(payload?.cards) ? payload.cards : [];
+    return new Map(cards
+      .filter((card) => card && typeof card.card_subtitle === "string")
+      .map((card) => [doubanSubjectId(card.url), card.card_subtitle.trim().slice(0, 200)])
+      .filter(([id]) => id));
+  } catch (error) {
+    console.warn("Douban card lookup failed:", error.message);
+    return new Map();
+  }
+}
+
+async function lookupAnimeOnMoegirl(pageTitle) {
+  const url = new URL("https://zh.moegirl.org.cn/api.php");
+  url.searchParams.set("action", "query");
+  url.searchParams.set("format", "json");
+  url.searchParams.set("prop", "extracts");
+  url.searchParams.set("exintro", "1");
+  url.searchParams.set("explaintext", "1");
+  url.searchParams.set("redirects", "1");
+  url.searchParams.set("titles", pageTitle);
+  const response = await fetchWithRetry(url.href, {
+    headers: { "User-Agent": BROWSER_USER_AGENT, Referer: "https://zh.moegirl.org.cn/" },
+    timeoutMs: 10_000
+  });
+  if (!response.ok) throw new Error(`萌娘百科暂不可用（HTTP ${response.status}）。`);
+  const payload = await response.json();
+  const pages = Object.values(payload?.query?.pages || {});
+  const extract = pages.map((page) => page?.extract).find((value) => typeof value === "string" && value.trim());
+  if (!extract) throw new Error("萌娘百科没有对应的条目简介。");
+  return stripHtml(extract).slice(0, 2000);
+}
+
+async function fetchDoubanSuggest(title) {
+  const url = new URL("https://movie.douban.com/j/subject_suggest");
+  url.searchParams.set("q", title);
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    const response = await fetchWithRetry(url.href, { headers: DOUBAN_API_HEADERS, timeoutMs: 15_000 });
+    if (!response.ok) throw new Error(`豆瓣暂不可用（HTTP ${response.status}）。`);
+    const payload = await response.json();
+    const items = Array.isArray(payload) ? payload : [];
+    if (items.length || attempt === 2) return items;
+    await new Promise((resolve) => setTimeout(resolve, 900));
+  }
+  return [];
+}
+
+async function lookupAnimeOnDouban(title) {
+  const cacheKey = normalizeAnimeTitle(title);
+  const cached = cacheKey ? doubanAnimeCache.get(cacheKey) : null;
+  if (cached && cached.expiresAt > Date.now()) return cached.value;
+
+  const candidates = (await fetchDoubanSuggest(title)).filter((item) => (
+    typeof item?.title === "string" && doubanPosterUrl(item?.img) && doubanSubjectUrl(item?.url)
+  ));
+  if (!candidates.length) throw new Error("豆瓣没有找到这部作品，请填写中文或日文常用名后重试。");
+
+  const needle = normalizeAnimeTitle(title);
+  const matches = candidates.filter((item) => {
+    const names = [item.title, item.sub_title].map(normalizeAnimeTitle).filter(Boolean);
+    return names.includes(needle) || names.some((name) => needle.length >= 2 && (name.includes(needle) || needle.includes(name)));
+  });
+  if (!matches.length) throw new Error(`豆瓣中没有与「${title}」匹配的条目，请填写更完整的作品名称。`);
+
+  const facts = await fetchDoubanFacts(title);
+  const cardFactsOf = (item) => facts.get(doubanSubjectId(item.url)) || "";
+  const ranked = [...matches].sort((first, second) => {
+    const firstKey = doubanRankKey(first, cardFactsOf(first));
+    const secondKey = doubanRankKey(second, cardFactsOf(second));
+    return firstKey.group - secondKey.group || firstKey.id - secondKey.id;
+  });
+  const item = ranked[0];
+
+  const cardFacts = cardFactsOf(item);
+  const details = [
+    item.sub_title ? `原名：${item.sub_title}` : "",
+    item.year ? `上映年份：${item.year}` : "",
+    cardFacts
+  ].filter(Boolean).join("；");
+  let synopsis = "";
+  try {
+    synopsis = await lookupAnimeOnMoegirl(item.title);
+  } catch (error) {
+    console.warn("Moegirl synopsis lookup failed:", error.message);
+  }
+  const reference = [
+    `豆瓣条目：${item.title}${details ? `（${details}）` : ""}`,
+    synopsis ? `萌娘百科简介：${synopsis}` : ""
+  ].filter(Boolean).join("\n");
+  const result = {
+    title: item.sub_title || item.title,
+    sourceUrl: doubanSubjectUrl(item.url),
+    imageUrl: doubanPosterUrl(item.img),
+    synopsis: reference.slice(0, 2500),
+    sourceName: "豆瓣电影"
+  };
+  if (cacheKey) {
+    doubanAnimeCache.set(cacheKey, { value: result, expiresAt: Date.now() + DOUBAN_CACHE_TTL_MS });
+    while (doubanAnimeCache.size > DOUBAN_CACHE_LIMIT) {
+      doubanAnimeCache.delete(doubanAnimeCache.keys().next().value);
+    }
+  }
+  return result;
+}
+
+function normalizeAnimeTitle(value) {
+  return typeof value === "string"
+    ? value.toLowerCase().replace(/[^a-z0-9\u3040-\u30ff\u4e00-\u9fff]+/g, "")
+    : "";
+}
+
+function pickAniListMatch(title, candidates) {
+  const needle = normalizeAnimeTitle(title);
+  if (!needle) return candidates[0];
+  const namesOf = (item) => [item.title?.english, item.title?.romaji, item.title?.native, ...(item.synonyms || [])].map(normalizeAnimeTitle).filter(Boolean);
+  return candidates.find((item) => namesOf(item).includes(needle))
+    || candidates.find((item) => namesOf(item).some((name) => needle.length >= 3 && (name.includes(needle) || needle.includes(name))))
+    || null;
+}
+
+async function lookupAnimeOnAniList(title) {
+  const response = await fetchWithRetry("https://graphql.anilist.co", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      query: "query ($search: String) { Page(perPage: 6) { media(search: $search, type: ANIME) { title { english romaji native } synonyms format coverImage { large } siteUrl description } } }",
+      variables: { search: title }
+    }),
+    timeoutMs: 15_000
+  });
+  let payload = null;
+  try {
+    payload = await response.json();
+  } catch {
+    payload = null;
+  }
+  const candidates = payload?.data?.Page?.media || [];
+  if (!candidates.length) {
+    if (!response.ok && response.status !== 404) throw new Error(`AniList 暂不可用（HTTP ${response.status}）。`);
+    throw new Error("AniList 没有找到这部作品，请尝试填写日文或英文原名。");
+  }
+  const media = pickAniListMatch(title, candidates);
+  if (!media) throw new Error(`AniList 中没有与「${title}」匹配的作品，请尝试日文或英文原名。`);
+  const poster = typeof media.coverImage?.large === "string" ? new URL(media.coverImage.large) : null;
+  const source = typeof media.siteUrl === "string" ? new URL(media.siteUrl) : null;
+  if (
+    !poster || poster.protocol !== "https:" || !/(^|\.)anilist\.co$/.test(poster.hostname) ||
+    !source || source.protocol !== "https:" || source.hostname !== "anilist.co"
+  ) throw new Error("AniList 没有返回可用的海报链接。");
+  return {
+    title: media.title?.english || media.title?.romaji || title,
+    sourceUrl: source.href,
+    imageUrl: poster.href,
+    synopsis: stripHtml(media.description).slice(0, 2500),
+    sourceName: "AniList",
+    kind: typeof media.format === "string" ? media.format : ""
+  };
+}
+
+const THEATRICAL_TITLE_PATTERN = /剧场版|劇場版|完结篇|完結編|电影版|電影版|剧场|劇場/;
+
+function preferAnimeSeries(douban, aniList) {
+  if (!douban || !aniList) return douban || aniList;
+  const doubanIsTheatrical = THEATRICAL_TITLE_PATTERN.test(douban.title || "");
+  const aniListIsSeries = /^TV/.test(aniList.kind || "");
+  return doubanIsTheatrical && aniListIsSeries ? aniList : douban;
+}
+
+const ANIME_PROVIDERS = [
+  { name: "豆瓣", lookup: lookupAnimeOnDouban },
+  { name: "AniList", lookup: lookupAnimeOnAniList }
+];
+
+async function findAnime(title) {
+  const settled = await Promise.allSettled(ANIME_PROVIDERS.map((provider) => provider.lookup(title)));
+  const failures = [];
+  const found = {};
+  settled.forEach((outcome, index) => {
+    const provider = ANIME_PROVIDERS[index];
+    if (outcome.status === "fulfilled") {
+      found[provider.name] = outcome.value;
+      return;
+    }
+    const message = networkErrorMessage(outcome.reason, provider.name) || outcome.reason.message;
+    console.warn(`Anime lookup source failed: ${provider.name} - ${message}`);
+    failures.push(message);
+  });
+  const resolved = preferAnimeSeries(found["豆瓣"], found.AniList);
+  if (resolved) return resolved;
+  const networkFailure = failures.find((message) => /连接失败/.test(message));
+  throw new Error(networkFailure || failures.join(" ") || "动漫资料库查询失败，请稍后重试。");
+}
+
 async function writeAnimeRecommendation(title, apiKey, anime) {
-  const response = await fetch("https://api.deepseek.com/chat/completions", {
+  const response = await fetchWithRetry("https://api.deepseek.com/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -459,7 +734,7 @@ async function writeAnimeRecommendation(title, apiKey, anime) {
         }
       ]
     }),
-    signal: AbortSignal.timeout(45_000)
+    timeoutMs: 45_000
   });
   if (!response.ok) {
     const details = (await response.text()).slice(0, 400);
@@ -520,17 +795,28 @@ async function handleAnimeRecommendationUpdate(request, response) {
     const settings = await readSiteSettings();
     const encryptedKey = apiKey ? encryptDeepseekApiKey(apiKey) : settings.deepseekApiKey;
     const resolvedApiKey = apiKey || decryptDeepseekApiKey(encryptedKey);
-    const anime = await findAnime(title);
+    let anime;
+    let metadataNotice = "";
+    try {
+      anime = await findAnime(title);
+    } catch (error) {
+      console.warn("Anime metadata lookup failed:", error.message);
+      anime = { title, sourceUrl: null, imageUrl: null, synopsis: "", sourceName: null };
+      metadataNotice = `未能获取海报与作品资料：${error.message}`;
+    }
     const article = await writeAnimeRecommendation(title, resolvedApiKey, anime);
     const updated = await updateSiteSettings((current) => ({
       ...current,
       deepseekApiKey: encryptedKey,
-      anime: { ...anime, requestedTitle: title, article, updatedAt: new Date().toISOString() }
+      anime: { ...anime, requestedTitle: title, article, metadataNotice, updatedAt: new Date().toISOString() }
     }));
     sendJson(response, 200, publicSiteSettings(updated));
   } catch (error) {
     console.error("Anime recommendation generation failed:", error);
-    sendJson(response, 502, { error: error.message || "动漫推荐生成失败，请检查网络和 DeepSeek 配置后重试。" });
+    const serviceMessage = networkErrorMessage(error, "DeepSeek") || networkErrorMessage(error, "AI 服务");
+    sendJson(response, 502, {
+      error: serviceMessage || error.message || "动漫推荐生成失败，请检查网络和 DeepSeek 配置后重试。"
+    });
   }
 }
 
@@ -1499,6 +1785,69 @@ async function handleLocalResult(request, response, user) {
   }
 }
 
+const ANIME_IMAGE_HOSTS = [
+  { pattern: /(^|\.)doubanio\.com$/, referer: "https://movie.douban.com/" },
+  { pattern: /(^|\.)anilist\.co$/, referer: "https://anilist.co/" },
+  { pattern: /(^|\.)myanimelist\.net$/, referer: "https://myanimelist.net/" }
+];
+const ANIME_IMAGE_CACHE_LIMIT = 40;
+const animeImageCache = new Map();
+
+async function handleAnimePoster(request, response) {
+  const requestUrl = new URL(request.url, "http://localhost");
+  let target;
+  try {
+    target = new URL(requestUrl.searchParams.get("url") || "");
+  } catch {
+    sendJson(response, 400, { error: "海报地址无效。" });
+    return;
+  }
+  const allowed = ANIME_IMAGE_HOSTS.find((entry) => entry.pattern.test(target.hostname));
+  if (target.protocol !== "https:" || !allowed) {
+    sendJson(response, 403, { error: "只允许代理资料库的海报地址。" });
+    return;
+  }
+
+  const cached = animeImageCache.get(target.href);
+  if (cached && cached.expiresAt > Date.now()) {
+    response.writeHead(200, { ...cached.headers, "Cache-Control": "public, max-age=86400" });
+    response.end(cached.body);
+    return;
+  }
+  animeImageCache.delete(target.href);
+
+  try {
+    const upstream = await fetchWithRetry(target.href, {
+      headers: {
+        "User-Agent": BROWSER_USER_AGENT,
+        Referer: allowed.referer,
+        Accept: "image/avif,image/webp,image/png,image/jpeg,image/*;q=0.8"
+      },
+      timeoutMs: 15_000
+    });
+    const contentType = upstream.headers.get("content-type") || "";
+    if (!upstream.ok || !contentType.startsWith("image/")) {
+      sendJson(response, 502, { error: `海报下载失败（HTTP ${upstream.status}）。` });
+      return;
+    }
+    const body = Buffer.from(await upstream.arrayBuffer());
+    if (!body.byteLength || body.byteLength > 6 * 1024 * 1024) {
+      sendJson(response, 502, { error: "海报文件大小异常，已拒绝。" });
+      return;
+    }
+    const headers = { "Content-Type": contentType, "X-Content-Type-Options": "nosniff" };
+    animeImageCache.set(target.href, { body, headers, expiresAt: Date.now() + 6 * 60 * 60 * 1000 });
+    while (animeImageCache.size > ANIME_IMAGE_CACHE_LIMIT) {
+      animeImageCache.delete(animeImageCache.keys().next().value);
+    }
+    response.writeHead(200, { ...headers, "Cache-Control": "public, max-age=86400" });
+    response.end(body);
+  } catch (error) {
+    console.error("Anime poster proxy failed:", error);
+    sendJson(response, 502, { error: networkErrorMessage(error, "海报服务器") || "海报下载失败，请稍后重试。" });
+  }
+}
+
 function serveStatic(request, response) {
   const pathname = new URL(request.url, "http://localhost").pathname;
   const requestedPath = pathname === "/" ? "/index.html" : decodeURIComponent(pathname);
@@ -1543,6 +1892,10 @@ const server = http.createServer(async (request, response) => {
     if (request.method === "POST" && request.url === "/api/admin/site-title") {
       if (!await requireAdmin(request, response)) return;
       await handleSiteTitleUpdate(request, response);
+      return;
+    }
+    if (request.method === "GET" && new URL(request.url, "http://localhost").pathname === "/api/anime/poster") {
+      await handleAnimePoster(request, response);
       return;
     }
     if (request.method === "POST" && request.url === "/api/admin/anime-recommendation") {

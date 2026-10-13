@@ -29,11 +29,11 @@ npm run desktop:build
 
 桌面安装版会在启动后自动检查 GitHub Releases，并在运行期间每 6 小时再次检查；也可点击右上角“检查更新”。发现新版本后，软件会先询问再下载；下载完成后可立即重启安装，或在以后退出时安装。自动更新使用公开的 `LiquidAccount/OJ-` GitHub Releases；仓库必须保持公开，仓库中的源码及其他已提交内容会对所有人公开。1.0.0 和 1.0.1 安装版不含本次站点设置功能；1.0.2 至 1.0.4 的安装版存在后端启动缺陷（软件会提示“OJ 后端服务启动超时”），请使用 1.0.5 或更新版本。
 
-发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.6：
+发布更新时，提高 `package.json` 的版本号并将改动上传到 GitHub，然后给该版本创建并推送匹配的标签。例如当前版本 1.0.7：
 
 ```powershell
-git tag v1.0.6
-git push origin v1.0.6
+git tag v1.0.7
+git push origin v1.0.7
 ```
 
 先把当前项目文件（包括 `.github/workflows/publish-release.yml`）上传到公开仓库的 `main` 分支，再给相同提交打版本标签。GitHub Actions 会自动构建 Windows NSIS 安装器，并在 Release 中一并上传 Setup 安装包、`latest.yml` 和 `.blockmap`；不需要个人访问令牌。工作流会验证标签版本与 `package.json` 一致。自动更新仅适用于本项目构建的 NSIS 安装版；portable 版不支持自动安装更新。更新仓库须保持公开，否则客户端无法匿名下载 Release。
@@ -92,9 +92,10 @@ Cloudflare Worker 版本使用 D1 而不是本地 JSON/Neon 存储。现有本�
 
 - 经验排行榜已内置：学生首次通过题目时按难度系数领取 EXP，排行榜按累计经验排序；管理员不参与学生榜单。
 - 管理员可在“管理后台”修改桌面端标题。独立标题同步 Worker/D1 只保存这一项共享设置；只有拥有者设备可写入共享标题，其他联网客户端会自动读取并定期刷新。账户、题库和提交记录仍只保存在各自电脑。
-- 管理员也可在后台输入日漫名称，并提交 DeepSeek API Key。服务端会从公开的 Jikan API 查询 MyAnimeList 作品资料和海报，再调用 DeepSeek `deepseek-flash` 模型生成原创中文推荐文。首页显示海报、文章和资料来源链接。
+- 管理员也可在后台输入日漫名称，并提交 DeepSeek API Key。服务端会先从国内可直连的豆瓣电影检索条目、海报与资料，必要时用萌娘百科补充简介，AniList 作为备用资料库；随后调用 DeepSeek `deepseek-flash` 模型生成原创中文推荐文。首页显示海报、文章和资料来源链接。
+- 豆瓣海报有防盗链，首页海报统一由本机服务转发（`/api/anime/poster`），只允许代理资料库域名，并校验文件类型与大小；浏览器不直接请求第三方图片。资料库查询失败时仍会调用 DeepSeek 生成文章，只在首页注明海报不可用。
 - API Key 不会发给访客；在本机版以 AES-GCM 加密保存在 OJ 数据目录，在 Worker 版加密后保存于 D1。加密密钥由 `ADMIN_REGISTRATION_PASSWORD` 派生；更换该管理员注册口令后，需在管理后台重新输入 DeepSeek API Key。
-- 需要自行申请并保管 DeepSeek API Key。免费额度、价格和服务可用性以 DeepSeek 当前政策为准；生成推荐时会把动漫名称和资料简介发送至 DeepSeek API。Jikan / MyAnimeList 海报受来源网站的可用性和使用条款约束。
+- 需要自行申请并保管 DeepSeek API Key。免费额度、价格和服务可用性以 DeepSeek 当前政策为准；生成推荐时会把动漫名称和资料简介发送至 DeepSeek API。海报与作品资料受豆瓣电影、萌娘百科及 AniList 的可用性和使用条款约束。
 
 ## 比赛
 
