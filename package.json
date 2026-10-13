@@ -1,8 +1,8 @@
 {
   "name": "liangliang-oj",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "private": true,
-  "description": "亮亮专属欧金金 - a local programming practice desktop app",
+  "description": "OJ - a local programming practice desktop app",
   "scripts": {
     "start": "node server.js",
     "local-judge": "node local-judge.js",
@@ -18,13 +18,14 @@
     "pg": "^8.16.3"
   },
   "devDependencies": {
+    "codemirror": "^5.65.21",
     "electron": "^38.2.0",
     "electron-builder": "^26.0.12",
     "wrangler": "^4.30.0"
   },
   "build": {
     "appId": "online.yyzm.oj",
-    "productName": "亮亮专属欧金金",
+    "productName": "OJ",
     "asar": false,
     "directories": {
       "output": "release"
@@ -49,7 +50,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "亮亮专属欧金金",
+      "shortcutName": "OJ",
       "runAfterFinish": true
     },
     "publish": [

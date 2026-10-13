@@ -1,4 +1,4 @@
-const DEFAULT_SITE_TITLE = "亮亮专属欧金金";
+const DEFAULT_SITE_TITLE = "OJ";
 
 function jsonResponse(payload, status = 200) {
   return new Response(JSON.stringify(payload), {

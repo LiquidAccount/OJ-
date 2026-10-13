@@ -26,7 +26,7 @@ const state = {
   activeContestId: null,
   selectedSubmissionId: null,
   adminOverview: null,
-  siteSettings: { siteTitle: "亮亮专属欧金金", anime: null, deepseekConfigured: false },
+  siteSettings: { siteTitle: "OJ", anime: null, deepseekConfigured: false },
   authMode: "login",
   adminRegistrationEnabled: false,
   localJudgeConnected: false,
@@ -72,10 +72,11 @@ function render() {
     admin: renderAdmin
   };
   pageContent.innerHTML = (views[state.page] || renderHome)();
+  mountCodeEditor();
 }
 
 function updateSiteBrand() {
-  const siteTitle = state.siteSettings.siteTitle || "亮亮专属欧金金";
+  const siteTitle = state.siteSettings.siteTitle || "OJ";
   document.title = siteTitle;
   document.querySelectorAll("[data-site-title]").forEach((element) => {
     element.textContent = siteTitle;
@@ -245,20 +246,22 @@ function renderProblems() {
     </section>${detail}`;
 }
 
+const STARTER_CODE = {
+  c: "#include <stdio.h>\n\nint main(void) {\n    // 在这里编写你的解法\n    return 0;\n}\n",
+  cpp: "#include <iostream>\nusing namespace std;\n\nint main() {\n    // 在这里编写你的解法\n    return 0;\n}\n",
+  python: "# 在这里编写你的解法\n",
+  javascript: "// 在这里编写你的解法\n"
+};
+
 function renderProblemDetail(problem) {
-  const starterCode = {
-    c: "#include <stdio.h>\n\nint main(void) {\n    // 在这里编写你的解法\n    return 0;\n}\n",
-    cpp: "#include <iostream>\nusing namespace std;\n\nint main() {\n    // 在这里编写你的解法\n    return 0;\n}\n",
-    python: "# 在这里编写你的解法\n",
-    javascript: "// 在这里编写你的解法\n"
-  };
   return `<section class="panel detail-panel" id="problem-detail">
     <div class="detail-top"><div><button class="back-button" data-action="close-problem">← 返回题目列表</button><p class="eyebrow">${escapeHtml(problem.id)} · ${escapeHtml(problem.category)}</p><h2>${escapeHtml(problem.title)}</h2><div class="detail-knowledge">${(problem.knowledgePoints || []).map((point) => `<span class="knowledge-chip">${escapeHtml(point)}</span>`).join("")}<span class="knowledge-chip">难度系数 ${problem.difficultyCoefficient} · 首次通过 +${problem.difficultyCoefficient * 10} EXP</span></div></div><span class="difficulty ${difficultyTone(problem.difficulty)}">${escapeHtml(problem.difficulty)}</span></div>
     <div class="statement">${problem.background ? `<h3>实际背景</h3><p>${escapeHtml(problem.background)}</p>` : ""}<h3>题目描述</h3><p>${escapeHtml(problem.description)}</p><h3>输入格式</h3><p>${escapeHtml(problem.input)}</p><h3>输出格式</h3><p>${escapeHtml(problem.output)}</p>
       <h3>样例</h3>${problem.examples.map((example, index) => `<div class="example-grid"><div><label>输入 ${index + 1}</label><pre>${escapeHtml(example.input || "(无输入)")}</pre></div><div><label>输出 ${index + 1}</label><pre>${escapeHtml(example.output)}</pre></div></div>`).join("")}
     </div>
     <div class="editor-heading"><div><h3>提交代码</h3><span>${state.judgeConfigured ? "使用网站评测服务" : state.localJudgeConnected ? "代码将在你的电脑上运行" : "连接本机评测器后即可在自己的电脑运行"}</span></div><div class="editor-controls"><button class="button button-outline local-connect-button" id="local-judge-config">${state.localJudgeConnected ? "本机评测器已连接 · 设置" : "连接本机评测器"}</button><select id="language-select" aria-label="编程语言"><option value="c" ${state.language === "c" ? "selected" : ""}>C17</option><option value="cpp" ${state.language === "cpp" ? "selected" : ""}>C++17</option><option value="python" ${state.language === "python" ? "selected" : ""}>Python 3</option><option value="javascript" ${state.language === "javascript" ? "selected" : ""}>JavaScript</option></select></div></div>
-    <div class="editor-wrap"><div class="editor-gutter">${Array.from({ length: 9 }, (_, index) => `<span>${index + 1}</span>`).join("")}</div><textarea id="code-editor" spellcheck="false" aria-label="代码编辑器">${escapeHtml(state.codeByLanguage[state.language] ?? starterCode[state.language])}</textarea></div>
+    <div class="editor-actions"><button class="button button-outline" id="editor-rename" type="button" title="Ctrl+Shift+R">重命名同名变量</button><button class="button button-outline" id="editor-select-word" type="button" title="Ctrl+D">找下一个相同词</button><span class="editor-hint">光标停在括号上会高亮配对括号 · Ctrl+F 查找 · Ctrl+/ 注释</span></div>
+    <div class="editor-wrap"><div id="code-editor" class="code-editor-host" aria-label="代码编辑器"></div></div>
     <section class="self-test-panel"><div class="self-test-heading"><div><strong>自测</strong><small>仅在本机运行，不会保存为正式提交</small></div><button class="button button-outline" id="run-self-test" type="button">运行自测</button></div><label class="self-test-input-label" for="self-test-input">自定义输入（已填入第一组样例，可自行修改）</label><textarea id="self-test-input" spellcheck="false">${escapeHtml(problem.examples?.[0]?.input || "")}</textarea><div id="self-test-result" aria-live="polite"></div></section>
     <div class="submit-row"><span class="editor-hint">⌘/Ctrl + Enter 快速提交 · 最大 32 KB</span><button class="button button-primary" id="submit-code">提交评测 <span>→</span></button></div>
     <div id="submission-result"></div></section>`;
@@ -861,17 +864,151 @@ function showToast(message) {
   toastTimer = setTimeout(() => toast.classList.remove("visible"), 3000);
 }
 
+const EDITOR_MODES = { c: "text/x-csrc", cpp: "text/x-c++src", python: "python", javascript: "javascript" };
+let codeEditorInstance = null;
+
+function getEditorCode() {
+  return codeEditorInstance ? codeEditorInstance.getValue() : "";
+}
+
+function identifierAtCursor(editor) {
+  const selection = editor.getSelection();
+  if (selection && !selection.includes("\n")) return selection.trim();
+  const cursor = editor.getCursor();
+  const line = editor.getLine(cursor.line) || "";
+  const isWordChar = (character) => /[A-Za-z0-9_$]/.test(character);
+  let start = Math.min(cursor.ch, line.length);
+  let end = start;
+  while (start > 0 && isWordChar(line[start - 1])) start -= 1;
+  while (end < line.length && isWordChar(line[end])) end += 1;
+  return line.slice(start, end);
+}
+
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function findIdentifierRanges(editor, name) {
+  const pattern = new RegExp(`\\b${escapeRegExp(name)}\\b`, "g");
+  const ranges = [];
+  for (let line = 0; line < editor.lineCount(); line += 1) {
+    const text = editor.getLine(line);
+    pattern.lastIndex = 0;
+    let match;
+    while ((match = pattern.exec(text)) !== null) {
+      ranges.push([{ line, ch: match.index }, { line, ch: match.index + name.length }]);
+    }
+  }
+  return ranges;
+}
+
+function renameSameIdentifier() {
+  const editor = codeEditorInstance;
+  if (!editor) return;
+  const name = identifierAtCursor(editor);
+  if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name)) {
+    showToast("请把光标放在变量名上，或先选中要改名的名字。");
+    return;
+  }
+  const ranges = findIdentifierRanges(editor, name);
+  if (!ranges.length) {
+    showToast(`没有找到「${name}」。`);
+    return;
+  }
+  editor.openDialog(
+    `把「${escapeHtml(name)}」重命名为（共 ${ranges.length} 处）：<input type="text" spellcheck="false" style="width:11em"/>`,
+    (answer) => {
+      const next = String(answer || "").trim();
+      if (!next || next === name) return;
+      if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(next)) {
+        showToast("变量名只能用字母、数字、下划线或 $，且不能以数字开头。");
+        return;
+      }
+      editor.operation(() => {
+        for (let index = ranges.length - 1; index >= 0; index -= 1) {
+          editor.replaceRange(next, ranges[index][0], ranges[index][1], "+rename");
+        }
+      });
+      editor.focus();
+      showToast(`已把 ${ranges.length} 处「${name}」改成「${next}」。`);
+    },
+    { value: name, selectValueOnOpen: true }
+  );
+}
+
+function selectNextSameWord() {
+  const editor = codeEditorInstance;
+  if (!editor) return;
+  const query = identifierAtCursor(editor);
+  if (!query) {
+    showToast("请把光标放在要查找的词上。");
+    return;
+  }
+  const cursor = editor.getSearchCursor(query, editor.getCursor("to"));
+  if (cursor.findNext()) {
+    editor.setSelection(cursor.from(), cursor.to());
+  } else {
+    const wrapped = editor.getSearchCursor(query, { line: 0, ch: 0 });
+    if (wrapped.findNext()) editor.setSelection(wrapped.from(), wrapped.to());
+  }
+  editor.focus();
+}
+
+function mountCodeEditor() {
+  const host = document.querySelector("#code-editor");
+  codeEditorInstance = null;
+  if (!host || typeof window.CodeMirror !== "function") return;
+  host.innerHTML = "";
+  const editor = window.CodeMirror(host, {
+    value: state.codeByLanguage[state.language] ?? STARTER_CODE[state.language] ?? "",
+    mode: EDITOR_MODES[state.language] || "text/x-csrc",
+    lineNumbers: true,
+    matchBrackets: true,
+    autoCloseBrackets: true,
+    styleActiveLine: true,
+    indentUnit: 4,
+    tabSize: 4,
+    smartIndent: true,
+    extraKeys: {
+      "Shift-Ctrl-R": () => renameSameIdentifier(),
+      "Ctrl-D": () => selectNextSameWord(),
+      "Ctrl-F": "find",
+      "Cmd-F": "find",
+      "Shift-Ctrl-F": "replace",
+      "Ctrl-H": "replace",
+      "F3": "findNext",
+      "Shift-F3": "findPrev",
+      "Ctrl-/": "toggleComment",
+      "Cmd-/": "toggleComment",
+      "Tab": (instance) => {
+        if (instance.somethingSelected()) instance.indentSelection("add");
+        else instance.replaceSelection(" ".repeat(4), "end");
+      },
+      "Shift-Tab": (instance) => instance.indentSelection("subtract")
+    }
+  });
+  editor.on("change", () => {
+    state.codeByLanguage[state.language] = editor.getValue();
+  });
+  codeEditorInstance = editor;
+  editor.refresh();
+}
+
+document.addEventListener("click", (event) => {
+  if (event.target.id === "editor-rename") renameSameIdentifier();
+  if (event.target.id === "editor-select-word") selectNextSameWord();
+});
+
 async function submitCode() {
-  const codeEditor = document.querySelector("#code-editor");
   const button = document.querySelector("#submit-code");
   const resultContainer = document.querySelector("#submission-result");
-  if (!codeEditor || !button || !state.selectedProblem) return;
+  if (!codeEditorInstance || !button || !state.selectedProblem) return;
   if (!state.currentUser) {
     openAuth("login");
     showToast("请登录后提交代码。");
     return;
   }
-  const code = codeEditor.value;
+  const code = getEditorCode();
   if (!code.trim()) {
     showToast("先写一点代码再提交吧。");
     return;
@@ -934,16 +1071,15 @@ async function submitCode() {
 
 async function runSelfTest() {
   const button = document.querySelector("#run-self-test");
-  const codeEditor = document.querySelector("#code-editor");
   const inputEditor = document.querySelector("#self-test-input");
   const resultContainer = document.querySelector("#self-test-result");
-  if (!button || !codeEditor || !inputEditor || !resultContainer) return;
+  if (!button || !codeEditorInstance || !inputEditor || !resultContainer) return;
   if (!state.localJudgeConnected || !state.localPairingToken) {
     openLocalJudgeModal();
     resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>请先连接本机评测器</strong></div>`;
     return;
   }
-  if (!codeEditor.value.trim()) {
+  if (!getEditorCode().trim()) {
     resultContainer.innerHTML = `<div class="submission-message failed-result"><strong>请先编写代码</strong></div>`;
     return;
   }
@@ -960,7 +1096,7 @@ async function runSelfTest() {
       },
       body: JSON.stringify({
         language: document.querySelector("#language-select").value,
-        code: codeEditor.value,
+        code: getEditorCode(),
         input: inputEditor.value
       }),
       signal: AbortSignal.timeout(25_000)
@@ -1121,8 +1257,7 @@ document.addEventListener("change", (event) => {
     render();
   }
   if (event.target.id === "language-select") {
-    const editor = document.querySelector("#code-editor");
-    if (editor) state.codeByLanguage[state.language] = editor.value;
+    state.codeByLanguage[state.language] = getEditorCode();
     state.language = event.target.value;
     render();
     document.querySelector("#problem-detail")?.scrollIntoView({ behavior: "smooth", block: "start" });

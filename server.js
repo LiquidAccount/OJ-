@@ -14,7 +14,7 @@ const USERS_FILE = path.join(DATA_DIR, "users.json");
 const SUBMISSIONS_FILE = path.join(DATA_DIR, "submissions.json");
 const CONTESTS_FILE = path.join(DATA_DIR, "contests.json");
 const SITE_SETTINGS_FILE = path.join(DATA_DIR, "site-settings.json");
-const DEFAULT_SITE_TITLE = "亮亮专属欧金金";
+const DEFAULT_SITE_TITLE = "OJ";
 const PORT = Number(process.env.PORT || 4173);
 const HOST = process.env.HOST || "127.0.0.1";
 const DATABASE_URL = process.env.DATABASE_URL || "";
@@ -2036,7 +2036,7 @@ async function startServer() {
   await initializeDatabase();
   await initializeExperience();
   server.listen(PORT, HOST, () => {
-    console.log(`天南地北艳姐最美OJ已启动：http://${HOST}:${PORT}`);
+    console.log(`OJ 已启动：http://${HOST}:${PORT}`);
     if (!pool) console.log("使用本地 JSON 文件保存账户和提交记录。");
     if (!JUDGE_URL) console.log("评测服务未配置；设置 JUDGE0_URL 后可启用真实评测。");
     if (!ADMIN_REGISTRATION_PASSWORD) console.log("管理员注册已关闭；设置 ADMIN_REGISTRATION_PASSWORD 后启用。");
