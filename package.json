@@ -1,6 +1,6 @@
 {
   "name": "liangliang-oj",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "private": true,
   "description": "亮亮专属欧金金 - a local programming practice desktop app",
   "scripts": {
