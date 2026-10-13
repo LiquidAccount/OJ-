@@ -14,10 +14,29 @@ let updateCheckPromise;
 let updaterWindow;
 let autoUpdatesConfigured = false;
 let updateCheckTimer;
+let lastUpdateStatus = { state: "idle", message: "尚未检查更新。", version: "" };
 const UPDATE_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 function sendUpdateStatus(window, status) {
-  if (!window.isDestroyed()) window.webContents.send("oj:update-status", status);
+  lastUpdateStatus = { ...lastUpdateStatus, ...status };
+  if (window && !window.isDestroyed()) window.webContents.send("oj:update-status", lastUpdateStatus);
+}
+
+function downloadPendingUpdate(window, version) {
+  updaterWindow = window;
+  sendUpdateStatus(window, { state: "downloading", message: "正在下载更新…", version });
+  return autoUpdater.downloadUpdate()
+    .then(() => true)
+    .catch((error) => {
+      console.error("Update download failed:", error);
+      sendUpdateStatus(window, { state: "error", message: `下载更新失败：${error.message}` });
+      return false;
+    });
+}
+
+function installPendingUpdate() {
+  app.isQuitting = true;
+  setImmediate(() => autoUpdater.quitAndInstall(false, true));
 }
 
 async function checkForUpdates(window) {
@@ -27,6 +46,7 @@ async function checkForUpdates(window) {
     return false;
   }
   if (updateCheckPromise) return updateCheckPromise;
+  sendUpdateStatus(window, { state: "checking", message: "正在检查更新…" });
   updateCheckPromise = autoUpdater.checkForUpdates()
     .then(() => true)
     .catch((error) => {
@@ -52,9 +72,13 @@ function setupAutoUpdates(window) {
   });
   autoUpdater.on("update-not-available", () => {
     sendUpdateStatus(updaterWindow, { state: "current", message: "当前已是最新版本。" });
-  });
-  autoUpdater.on("update-available", async (info) => {
-    sendUpdateStatus(updaterWindow, { state: "available", message: `发现新版本 ${info.version}，等待确认下载。` });
+  });  autoUpdater.on("update-available", async (info) => {
+    sendUpdateStatus(updaterWindow, {
+      state: "available",
+      message: `发现新版本 ${info.version}，可在顶部提示条中下载，也可以稍后退出软件时自动安装。`,
+      version: info.version
+    });
+    if (!updaterWindow || updaterWindow.isDestroyed() || updaterWindow.isFocused()) return;
     const answer = await dialog.showMessageBox(updaterWindow, {
       type: "info",
       title: "发现软件更新",
@@ -66,27 +90,28 @@ function setupAutoUpdates(window) {
       noLink: true
     });
     if (answer.response !== 0) {
-      sendUpdateStatus(updaterWindow, { state: "deferred", message: "已暂缓更新；下次启动时会再次检查。" });
+      sendUpdateStatus(updaterWindow, { state: "deferred", message: `已暂缓下载 ${info.version}，可在顶部提示条中重新下载。` });
       return;
     }
-    sendUpdateStatus(updaterWindow, { state: "downloading", message: "正在下载更新…" });
-    try {
-      await autoUpdater.downloadUpdate();
-    } catch (error) {
-      console.error("Update download failed:", error);
-      sendUpdateStatus(updaterWindow, { state: "error", message: `下载更新失败：${error.message}` });
-    }
+    await downloadPendingUpdate(updaterWindow, info.version);
   });
   autoUpdater.on("download-progress", (progress) => {
     updaterWindow?.setProgressBar(Math.max(0, Math.min(progress.percent, 100)) / 100);
     sendUpdateStatus(updaterWindow, {
       state: "downloading",
-      message: `正在下载更新：${Math.round(progress.percent)}%`
+      message: `正在下载更新：${Math.round(progress.percent)}%（完成后可立即重启安装）`,
+      percent: progress.percent
     });
   });
   autoUpdater.on("update-downloaded", async (info) => {
     updaterWindow?.setProgressBar(-1);
-    sendUpdateStatus(updaterWindow, { state: "downloaded", message: `版本 ${info.version} 已下载完成。` });
+    sendUpdateStatus(updaterWindow, {
+      state: "downloaded",
+      message: `版本 ${info.version} 已下载完成。点击“立即重启安装”，或直接退出软件后自动安装。`,
+      version: info.version,
+      percent: 100
+    });
+    if (!updaterWindow || updaterWindow.isDestroyed() || updaterWindow.isFocused()) return;
     const answer = await dialog.showMessageBox(updaterWindow, {
       type: "info",
       title: "更新已准备就绪",
@@ -97,10 +122,7 @@ function setupAutoUpdates(window) {
       cancelId: 1,
       noLink: true
     });
-    if (answer.response === 0) {
-      app.isQuitting = true;
-      autoUpdater.quitAndInstall(false, true);
-    }
+    if (answer.response === 0) installPendingUpdate();
   });
   autoUpdater.on("error", (error) => {
     updaterWindow?.setProgressBar(-1);
@@ -428,6 +450,13 @@ async function createWindow() {
   });
   ipcMain.handle("oj:toolchain-status", () => toolchainStatus());
   ipcMain.handle("oj:check-for-updates", () => checkForUpdates(window));
+  ipcMain.handle("oj:update-state", () => lastUpdateStatus);
+  ipcMain.handle("oj:download-update", () => downloadPendingUpdate(window, lastUpdateStatus.version));
+  ipcMain.handle("oj:install-update", () => {
+    if (lastUpdateStatus.state !== "downloaded") return false;
+    installPendingUpdate();
+    return true;
+  });
   window.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith("https://")) {
       void shell.openExternal(url);

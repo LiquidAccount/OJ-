@@ -1145,22 +1145,76 @@ document.querySelector("#mobile-menu").addEventListener("click", () => {
 });
 
 const updateButton = document.querySelector("#desktop-update-button");
+const updateBanner = document.querySelector("#update-banner");
+const updateBannerTitle = document.querySelector("#update-banner-title");
+const updateBannerMessage = document.querySelector("#update-banner-message");
+const updateBannerActions = document.querySelector("#update-banner-actions");
+const updateBannerTrack = document.querySelector("#update-banner-track");
+const updateBannerFill = document.querySelector("#update-banner-fill");
+
+const UPDATE_BANNER_TITLES = {
+  checking: "正在检查更新",
+  available: "发现新版本",
+  downloading: "正在下载更新",
+  downloaded: "更新已就绪，等待重启安装",
+  current: "已是最新版本",
+  deferred: "更新已暂缓",
+  error: "更新失败",
+  unavailable: "更新不可用"
+};
+
+function renderUpdateBanner(status) {
+  const { state = "idle", message = "", version = "", percent } = status || {};
+  const visible = Boolean(UPDATE_BANNER_TITLES[state]);
+  updateBanner.hidden = !visible;
+  if (!visible) return;
+
+  updateBanner.classList.toggle("error", state === "error");
+  updateBanner.classList.toggle("ready", state === "downloaded");
+  updateBannerTitle.textContent = version ? `${UPDATE_BANNER_TITLES[state]} v${version}` : UPDATE_BANNER_TITLES[state];
+  updateBannerMessage.textContent = message;
+
+  const downloading = state === "downloading";
+  updateBannerTrack.hidden = !downloading;
+  updateBannerFill.style.width = downloading ? `${Math.max(0, Math.min(Number(percent) || 0, 100))}%` : "0";
+
+  updateBannerActions.replaceChildren();
+  const addAction = (label, handler, primary) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = `button ${primary ? "button-primary" : "button-outline"}`;
+    button.textContent = label;
+    button.addEventListener("click", () => {
+      button.disabled = true;
+      void handler().finally(() => {
+        if (button.isConnected) button.disabled = false;
+      });
+    });
+    updateBannerActions.append(button);
+  };
+  if (state === "available" || state === "deferred") addAction("下载更新", () => window.ojDesktop.downloadUpdate(), true);
+  if (state === "downloaded") addAction("立即重启安装", () => window.ojDesktop.installUpdate(), true);
+  if (state === "error" || state === "current") addAction("重新检查", () => window.ojDesktop.checkForUpdates(), false);
+}
+
 if (window.ojDesktop) {
   updateButton.hidden = true;
   updateButton.addEventListener("click", () => {
     updateButton.disabled = true;
+    updateButton.textContent = "检查中…";
     void window.ojDesktop.checkForUpdates().finally(() => {
       updateButton.disabled = false;
     });
   });
-  window.ojDesktop.onUpdateStatus(({ state: updateState, message }) => {
-    if (updateState === "downloading") {
-      updateButton.textContent = message.match(/\d+%/)?.[0] || "下载中";
-    } else {
-      updateButton.textContent = "检查更新";
-      if (["error", "deferred", "downloaded"].includes(updateState)) showToast(message);
-    }
+  window.ojDesktop.onUpdateStatus((status) => {
+    const { state: updateState, message } = status;
+    updateButton.textContent = updateState === "downloading"
+      ? (message.match(/\d+%/) || ["下载中"])[0]
+      : "检查更新";
+    renderUpdateBanner(status);
+    if (updateState === "downloaded") showToast(message);
   });
+  void window.ojDesktop.getUpdateState().then(renderUpdateBanner);
 }
 
 async function initialize() {
