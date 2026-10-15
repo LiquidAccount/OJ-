@@ -21,6 +21,14 @@ npm run desktop:build
 
 安装包必须保持 `"asar": false`：OJ 后端服务与本地评测器由 Electron `utilityProcess` 以独立 Node 进程启动，而指向 `app.asar` 内部脚本的启动路径不会真正执行（子进程既不报错也不监听端口），会导致软件停在“OJ 后端服务启动超时”。如果以后要重新启用 asar，需同时改造这两个子进程的加载方式。
 
+本机网络无法稳定访问 `github.com` 时（例如被加速器改写 hosts 或链路被重置），`npm run desktop:build` 会在 `packaging` 这一步卡住或报 `unable to verify the first certificate` / `read ECONNRESET`，因为它仍需从 GitHub 取 Electron。此时改用本地已缓存的 Electron 离线打包：Electron 压缩包位于 `%LOCALAPPDATA%\electron\Cache`，用 `%LOCALAPPDATA%\electron-builder\Cache\7zip@*\7zip-win-x64-*\bin\7za.exe` 解压到任意目录，再把该目录作为 `electronDist` 传入：
+
+```powershell
+.\node_modules\.bin\electron-builder.cmd --win nsis --x64 --publish never --config.electronDist="C:\path\to\electron-dist"
+```
+
+若还遇到证书校验失败，先设置 `$env:NODE_OPTIONS = '--use-system-ca'` 让 Node 使用 Windows 证书库（加速器的根证书装在系统库里，Node 默认不读）。正式发布仍由 GitHub Actions 构建，无需在本地解决网络问题。
+
 应用名称（安装包名、可执行文件名、桌面与开始菜单快捷方式）来自 `package.json` 的 `build.productName` 与 `build.nsis.shortcutName`；`name` 字段必须保持 `liangliang-oj`，因为 Electron 的用户数据目录与自动更新缓存目录由它派生，改名会导致账号、题库与提交记录看起来“丢失”。
 
 桌面版首次启动会检测 GCC、G++ 和 Python。缺少时可以选择“尝试自动安装”，由 Windows Package Manager 安装 Python 和 MSYS2/GCC；需要可用的 winget、网络及可能的系统授权。也可跳过，使用 JavaScript 评测或稍后安装。用户程序以当前 Windows 用户权限运行，不属于操作系统级沙箱；仅评测自己信任的代码。
