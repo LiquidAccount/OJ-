@@ -1,6 +1,6 @@
 {
   "name": "liangliang-oj",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "private": true,
   "description": "OJ - a local programming practice desktop app",
   "scripts": {

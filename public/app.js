@@ -26,7 +26,7 @@ const state = {
   activeContestId: null,
   selectedSubmissionId: null,
   adminOverview: null,
-  siteSettings: { siteTitle: "OJ", anime: null, deepseekConfigured: false },
+  siteSettings: { siteTitle: "哎呀我去做会OJ", anime: null, deepseekConfigured: false },
   authMode: "login",
   adminRegistrationEnabled: false,
   localJudgeConnected: false,
@@ -76,7 +76,7 @@ function render() {
 }
 
 function updateSiteBrand() {
-  const siteTitle = state.siteSettings.siteTitle || "OJ";
+  const siteTitle = state.siteSettings.siteTitle || "哎呀我去做会OJ";
   document.title = siteTitle;
   document.querySelectorAll("[data-site-title]").forEach((element) => {
     element.textContent = siteTitle;
